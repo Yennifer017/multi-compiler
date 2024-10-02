@@ -1,0 +1,135 @@
+
+package compi2.pascal.valitations.analysis;
+
+import java_cup.runtime.*;
+import java.util.*;
+import compi2.pascal.valitations.analysis.typet.*;
+import compi2.pascal.valitations.analyzator.*;
+import compi2.pascal.valitations.semantic.*;
+import compi2.pascal.valitations.semantic.expr.*;
+import compi2.pascal.valitations.semantic.obj.*;
+import compi2.pascal.valitations.semantic.ast.*;
+import compi2.pascal.valitations.semantic.module.*;
+import compi2.pascal.valitations.util.Position;
+
+/*-----------------------------------------------------------
+  CUP Specification for the Parser Class
+  -----------------------------------------------------------*/
+parser code {:
+    //fields
+    Lexer lex;
+    private List<String> syntaxErrors;
+    private GenTypeTab genTypeTab;
+    private AstGen astGen;
+    private Analyzator analyzator;
+
+    //conect the parser with the lexer
+    public Parser(Lexer lex, Analyzator analyzator){
+        super(lex);
+        syntaxErrors = new LinkedList<>();
+        genTypeTab = new GenTypeTab();
+        astGen = new AstGen();
+        this.analyzator = analyzator;
+    }
+
+    //getters
+    public Lexer getLexer(){
+        return this.lex;
+    }
+    public List<String> getSyntaxErrors(){
+        return this.syntaxErrors;
+    }
+    
+    /*SOBREESCRIBIR LOS METODOS DE ERROR*/
+    public void syntax_error(Symbol cur_token) {
+        StringBuilder mssBuilder = new StringBuilder("Simbolo: ");
+        mssBuilder.append(symbl_name_from_id(cur_token.sym));
+        
+        if(cur_token.value != null){
+            mssBuilder.append(", lexema <");
+            mssBuilder.append(cur_token.value.toString());
+            mssBuilder.append(">");
+        }
+        mssBuilder.append(", linea: ");
+        mssBuilder.append(cur_token.left);
+        mssBuilder.append(", columna: ");
+        mssBuilder.append(cur_token.right);
+        
+        if (expected_token_ids().isEmpty()) {
+            mssBuilder.append(" -- ya no se esperaba ningun simbolo");
+        } else {
+            mssBuilder.append(" -- Se esperaba [");
+            for (Integer expected_token_id : expected_token_ids()) {
+                if(!symbl_name_from_id(expected_token_id).equals("error")){
+                    mssBuilder.append(symbl_name_from_id(expected_token_id));
+                    mssBuilder.append(" ");
+                }
+                
+            }
+            mssBuilder.append("]");
+        }
+        syntaxErrors.add(mssBuilder.toString());
+    }
+    
+    public void report_error(String message, Object info){
+        try{
+            Symbol cur_token = (Symbol) info;
+            StringBuilder mssBuilder = new StringBuilder("Simbolo: ");
+            mssBuilder.append(symbl_name_from_id(cur_token.sym));
+            mssBuilder.append(", linea: ");
+            mssBuilder.append(cur_token.left);
+            mssBuilder.append(", columna: ");
+            mssBuilder.append(cur_token.right);
+            if(cur_token != null){
+                mssBuilder.append(", Lexema: ");
+                mssBuilder.append(cur_token.value);
+            }
+
+            if(message != null){
+                mssBuilder.append(", Info: ");
+                mssBuilder.append(message);
+            }
+            
+            syntaxErrors.add(mssBuilder.toString());
+        } catch (Exception e){
+            syntaxErrors.add(message);
+        }
+    }
+
+
+    public void unrecovered_syntax_error(Symbol cur_token) {
+        syntaxErrors.add("Errores de sintaxis severos detectados, revisa municiosamente el codigo");
+    }
+:}
+
+/*---------------------------------------
+             Declarations
+-----------------------------------------*/
+/* Terminals (tokens returned by the scanner). */
+terminal            PLUS, MINUS, TIMES, BARRA,
+                    LLAVE_L, LLAVE_R, PARENTESIS_L, PARENTESIS_R, CORCHETE_L, CORCHETE_R, ACENT,
+                    EQUALS, DIFFERENT, GRATER, LESS, GRATER_EQUALS, LESS_EQUALS,
+                    ASSIGNATION, COMA, DOT, SEMICOLON, COLON,
+                    AND, ARRAY, BEGIN, CASE, CONST, DIV, DO,
+                    DOWNTO, ELSE, END, FILE, FOR, FUNCTION, GOTO,
+                    IF, IN, LABEL, MOD, NIL, NOT, OF,
+                    OR, PACKED, PROCEDURE, PROGRAM, RECORD, REPEAT, SET,
+                    THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH,
+                    INTEGER, REAL, BOOLEAN, CHAR, STRING, LONGINT,
+                    REAL_LIT, STRING_LIT,
+                    WRITELN, READLN, RETURN, BREAK, CONTINUE,
+                    UMINUS, COND
+                    ;
+
+
+/*----------------------------------------
+            Precedences
+-----------------------------------------*/
+
+
+/* --------------------------------------
+            The grammar 
+-----------------------------------------*/
+start with s;
+s ::=   
+    ;
