@@ -159,6 +159,7 @@ OctDigit          = [0-7]
         "while"         { return symbol(sym.WHILE); }
 
         /* others */
+        "=="             { return symbol(sym.EQUALS); }
         "="             { return symbol(sym.ASSIGNATION); }
         "&&"            { return symbol(sym.AND); }
         "||"            { return symbol(sym.OR); }
@@ -189,7 +190,7 @@ OctDigit          = [0-7]
         "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\\'); }
         \\[0-3]?{OctDigit}?{OctDigit}\' { yybegin(YYINITIAL);
                                                 int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);
-                                                return symbol(CHARACTER_LITERAL, (char)val); }
+                                                return symbol(sym.CHAR_LIT, (char)val); }
 
         /* error cases */
         \\.                            { error("Secuencia ilegal de escape \""+yytext()+"\""); }
@@ -197,7 +198,7 @@ OctDigit          = [0-7]
     }
 
     <STRING> {
-        \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LIT, string.toString())); }
+        \"                             { yybegin(YYINITIAL); return symbol(sym.STRING_LIT, string.toString()); }
 
         {StringCharacter}+             { string.append( yytext() ); }
 
@@ -251,6 +252,7 @@ OctDigit          = [0-7]
         "while"         { return symbol(sym.WHILE); }
 
         /* others */
+        "=="             { return symbol(sym.EQUALS); }
         "="             { return symbol(sym.ASSIGNATION); }
         "&&"            { return symbol(sym.AND); }
         "||"            { return symbol(sym.OR); }
@@ -261,8 +263,8 @@ OctDigit          = [0-7]
         "println"       { return symbol(sym.PRINTLN); }
 
         /* literals */
-        "true"          { return symbol(BOOLEAN_LIT, true); }
-        "false"         { return symbol(BOOLEAN_LIT, false); }
+        "true"          { return symbol(sym.BOOLEAN_LIT, true); }
+        "false"         { return symbol(sym.BOOLEAN_LIT, false); }
         {Identifier}    { return symbol( sym.ID, yytext() ); }
         {DecIntegerLiteral}            { return symbol(sym.INTEGER_LIT, Integer.valueOf(yytext())); }
         {DecFloatLiteral}              { return symbol(sym.FLOAT_LIT, Float.parseFloat(yytext()));}
@@ -288,7 +290,7 @@ OctDigit          = [0-7]
         "\\\\"\'                       { yybegin(JAVA); return symbol(sym.CHAR_LIT, '\\'); }
         \\[0-3]?{OctDigit}?{OctDigit}\' { yybegin(JAVA);
                                                 int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);
-                                                return symbol(CHARACTER_LITERAL, (char)val); }
+                                                return symbol(sym.CHAR_LIT, (char)val); }
 
         /* error cases */
         \\.                            { error("Secuencia ilegal de escape \""+yytext()+"\""); }
@@ -296,7 +298,7 @@ OctDigit          = [0-7]
     }
 
     <JSTRING> {
-        \"                             { yybegin(JAVA); return symbol(sym.STRING_LIT, string.toString())); }
+        \"                             { yybegin(JAVA); return symbol(sym.STRING_LIT, string.toString()); }
 
         {StringCharacter}+             { string.append( yytext() ); }
 
@@ -328,9 +330,10 @@ OctDigit          = [0-7]
         "%%PROGRAMA"    { yybegin(YYINITIAL); return symbol(sym.MAIN_SECTION); }
 
         /* simbols */
-        ":="             { return symbol(sym.ASSIGNATION); }
+        ":="            { return symbol(sym.ASSIGNATION); }
         "="             { return symbol(sym.EQUALS); }
         "<>"            { return symbol(sym.DIFFERENT); }
+        "="             { return symbol(sym.EQUALS); }
 
         /* keywords */
         [aA][nN][dD]                    { return symbol(sym.AND); }
@@ -342,10 +345,10 @@ OctDigit          = [0-7]
         [cC][hH][aA][rR]                { return symbol(sym.CHAR_TKN); }
         [cC][oO][nN][sS][tT]            { return symbol(sym.CONST); }
         [cC][oO][nN][tT][iI][nN][uU][eE]    { return symbol(sym.CONTINUE); }
-        [dD][iI][vV]                    { return symbol(sym.DIV); }
         [dD][oO]                        { return symbol(sym.DO); }
         [dD][oO][wW][nN][tT][oO]        { return symbol(sym.DOWNTO); }
         [eE][lL][sS][eE]                { return symbol(sym.ELSE); }
+        [eE][nN][dD]                    { return symbol(sym.END); }
         [fF][oO][rR]                    { return symbol(sym.FOR); }
         [fF][uU][nN][cC][tT][iI][oO][nN]    { return symbol(sym.FUNCTION); }
         [iI][fF]                        { return symbol(sym.IF); }

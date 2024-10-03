@@ -1,9 +1,16 @@
 
-package compi2.pascal.valitations.analysis;
+package compi2.multi.compilator.analysis;
 
 import java_cup.runtime.*;
 import java.util.*;
-
+import compi2.multi.compilator.analysis.typet.*;
+import compi2.multi.compilator.analyzator.*;
+import compi2.multi.compilator.semantic.*;
+import compi2.multi.compilator.semantic.exp.*;
+import compi2.multi.compilator.semantic.obj.*;
+import compi2.multi.compilator.semantic.ast.*;
+import compi2.multi.compilator.semantic.module.*;
+import compi2.multi.compilator.util.Position;
 /*-----------------------------------------------------------
   CUP Specification for the Parser Class
   -----------------------------------------------------------*/
@@ -119,8 +126,9 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             DO,
             DOWNTO,
             ELSE,
+            END,
+            EQUALS,
             EXTENDS,
-            FLOAT_LIT,
             FLOAT_TKN,
             FOR,
             FUNCTION,
@@ -149,6 +157,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             REPEAT,
             RETURN,
             SCANF,
+            SET,
             STRING_LIT,
             STRING_TKN,
             SUPER,
@@ -175,6 +184,7 @@ terminal String     ID;
 terminal Character  CHAR_LIT;
 terminal Integer    INTEGER_LIT;
 terminal boolean    BOOLEAN_LIT;
+terminal float      FLOAT_LIT;
 
 
 /*----------------------------- Non-terminals ---------------------------------------*/
@@ -182,18 +192,15 @@ non terminal        s, pascal_block, java_block, main_program, pcontent,
                     jcontent
                     ;
 
-/* FOR PASCAL */
+/******************************* FOR PASCAL ****************************/
 non terminal List<Label> id_list, list_access
                     ;
 non terminal Label var_type
                     ;
-non terminal List<DefAst> type_b, list_typedec, type_dec,
-                    more_records, record_b,
-                    const_b, list_constdec,
+non terminal List<DefAst> more_records, record_b,
                     list_vardec, var_b, var_dec
                     ;
-non terminal DefAst def_record,
-                    const_dec
+non terminal DefAst def_record
                     ;
 non terminal Expression expression, bool_exp, arit_exp, literals
                     ;
@@ -209,8 +216,7 @@ non terminal Statement simple_stmt, complex_stmt,
                     ;
 non terminal List<Statement> list_stmts, more_stmts, block_stmt, statements,
                     block_cond, 
-                    case_stmts, case_else_stmts,
-                    main
+                    case_stmts, case_else_stmts
                     ;
 non terminal WhileAst while_stmt
                     ;
@@ -254,6 +260,7 @@ precedence left NOT;
 /*operaciones*/
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV, BARRA, MOD;
+precedence left POWER;
 precedence right UMINUS;
 
 precedence right SEMICOLON;
@@ -278,7 +285,6 @@ pascal_block ::= PASCAL_SECTION pcontent
 
 pcontent ::= functions_b:lf procedure_b:lp
         ;
-
 /*-------------------------------------- UTILITIES --------------------------------*/
 var_type ::= INT_TKN:t  
                     {: 
@@ -349,7 +355,7 @@ range ::= expression:e1 DOT DOT DOT expression:e2
                     :}
             ;
 
-arr_range ::= LPAREN expression:e1 DOT DOT expression:e2 RPAREN
+arr_range ::= LBRACK expression:e1 DOT DOT expression:e2 RBRACK
                     {:
                          RESULT = new Range(e1, e2);
                     :}
@@ -427,7 +433,6 @@ expression_list ::= expression_list:l COMMA expression:e
             ;
 
 
-
 /*-------------------------------------- VARIABLES BLOCK -------------------------------*/
 var_b ::= VAR list_vardec:l
                     {:
@@ -470,21 +475,9 @@ var_dec ::= id_list:l COLON var_type:t
                     {:
                         RESULT = genTypeTab.userDef(l, t);
                     :}
-            | id_list:l COLON range:r 
-                    {:
-                        RESULT = genTypeTab.rangeDef(l, r);
-                    :}
             | id_list:l COLON ARRAY arr_range:r OF var_type:t 
                     {:
                         RESULT = genTypeTab.arrayDef(l, t, r);
-                    :}
-            | id_list:ids EQUALS RECORD record_b:l END 
-                    {:
-                        RESULT = genTypeTab.recordDef(ids, l);
-                    :}
-            | id_list:ids COLON RECORD record_b:l END 
-                    {:
-                        RESULT = genTypeTab.recordDef(ids, l);
                     :}
         /*MANAGE ERRORS*/
             | id_list:l error var_type:t 
@@ -498,10 +491,6 @@ var_dec ::= id_list:l COLON var_type:t
             | id_list:l error ARRAY arr_range:r OF var_type:t 
                     {:
                         RESULT = genTypeTab.arrayDef(l, t, r);
-                    :}
-            | id_list:ids error RECORD record_b:l END 
-                    {:
-                        RESULT = genTypeTab.recordDef(ids, l);
                     :}
             ;
 
@@ -634,13 +623,6 @@ arit_exp ::=
                             new Position(oleft, oright)
                         );
                     :}
-            | arit_exp:e1 BARRA:o arit_exp:e2
-                    {:
-                        RESULT = new Operation(
-                            DefiniteOperation.Division, e1, e2,
-                            new Position(oleft, oright)
-                        );
-                    :}
             | arit_exp:e1 MOD:o arit_exp:e2
                     {:
                         RESULT = new Operation(
@@ -648,35 +630,21 @@ arit_exp ::=
                             new Position(oleft, oright)
                         );
                     :}
+            | arit_exp:e1 POWER:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Power, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
             | literals:e
                     {:
                         RESULT = e;
                     :}
-            | ID:i LPAREN arit_exp:e RPAREN
+            | ID:i LBRACK arit_exp:e RBRACK
                     {:
                         RESULT = new VectorUse(
                             i, e, new Position(ileft, iright)
-                        );
-                    :}
-            | ID:i DOT list_access:l
-                    {:
-                        if(l != null){
-                            l.add(0, new Label(i, new Position(ileft, iright)));
-                        } else {
-                            l = new LinkedList<>();
-                        }
-                        RESULT = new RecordUse(l);
-                    :}
-            | ID:i PARENTESIS_L expression_list:l PARENTESIS_R
-                    {:
-                        RESULT = new FunctionUse(
-                            i, l, new Position(ileft, iright)
-                        );
-                    :}
-            | ID:i PARENTESIS_L PARENTESIS_R
-                    {:
-                        RESULT = new FunctionUse(
-                            i, new Position(ileft, iright)
                         );
                     :}
             | ID:i
@@ -686,7 +654,7 @@ arit_exp ::=
                         );
                     :}
             %prec UMINUS
-            | PARENTESIS_L expression:e PARENTESIS_R
+            | LPAREN expression:e RPAREN
                     {:
                         RESULT = e;
                     :}
@@ -710,7 +678,7 @@ arit_exp ::=
                     :}
         /*MANAGE ERRORS*/
             %prec UMINUS
-            | PARENTESIS_L error PARENTESIS_R
+            | LPAREN error RPAREN
             %prec UMINUS        
             | MINUS error
             %prec UMINUS
@@ -733,7 +701,7 @@ literals ::= BOOLEAN_LIT:l
                             new Position(lleft, lright)
                         );
                     :}
-            | REAL_LIT:l
+            | FLOAT_LIT:l
                     {:
                         RESULT = new SingleExp(
                             PrimitiveType.RealPT, 
@@ -759,6 +727,218 @@ literals ::= BOOLEAN_LIT:l
 
 
 /*------------------------------------------- STATEMENTS BLOCK ------------------------------*/
+
+/************************* conditionals *****************************/
+conditional ::=
+          if_stmt:i block_cond:ls
+                {:
+                    RESULT = new PassIf(new IfAst(
+                        i.getExpression(), 
+                        ls, 
+                        i.getPosition()
+                    ));
+                :}
+        | if_stmt:i block_cond:ls SEMICOLON
+                {:
+                    RESULT = new PassIf(new IfAst(
+                        i.getExpression(), 
+                        ls,
+                        i.getPosition()
+                    ));
+                :}
+        | if_stmt:i block_cond:ls ELSE:e elif:pi
+                {:  
+                    if(pi.getElseAst() != null && pi.getElseAst().getInitPos() == null){
+                        pi.getElseAst().setInitPos(
+                            new Position(eleft, eright)
+                        );
+                    }
+                    RESULT = astGen.genPassIf(
+                        pi, 
+                        new IfAst(i.getExpression(), ls, i.getPosition())
+                    );
+                :}
+        ;
+
+if_stmt ::= IF:i LPAREN expression:e RPAREN THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        | IF:i LPAREN error RPAREN THEN
+                {:  
+                    RESULT = new InitIf(null, new Position(ileft, iright));     
+                :}
+    /*MANAGE ERRORS*/
+        | IF:i LPAREN expression:e error THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        | IF:i error expression:e RPAREN THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        | IF:i error expression:e error THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        ;
+block_cond ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:ls END
+                {:
+                    RESULT = ls;
+                :}
+        ;
+elif ::= else_block:e SEMICOLON
+                {:
+                    RESULT = new PassIf(e);
+                :}
+        | conditional:pi
+                {:
+                    RESULT = pi;
+                :}
+        ;
+
+else_block ::= complex_else:s
+                {:  
+                    RESULT = new ElseAst(astGen.oneStmtInList(s)); 
+                :}
+        | simple_stmt:s
+                {:
+                    RESULT = new ElseAst(astGen.oneStmtInList(s)); 
+                :}
+        | BEGIN block_stmt:ls END
+                {:
+                    RESULT = new ElseAst(ls);
+                :}
+        ;
+
+complex_else ::= case_stmt:s
+                {:  RESULT = s; :}
+        | while_stmt:s
+                {:  RESULT = s; :}
+        | for_stmt:s
+                {:  RESULT = s; :}
+        | repeat_stmt:s
+                {:  RESULT = s; :}
+        ;
+
+/************************* case *****************************/
+
+case_stmt ::= CASE:c LPAREN expression:e RPAREN OF case_block:lsc 
+                    ELSE case_else_stmts:ls END SEMICOLON
+                {:
+                    RESULT = new CaseAst(e, lsc, new ElseAst(ls), new Position(cleft, cright));
+                :}
+        ;
+
+case_block ::= case_block:l labels:labs COLON case_stmts:ls SEMICOLON
+                {:
+                    if(l != null){
+                        l.add(new SimpleCase(labs, ls));
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | labels:labs COLON case_stmts:ls SEMICOLON
+                {:
+                    RESULT = astGen.genSimpleCaseList(labs, ls);
+                :}
+        ;
+
+labels ::= labels:l COMMA expression:e
+                {:
+                    if(l != null){
+                        l.add(e);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | expression:e
+                {:
+                    LinkedList<Expression> list = new LinkedList<>();
+                    list.add(e);
+                    RESULT = list;
+                :}
+        ;
+
+case_stmts ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:l END
+                {:
+                    RESULT = l;
+                :}
+        ;
+
+case_else_stmts ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s SEMICOLON
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:l
+                {:      
+                    RESULT = l;
+                :}
+        ;
+
+/************************* ciclos *****************************/
+
+while_stmt ::= WHILE:w LPAREN expression:e RPAREN DO statements:l
+                {:
+                    RESULT = new WhileAst(e, l, new Position(wleft, wright));
+                :}
+        | WHILE:w LPAREN error RPAREN DO statements:l
+                {:
+                    RESULT = new WhileAst(null, l, new Position(wleft, wright));
+                :}
+        ;
+
+for_stmt ::= FOR:f ID:i ASSIGNATION expression:e1 TO expression:e2 DO statements:l
+                {:
+                    Range range = new Range(e1, e2);
+                    Label variable = new Label(i, new Position(ileft, iright));
+                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
+                :}
+        | FOR:f ID:i ASSIGNATION error TO expression:e2 DO statements:l
+                {:
+                    Range range = new Range(null, e2);
+                    Label variable = new Label(i, new Position(ileft, iright));
+                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
+                :}
+        | FOR:f ID:i error expression:e1 TO expression:e2 DO statements:l
+                {:
+                    Range range = new Range(e1, e2);
+                    Label variable = new Label(i, new Position(ileft, iright));
+                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
+                :}
+        ;
+
+repeat_stmt ::= REPEAT:r statements:l UNTIL expression:e
+                {:
+                    RESULT = new RepeatAst(e, l, new Position(rleft, rright));
+                :}
+        ;
 
 /************************* statements *****************************/
 statements ::= simple_stmt:s SEMICOLON
@@ -872,30 +1052,7 @@ simple_stmt ::= BREAK:b
                         new Label(i, new Position(ileft, iright)), e
                     );
                 :}
-        | ID:i PARENTESIS_L expression_list:el PARENTESIS_R
-                {:
-                    RESULT = new FunctionUseStmt(
-                        new Label(i, new Position(ileft, iright)),
-                        el
-                    );
-                :}
-        | ID:i PARENTESIS_L PARENTESIS_R
-                {:
-                    RESULT = new FunctionUseStmt(
-                        new Label(i, new Position(ileft, iright)),
-                        new LinkedList<>()
-                    );
-                :}
-        | ID:i DOT list_access:l ASSIGNATION expression:e
-                {:
-                    if(l != null){
-                        l.add(0, new Label(i, new Position(ileft, iright)));
-                    } else {
-                        l = new LinkedList<>();
-                    }
-                    RESULT = new RecAssignation(l, e, new Position(ileft, iright));
-                :}
-        | ID:i LPAREN expression:e1 RPAREN ASSIGNATION expression:e2
+        | ID:i LBRACK expression:e1 RBRACK ASSIGNATION expression:e2
                 {:
                     RESULT = new ArrayAssign(
                         new Label(i, new Position(ileft, iright)),
@@ -921,222 +1078,6 @@ complex_stmt ::= conditional:pi
         | repeat_stmt:s
                 {:  RESULT = s; :}
         ;
-
-
-/************************* ciclos *****************************/
-
-while_stmt ::= WHILE:w PARENTESIS_L expression:e PARENTESIS_R DO statements:l
-                {:
-                    RESULT = new WhileAst(e, l, new Position(wleft, wright));
-                :}
-        | WHILE:w PARENTESIS_L error PARENTESIS_R DO statements:l
-                {:
-                    RESULT = new WhileAst(null, l, new Position(wleft, wright));
-                :}
-        ;
-
-for_stmt ::= FOR:f ID:i ASSIGNATION expression:e1 TO expression:e2 DO statements:l
-                {:
-                    Range range = new Range(e1, e2);
-                    Label variable = new Label(i, new Position(ileft, iright));
-                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
-                :}
-        | FOR:f ID:i ASSIGNATION error TO expression:e2 DO statements:l
-                {:
-                    Range range = new Range(null, e2);
-                    Label variable = new Label(i, new Position(ileft, iright));
-                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
-                :}
-        | FOR:f ID:i error expression:e1 TO expression:e2 DO statements:l
-                {:
-                    Range range = new Range(e1, e2);
-                    Label variable = new Label(i, new Position(ileft, iright));
-                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
-                :}
-        ;
-
-repeat_stmt ::= REPEAT:r statements:l UNTIL expression:e
-                {:
-                    RESULT = new RepeatAst(e, l, new Position(rleft, rright));
-                :}
-        ;
-
-
-/************************* conditionals *****************************/
-conditional ::=
-          if_stmt:i block_cond:ls
-                {:
-                    RESULT = new PassIf(new IfAst(
-                        i.getExpression(), 
-                        ls, 
-                        i.getPosition()
-                    ));
-                :}
-        | if_stmt:i block_cond:ls SEMICOLON
-                {:
-                    RESULT = new PassIf(new IfAst(
-                        i.getExpression(), 
-                        ls,
-                        i.getPosition()
-                    ));
-                :}
-        | if_stmt:i block_cond:ls ELSE:e elif:pi
-                {:  
-                    if(pi.getElseAst() != null && pi.getElseAst().getInitPos() == null){
-                        pi.getElseAst().setInitPos(
-                            new Position(eleft, eright)
-                        );
-                    }
-                    RESULT = astGen.genPassIf(
-                        pi, 
-                        new IfAst(i.getExpression(), ls, i.getPosition())
-                    );
-                :}
-        ;
-
-if_stmt ::= IF:i PARENTESIS_L expression:e PARENTESIS_R THEN
-                {:  
-                    RESULT = new InitIf(e, new Position(ileft, iright));     
-                :}
-        | IF:i PARENTESIS_L error PARENTESIS_R THEN
-                {:  
-                    RESULT = new InitIf(null, new Position(ileft, iright));     
-                :}
-    /*MANAGE ERRORS*/
-        | IF:i PARENTESIS_L expression:e error THEN
-                {:  
-                    RESULT = new InitIf(e, new Position(ileft, iright));     
-                :}
-        | IF:i error expression:e PARENTESIS_R THEN
-                {:  
-                    RESULT = new InitIf(e, new Position(ileft, iright));     
-                :}
-        | IF:i error expression:e error THEN
-                {:  
-                    RESULT = new InitIf(e, new Position(ileft, iright));     
-                :}
-        ;
-block_cond ::= simple_stmt:s
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | complex_stmt:s
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | BEGIN block_stmt:ls END
-                {:
-                    RESULT = ls;
-                :}
-        ;
-elif ::= else_block:e SEMICOLON
-                {:
-                    RESULT = new PassIf(e);
-                :}
-        | conditional:pi
-                {:
-                    RESULT = pi;
-                :}
-        ;
-
-else_block ::= complex_else:s
-                {:  
-                    RESULT = new ElseAst(astGen.oneStmtInList(s)); 
-                :}
-        | simple_stmt:s
-                {:
-                    RESULT = new ElseAst(astGen.oneStmtInList(s)); 
-                :}
-        | BEGIN block_stmt:ls END
-                {:
-                    RESULT = new ElseAst(ls);
-                :}
-        ;
-
-complex_else ::= case_stmt:s
-                {:  RESULT = s; :}
-        | while_stmt:s
-                {:  RESULT = s; :}
-        | for_stmt:s
-                {:  RESULT = s; :}
-        | repeat_stmt:s
-                {:  RESULT = s; :}
-        ;
-
-/************************* case *****************************/
-
-case_stmt ::= CASE:c PARENTESIS_L expression:e PARENTESIS_R OF case_block:lsc 
-                    ELSE case_else_stmts:ls END SEMICOLON
-                {:
-                    RESULT = new CaseAst(e, lsc, new ElseAst(ls), new Position(cleft, cright));
-                :}
-        ;
-
-case_block ::= case_block:l labels:labs COLON case_stmts:ls SEMICOLON
-                {:
-                    if(l != null){
-                        l.add(new SimpleCase(labs, ls));
-                    } else {
-                        l = new LinkedList<>();
-                    }
-                    RESULT = l;
-                :}
-        | labels:labs COLON case_stmts:ls SEMICOLON
-                {:
-                    RESULT = astGen.genSimpleCaseList(labs, ls);
-                :}
-        ;
-
-labels ::= labels:l COMMA expression:e
-                {:
-                    if(l != null){
-                        l.add(e);
-                    } else {
-                        l = new LinkedList<>();
-                    }
-                    RESULT = l;
-                :}
-        | expression:e
-                {:
-                    LinkedList<Expression> list = new LinkedList<>();
-                    list.add(e);
-                    RESULT = list;
-                :}
-        ;
-
-case_stmts ::= simple_stmt:s
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | complex_stmt:s
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | BEGIN block_stmt:l END
-                {:
-                    RESULT = l;
-                :}
-        ;
-
-case_else_stmts ::= simple_stmt:s
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | simple_stmt:s SEMICOLON
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | complex_stmt:s
-                {:
-                    RESULT = astGen.oneStmtInList(s);
-                :}
-        | BEGIN block_stmt:l
-                {:      
-                    RESULT = l;
-                :}
-        ;
-
-
 
 /*-------------------- FUNCTIONS -------------------------*/
 
@@ -1167,7 +1108,7 @@ functions ::= functions:l function_dec:d
                 :}
         ;
 
-function_dec ::= FUNCTION ID:i PARENTESIS_L arguments:a PARENTESIS_R COLON var_type:t SEMICOLON
+function_dec ::= FUNCTION ID:i LPAREN arguments:a RPAREN COLON var_type:t SEMICOLON
             var_b:lv
             BEGIN block_stmt:ls END SEMICOLON
                 {:  
@@ -1207,7 +1148,7 @@ procedures ::= procedures:l procedure_dec:d
                 :}
         ;
 
-procedure_dec ::= PROCEDURE ID:i PARENTESIS_L arguments:a PARENTESIS_R SEMICOLON
+procedure_dec ::= PROCEDURE ID:i LPAREN arguments:a RPAREN SEMICOLON
             var_b:lv
             BEGIN block_stmt:ls END SEMICOLON
                 {:
@@ -1248,9 +1189,6 @@ type_arg ::= VAR id_list:l COLON var_type:t
                     RESULT = astGen.generateArgs(l, t, false);
                 :}
         ;
-
-
-
 
 
 /* --------------------------------------------------------------------------------------------------
