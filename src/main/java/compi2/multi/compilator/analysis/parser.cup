@@ -3,14 +3,6 @@ package compi2.pascal.valitations.analysis;
 
 import java_cup.runtime.*;
 import java.util.*;
-import compi2.pascal.valitations.analysis.typet.*;
-import compi2.pascal.valitations.analyzator.*;
-import compi2.pascal.valitations.semantic.*;
-import compi2.pascal.valitations.semantic.expr.*;
-import compi2.pascal.valitations.semantic.obj.*;
-import compi2.pascal.valitations.semantic.ast.*;
-import compi2.pascal.valitations.semantic.module.*;
-import compi2.pascal.valitations.util.Position;
 
 /*-----------------------------------------------------------
   CUP Specification for the Parser Class
@@ -106,30 +98,1181 @@ parser code {:
              Declarations
 -----------------------------------------*/
 /* Terminals (tokens returned by the scanner). */
-terminal            PLUS, MINUS, TIMES, BARRA,
-                    LLAVE_L, LLAVE_R, PARENTESIS_L, PARENTESIS_R, CORCHETE_L, CORCHETE_R, ACENT,
-                    EQUALS, DIFFERENT, GRATER, LESS, GRATER_EQUALS, LESS_EQUALS,
-                    ASSIGNATION, COMA, DOT, SEMICOLON, COLON,
-                    AND, ARRAY, BEGIN, CASE, CONST, DIV, DO,
-                    DOWNTO, ELSE, END, FILE, FOR, FUNCTION, GOTO,
-                    IF, IN, LABEL, MOD, NIL, NOT, OF,
-                    OR, PACKED, PROCEDURE, PROGRAM, RECORD, REPEAT, SET,
-                    THEN, TO, TYPE, UNTIL, VAR, WHILE, WITH,
-                    INTEGER, REAL, BOOLEAN, CHAR, STRING, LONGINT,
-                    REAL_LIT, STRING_LIT,
-                    WRITELN, READLN, RETURN, BREAK, CONTINUE,
-                    UMINUS, COND
+terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
+            SEMICOLON, COLON, COMMA, DOT,
+            LPAREN, RPAREN, LBRACE, RBRACE, LBRACK, RBRACK,
+            GRATER, LESS, GRATER_EQUALS, LESS_EQUALS,
+
+            JAVA_SECTION, PASCAL_SECTION, MAIN_SECTION,
+
+            AND,
+            ARRAY,
+            BEGIN,
+            BOOLEAN_TKN,
+            BREAK,
+            CASE,
+            CHAR_TKN,
+            CLASS,
+            CLEAR,
+            CONST,
+            CONTINUE,
+            DO,
+            DOWNTO,
+            ELSE,
+            EXTENDS,
+            FLOAT_LIT,
+            FLOAT_TKN,
+            FOR,
+            FUNCTION,
+            GETCH,
+            IF,
+            IN,
+            INCLUDE,
+            INT_TKN,
+            JAVA,
+            MAIN,
+            NOT,
+            NULL_LIT,
+            OF,
+            OR,
+            PACKED,
+            PASCAL,
+            PRINT,
+            PRINTLN,
+            PRIVATE,
+            PROCEDURE,
+            PROGRAM,
+            PROTECTED,
+            PUBLIC,
+            REAL_TKN,
+            RECORD,
+            REPEAT,
+            RETURN,
+            SCANF,
+            STRING_LIT,
+            STRING_TKN,
+            SUPER,
+            SWITCH,
+            THEN,
+            TO,
+            TYPE,
+            UNTIL,
+            VAR,
+            VOID,
+            WHILE,
+            WITH,
+
+            ASSIGNATION,
+            DIFFERENT,
+            AMPERSAND,
+            MOD,
+
+            UMINUS,
+
+            BARRA
+            ;
+terminal String     ID;
+terminal Character  CHAR_LIT;
+terminal Integer    INTEGER_LIT;
+terminal boolean    BOOLEAN_LIT;
+
+
+/*----------------------------- Non-terminals ---------------------------------------*/
+non terminal        s, pascal_block, java_block, main_program, pcontent,
+                    jcontent
+                    ;
+
+/* FOR PASCAL */
+non terminal List<Label> id_list, list_access
+                    ;
+non terminal Label var_type
+                    ;
+non terminal List<DefAst> type_b, list_typedec, type_dec,
+                    more_records, record_b,
+                    const_b, list_constdec,
+                    list_vardec, var_b, var_dec
+                    ;
+non terminal DefAst def_record,
+                    const_dec
+                    ;
+non terminal Expression expression, bool_exp, arit_exp, literals
+                    ;
+non terminal InitIf if_stmt
+                    ;
+non terminal List<Expression> expression_list,
+                    labels
+                    ;
+non terminal Range range, arr_range
+                    ;
+non terminal Statement simple_stmt, complex_stmt, 
+                    complex_else
+                    ;
+non terminal List<Statement> list_stmts, more_stmts, block_stmt, statements,
+                    block_cond, 
+                    case_stmts, case_else_stmts,
+                    main
+                    ;
+non terminal WhileAst while_stmt
+                    ;
+non terminal ForAst for_stmt
+                    ;
+non terminal RepeatAst repeat_stmt
+                    ;
+non terminal CaseAst case_stmt
+                    ;   
+non terminal ElseAst else_block
+                    ;
+non terminal FunctionUseStmt definite_fun, writefn, readfn
+                    ;
+non terminal FunctionDec function_dec
+                    ;
+non terminal ProcedureDec procedure_dec
+                    ;
+non terminal List<ProcedureDec> procedure_b, procedures
+                    ;
+non terminal List<FunctionDec> functions_b, functions
+                    ;
+non terminal List<Argument> arguments, type_arg
+                    ;
+non terminal PassIf elif, conditional
+                    ;
+non terminal List<SimpleCase> case_block
                     ;
 
 
-/*----------------------------------------
-            Precedences
------------------------------------------*/
+/*------------------------------------------------------------------------------
+                                 Precedences
+--------------------------------------------------------------------------------*/
 
+/*booleanos*/
+precedence left THEN;
+precedence left ELSE;
+precedence left OR;
+precedence left AND;
+precedence left NOT;
+
+/*operaciones*/
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV, BARRA, MOD;
+precedence right UMINUS;
+
+precedence right SEMICOLON;
+
+precedence left IF;
+precedence left ELSE;
 
 /* --------------------------------------
             The grammar 
 -----------------------------------------*/
 start with s;
-s ::=   
+s ::=   pascal_block
+        java_block
+        main_program
     ;
+
+/* --------------------------------------------------------------------------------------------------
+                                            PASCAL
+-----------------------------------------------------------------------------------------------------*/
+pascal_block ::= PASCAL_SECTION pcontent
+        ;
+
+pcontent ::= functions_b:lf procedure_b:lp
+        ;
+
+/*-------------------------------------- UTILITIES --------------------------------*/
+var_type ::= INT_TKN:t  
+                    {: 
+                        RESULT = new Label(
+                            PrimitiveType.IntegerPT.getName(), 
+                            new Position(tleft, tright)
+                        ); 
+                    :}
+            | FLOAT_TKN:t    
+                    {: 
+                        RESULT = new Label(
+                            PrimitiveType.RealPT.getName(), 
+                            new Position(tleft, tright)
+                        ); 
+                    :}
+            | BOOLEAN_TKN:t 
+                    {: 
+                        RESULT = new Label(
+                            PrimitiveType.BooleanPT.getName(), 
+                            new Position(tleft, tright)
+                        ); 
+                    :}
+            | CHAR_TKN:t    
+                    {: 
+                        RESULT = new Label(
+                            PrimitiveType.CharPT.getName(), 
+                            new Position(tleft, tright)
+                        ); 
+                    :}
+            | STRING_TKN:t  
+                    {: 
+                        RESULT = new Label(
+                            PrimitiveType.StringPT.getName(), 
+                            new Position(tleft, tright)
+                        ); 
+                    :}
+            | ID:t  
+                    {: 
+                        RESULT = new Label(
+                            t, 
+                            new Position(tleft, tright)
+                        ); 
+                    :}
+            | error
+            ;
+
+id_list ::= id_list:l COMMA ID:i
+                    {:
+                        if(l != null){
+                            l.add(new Label(i, new Position(ileft, iright)));
+                        } else {
+                            l = new ArrayList<>();
+                        }
+                        RESULT = l;
+                    :}
+
+            | ID:i      
+                    {:
+                        List<Label> list = new ArrayList<>();
+                        list.add(new Label(i, new Position(ileft, iright)));
+                        RESULT = list;
+                    :}
+            ;
+
+range ::= expression:e1 DOT DOT DOT expression:e2
+                    {:
+                        RESULT = new Range(e1, e2);
+                    :}
+            ;
+
+arr_range ::= LPAREN expression:e1 DOT DOT expression:e2 RPAREN
+                    {:
+                         RESULT = new Range(e1, e2);
+                    :}
+            ;
+
+list_access ::=  list_access:l DOT ID:i 
+                    {:
+                        if(l != null){
+                            l.add(new Label(i, new Position(ileft, iright)));
+                        } else {
+                            l = new LinkedList<>();
+                        }
+                        RESULT = l;
+                    :}
+            | ID:i
+                    {:
+                        ArrayList<Label> access = new ArrayList<>();
+                        access.add(new Label(i, new Position(ileft, iright)));
+                        RESULT = access;
+                    :}
+            ;
+
+record_b ::= def_record:d more_records:l
+                    {:
+                        if(l != null){
+                            l.add(0, d);
+                        } else {
+                            l = new LinkedList<>();
+                        }
+                        RESULT = l;
+                    :}
+            ;
+
+def_record ::= ID:i COLON var_type:t SEMICOLON
+                    {:
+                        RESULT = new SingleDef(new Label(i, new Position(ileft, iright)), t);
+                    :}
+            | ID:i COLON PACKED ARRAY arr_range:r OF var_type:t SEMICOLON
+                    {:
+                        RESULT = new ArrayDef(new Label(i, new Position(ileft, iright)), t, r);
+                    :}
+            ;
+
+more_records ::= def_record:d more_records:l
+                    {:
+                        if(l != null){
+                            l.add(0, d);
+                        } else {
+                            l = new LinkedList<>();
+                        }
+                        RESULT = l;
+                    :}
+            | /* empty */
+                    {:
+                        RESULT = new LinkedList<DefAst>();
+                    :}
+            ;
+
+
+expression_list ::= expression_list:l COMMA expression:e
+                    {:
+                        if(l != null){
+                            l.add(e);
+                        } else {
+                            l = new LinkedList<>();
+                        }
+                        RESULT = l;
+                    :}
+            | expression:e
+                    {:
+                        LinkedList<Expression> list = new LinkedList<Expression>();
+                        list.add(e);
+                        RESULT = list;
+                    :}
+            ;
+
+
+
+/*-------------------------------------- VARIABLES BLOCK -------------------------------*/
+var_b ::= VAR list_vardec:l
+                    {:
+                        RESULT = l;
+                    :}
+            | /* emtpy */
+                    {:
+                        RESULT = new LinkedList<DefAst>();
+                    :}
+            ;
+
+list_vardec ::= list_vardec:l var_dec:dl SEMICOLON
+                    {:
+                        try{
+                            l.addAll(dl);
+                        } catch (NullPointerException e){}    
+                        RESULT = l;
+                    :}
+            | var_dec:l SEMICOLON
+                    {:
+                        RESULT = l;
+                    :}  
+        /*ERROR MANAGE*/
+            | list_vardec:l var_dec:dl error var_dec
+                    {:
+                        try{
+                            l.addAll(dl);
+                        } catch (NullPointerException e){}    
+                        RESULT = l;
+                    :}
+            | error var_dec:l
+                    {:
+                        RESULT = l;
+                    :} 
+            | var_dec:l error var_dec
+                    
+            ;
+
+var_dec ::= id_list:l COLON var_type:t 
+                    {:
+                        RESULT = genTypeTab.userDef(l, t);
+                    :}
+            | id_list:l COLON range:r 
+                    {:
+                        RESULT = genTypeTab.rangeDef(l, r);
+                    :}
+            | id_list:l COLON ARRAY arr_range:r OF var_type:t 
+                    {:
+                        RESULT = genTypeTab.arrayDef(l, t, r);
+                    :}
+            | id_list:ids EQUALS RECORD record_b:l END 
+                    {:
+                        RESULT = genTypeTab.recordDef(ids, l);
+                    :}
+            | id_list:ids COLON RECORD record_b:l END 
+                    {:
+                        RESULT = genTypeTab.recordDef(ids, l);
+                    :}
+        /*MANAGE ERRORS*/
+            | id_list:l error var_type:t 
+                    {:
+                        RESULT = genTypeTab.userDef(l, t);
+                    :}
+            | id_list:l error range:r 
+                    {:
+                        RESULT = genTypeTab.rangeDef(l, r);
+                    :}
+            | id_list:l error ARRAY arr_range:r OF var_type:t 
+                    {:
+                        RESULT = genTypeTab.arrayDef(l, t, r);
+                    :}
+            | id_list:ids error RECORD record_b:l END 
+                    {:
+                        RESULT = genTypeTab.recordDef(ids, l);
+                    :}
+            ;
+
+
+/*---------------------------------- EXPRESSION BLOCK -------------------------------------*/
+
+expression ::= expression:e1 AND:o expression:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.And, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | expression:e1 AND:o THEN expression:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.AndThen, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | expression:e1 OR:o expression:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Or, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | expression:e1 OR:o ELSE expression:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.OrElse, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | NOT:o expression:e
+                    {:
+                        RESULT = new UnaryOperation(
+                            DefiniteOperation.Not,
+                            e,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | bool_exp:e
+                    {:
+                        RESULT = e;
+                    :}
+            ;
+
+bool_exp ::= arit_exp:e1 EQUALS:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.EqualsTo, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 DIFFERENT:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.DifferentTo, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 GRATER:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.GraterThan, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 LESS:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.LessThan, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 GRATER_EQUALS:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.GraterEq, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 LESS_EQUALS:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.LessEq, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e
+                    {:
+                        RESULT = e;
+                    :}
+            ;
+
+arit_exp ::= 
+        /*MANAGE ERRORS*/
+                error PLUS error
+            | error MINUS error
+            | error TIMES error
+            | error DIV error
+            | error BARRA error
+            | error MOD error
+            | arit_exp:e1 PLUS:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Addition, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 MINUS:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Substraction, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 TIMES:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Multiplication, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 DIV:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.IntDivision, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 BARRA:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Division, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | arit_exp:e1 MOD:o arit_exp:e2
+                    {:
+                        RESULT = new Operation(
+                            DefiniteOperation.Module, e1, e2,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            | literals:e
+                    {:
+                        RESULT = e;
+                    :}
+            | ID:i LPAREN arit_exp:e RPAREN
+                    {:
+                        RESULT = new VectorUse(
+                            i, e, new Position(ileft, iright)
+                        );
+                    :}
+            | ID:i DOT list_access:l
+                    {:
+                        if(l != null){
+                            l.add(0, new Label(i, new Position(ileft, iright)));
+                        } else {
+                            l = new LinkedList<>();
+                        }
+                        RESULT = new RecordUse(l);
+                    :}
+            | ID:i PARENTESIS_L expression_list:l PARENTESIS_R
+                    {:
+                        RESULT = new FunctionUse(
+                            i, l, new Position(ileft, iright)
+                        );
+                    :}
+            | ID:i PARENTESIS_L PARENTESIS_R
+                    {:
+                        RESULT = new FunctionUse(
+                            i, new Position(ileft, iright)
+                        );
+                    :}
+            | ID:i
+                    {:
+                        RESULT = new SingleExp(
+                            i, new Position(ileft,iright)
+                        );
+                    :}
+            %prec UMINUS
+            | PARENTESIS_L expression:e PARENTESIS_R
+                    {:
+                        RESULT = e;
+                    :}
+            %prec UMINUS
+            | PLUS:o arit_exp:e
+                    {:
+                        RESULT = new UnaryOperation(
+                            DefiniteOperation.Addition,
+                            e,
+                            new Position(oleft, oright)
+                        );
+                    :}
+            %prec UMINUS
+            | MINUS:o arit_exp:e
+                    {:
+                        RESULT = new UnaryOperation(
+                            DefiniteOperation.Substraction,
+                            e,
+                            new Position(oleft, oright)
+                        );
+                    :}
+        /*MANAGE ERRORS*/
+            %prec UMINUS
+            | PARENTESIS_L error PARENTESIS_R
+            %prec UMINUS        
+            | MINUS error
+            %prec UMINUS
+            | PLUS error
+            ;
+
+literals ::= BOOLEAN_LIT:l
+                    {:
+                        RESULT = new SingleExp(
+                            PrimitiveType.BooleanPT, 
+                            l,
+                            new Position(lleft, lright)
+                        );
+                    :}
+            | INTEGER_LIT:l
+                    {:
+                        RESULT = new SingleExp(
+                            PrimitiveType.IntegerPT, 
+                            l,
+                            new Position(lleft, lright)
+                        );
+                    :}
+            | REAL_LIT:l
+                    {:
+                        RESULT = new SingleExp(
+                            PrimitiveType.RealPT, 
+                            new Position(lleft, lright)
+                        );
+                    :}
+            | CHAR_LIT:l
+                    {:
+                        RESULT = new SingleExp(
+                            PrimitiveType.CharPT, 
+                            l,
+                            new Position(lleft, lright)
+                        );
+                    :}
+            | STRING_LIT:l
+                    {:
+                        RESULT = new SingleExp(
+                            PrimitiveType.StringPT, 
+                            new Position(lleft, lright)
+                        );
+                    :}
+            ;
+
+
+/*------------------------------------------- STATEMENTS BLOCK ------------------------------*/
+
+/************************* statements *****************************/
+statements ::= simple_stmt:s SEMICOLON
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:l END SEMICOLON
+                {:
+                    RESULT = l;
+                :}
+        ;
+
+block_stmt ::= list_stmts:l
+                {:  RESULT = l; :}
+        | /* empty */
+                {:
+                    RESULT = new LinkedList<Statement>();
+                :}
+        ;
+
+list_stmts ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s SEMICOLON
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s SEMICOLON more_stmts:l
+                {:
+                    if(l != null){
+                        l.add(0, s);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | complex_stmt:s more_stmts:l
+                {:
+                    if(l != null){
+                        l.add(0, s);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        ;
+
+more_stmts ::= 
+          simple_stmt:s error
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s SEMICOLON
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s SEMICOLON more_stmts:l
+                {:
+                    if(l != null){
+                        l.add(0, s);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | complex_stmt:s more_stmts:l
+                {:
+                    if(l != null){
+                        l.add(0, s);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        ;
+
+simple_stmt ::= BREAK:b
+                {:  
+                    RESULT = new SimpleStmt(
+                        SimpleStmt.BREAK, 
+                        new Position(bleft, bright)
+                    );  
+                :}
+        | CONTINUE:c
+                {:  
+                    RESULT = new SimpleStmt(
+                        SimpleStmt.CONTINUE,
+                        new Position(cleft, cright)
+                    );  
+                :}
+        | ID:i ASSIGNATION expression:e
+                {:  
+                    RESULT = new Assignation(
+                        new Label(i, new Position(ileft, iright)), e
+                    );
+                :}
+        | ID:i PARENTESIS_L expression_list:el PARENTESIS_R
+                {:
+                    RESULT = new FunctionUseStmt(
+                        new Label(i, new Position(ileft, iright)),
+                        el
+                    );
+                :}
+        | ID:i PARENTESIS_L PARENTESIS_R
+                {:
+                    RESULT = new FunctionUseStmt(
+                        new Label(i, new Position(ileft, iright)),
+                        new LinkedList<>()
+                    );
+                :}
+        | ID:i DOT list_access:l ASSIGNATION expression:e
+                {:
+                    if(l != null){
+                        l.add(0, new Label(i, new Position(ileft, iright)));
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = new RecAssignation(l, e, new Position(ileft, iright));
+                :}
+        | ID:i LPAREN expression:e1 RPAREN ASSIGNATION expression:e2
+                {:
+                    RESULT = new ArrayAssign(
+                        new Label(i, new Position(ileft, iright)),
+                        e1,
+                        e2
+                    );
+                :}
+        | definite_fun:fu
+                {: RESULT = fu; :} 
+        | error
+        ; 
+
+complex_stmt ::= conditional:pi
+                {:  
+                    RESULT =  astGen.transformPassIf(pi); 
+                :}
+        | case_stmt:s
+                {:  RESULT = s; :}
+        | while_stmt:s
+                {:  RESULT = s; :}
+        | for_stmt:s
+                {:  RESULT = s; :}
+        | repeat_stmt:s
+                {:  RESULT = s; :}
+        ;
+
+
+/************************* ciclos *****************************/
+
+while_stmt ::= WHILE:w PARENTESIS_L expression:e PARENTESIS_R DO statements:l
+                {:
+                    RESULT = new WhileAst(e, l, new Position(wleft, wright));
+                :}
+        | WHILE:w PARENTESIS_L error PARENTESIS_R DO statements:l
+                {:
+                    RESULT = new WhileAst(null, l, new Position(wleft, wright));
+                :}
+        ;
+
+for_stmt ::= FOR:f ID:i ASSIGNATION expression:e1 TO expression:e2 DO statements:l
+                {:
+                    Range range = new Range(e1, e2);
+                    Label variable = new Label(i, new Position(ileft, iright));
+                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
+                :}
+        | FOR:f ID:i ASSIGNATION error TO expression:e2 DO statements:l
+                {:
+                    Range range = new Range(null, e2);
+                    Label variable = new Label(i, new Position(ileft, iright));
+                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
+                :}
+        | FOR:f ID:i error expression:e1 TO expression:e2 DO statements:l
+                {:
+                    Range range = new Range(e1, e2);
+                    Label variable = new Label(i, new Position(ileft, iright));
+                    RESULT = new ForAst(variable, range, l, new Position(fleft, fright));
+                :}
+        ;
+
+repeat_stmt ::= REPEAT:r statements:l UNTIL expression:e
+                {:
+                    RESULT = new RepeatAst(e, l, new Position(rleft, rright));
+                :}
+        ;
+
+
+/************************* conditionals *****************************/
+conditional ::=
+          if_stmt:i block_cond:ls
+                {:
+                    RESULT = new PassIf(new IfAst(
+                        i.getExpression(), 
+                        ls, 
+                        i.getPosition()
+                    ));
+                :}
+        | if_stmt:i block_cond:ls SEMICOLON
+                {:
+                    RESULT = new PassIf(new IfAst(
+                        i.getExpression(), 
+                        ls,
+                        i.getPosition()
+                    ));
+                :}
+        | if_stmt:i block_cond:ls ELSE:e elif:pi
+                {:  
+                    if(pi.getElseAst() != null && pi.getElseAst().getInitPos() == null){
+                        pi.getElseAst().setInitPos(
+                            new Position(eleft, eright)
+                        );
+                    }
+                    RESULT = astGen.genPassIf(
+                        pi, 
+                        new IfAst(i.getExpression(), ls, i.getPosition())
+                    );
+                :}
+        ;
+
+if_stmt ::= IF:i PARENTESIS_L expression:e PARENTESIS_R THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        | IF:i PARENTESIS_L error PARENTESIS_R THEN
+                {:  
+                    RESULT = new InitIf(null, new Position(ileft, iright));     
+                :}
+    /*MANAGE ERRORS*/
+        | IF:i PARENTESIS_L expression:e error THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        | IF:i error expression:e PARENTESIS_R THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        | IF:i error expression:e error THEN
+                {:  
+                    RESULT = new InitIf(e, new Position(ileft, iright));     
+                :}
+        ;
+block_cond ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:ls END
+                {:
+                    RESULT = ls;
+                :}
+        ;
+elif ::= else_block:e SEMICOLON
+                {:
+                    RESULT = new PassIf(e);
+                :}
+        | conditional:pi
+                {:
+                    RESULT = pi;
+                :}
+        ;
+
+else_block ::= complex_else:s
+                {:  
+                    RESULT = new ElseAst(astGen.oneStmtInList(s)); 
+                :}
+        | simple_stmt:s
+                {:
+                    RESULT = new ElseAst(astGen.oneStmtInList(s)); 
+                :}
+        | BEGIN block_stmt:ls END
+                {:
+                    RESULT = new ElseAst(ls);
+                :}
+        ;
+
+complex_else ::= case_stmt:s
+                {:  RESULT = s; :}
+        | while_stmt:s
+                {:  RESULT = s; :}
+        | for_stmt:s
+                {:  RESULT = s; :}
+        | repeat_stmt:s
+                {:  RESULT = s; :}
+        ;
+
+/************************* case *****************************/
+
+case_stmt ::= CASE:c PARENTESIS_L expression:e PARENTESIS_R OF case_block:lsc 
+                    ELSE case_else_stmts:ls END SEMICOLON
+                {:
+                    RESULT = new CaseAst(e, lsc, new ElseAst(ls), new Position(cleft, cright));
+                :}
+        ;
+
+case_block ::= case_block:l labels:labs COLON case_stmts:ls SEMICOLON
+                {:
+                    if(l != null){
+                        l.add(new SimpleCase(labs, ls));
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | labels:labs COLON case_stmts:ls SEMICOLON
+                {:
+                    RESULT = astGen.genSimpleCaseList(labs, ls);
+                :}
+        ;
+
+labels ::= labels:l COMMA expression:e
+                {:
+                    if(l != null){
+                        l.add(e);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | expression:e
+                {:
+                    LinkedList<Expression> list = new LinkedList<>();
+                    list.add(e);
+                    RESULT = list;
+                :}
+        ;
+
+case_stmts ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:l END
+                {:
+                    RESULT = l;
+                :}
+        ;
+
+case_else_stmts ::= simple_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | simple_stmt:s SEMICOLON
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | complex_stmt:s
+                {:
+                    RESULT = astGen.oneStmtInList(s);
+                :}
+        | BEGIN block_stmt:l
+                {:      
+                    RESULT = l;
+                :}
+        ;
+
+
+
+/*-------------------- FUNCTIONS -------------------------*/
+
+functions_b ::= functions:l
+                {:
+                    RESULT = l;
+                :}
+        | /* empty */
+                {:
+                    RESULT = new LinkedList<FunctionDec>();
+                :}
+        ;
+
+functions ::= functions:l function_dec:d
+                {:
+                    if(l != null){
+                        l.add(d);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | function_dec:d
+                {:
+                    LinkedList<FunctionDec> list = new LinkedList<>();
+                    list.add(d);
+                    RESULT = list;
+                :}
+        ;
+
+function_dec ::= FUNCTION ID:i PARENTESIS_L arguments:a PARENTESIS_R COLON var_type:t SEMICOLON
+            var_b:lv
+            BEGIN block_stmt:ls END SEMICOLON
+                {:  
+                    RESULT = new FunctionDec(
+                        new Label(i, new Position(ileft, iright)),
+                        t, a, lv, ls
+                    );
+                :}
+        ;
+
+/*-------------------------------------- PROCEDURES ----------------------------------*/
+
+procedure_b ::= procedures:p
+                {:
+                    RESULT = p;
+                :} 
+        | /* empty */
+                {:  
+                    RESULT = new LinkedList<ProcedureDec>();
+                :}
+        ;
+
+procedures ::= procedures:l procedure_dec:d
+                {:
+                    if(l != null){
+                        l.add(d);
+                    } else {
+                        l = new LinkedList<>();
+                    }
+                    RESULT = l;
+                :}
+        | procedure_dec:d
+                {:
+                    LinkedList<ProcedureDec> list = new LinkedList<>();
+                    list.add(d);
+                    RESULT = list;
+                :}
+        ;
+
+procedure_dec ::= PROCEDURE ID:i PARENTESIS_L arguments:a PARENTESIS_R SEMICOLON
+            var_b:lv
+            BEGIN block_stmt:ls END SEMICOLON
+                {:
+                    RESULT = new ProcedureDec(
+                        new Label(i, new Position(ileft, iright)),
+                        a, lv, ls
+                    );
+                :}
+        ;
+
+/*---------------------------------- PARAMS / ARGUMENTS ----------------------------------*/
+arguments ::= arguments:l COMMA type_arg:args
+                {:
+                    try{
+                        l.addAll(args);
+                    } catch (NullPointerException e){
+
+                    }
+                    
+                    RESULT = l;
+                :}
+        | type_arg:args
+                {:
+                    RESULT = args;
+                :}
+        | /* empty */
+                {:
+                    RESULT = new LinkedList<Argument>();
+                :}
+        ;
+
+type_arg ::= VAR id_list:l COLON var_type:t
+                {:
+                    RESULT = astGen.generateArgs(l, t, true);
+                :}
+        | id_list:l COLON var_type:t
+                {:
+                    RESULT = astGen.generateArgs(l, t, false);
+                :}
+        ;
+
+
+
+
+
+/* --------------------------------------------------------------------------------------------------
+                                            JAVA
+-----------------------------------------------------------------------------------------------------*/
+java_block ::= JAVA_SECTION jcontent
+        ;
+
+jcontent ::= JAVA_SECTION
+        | /* empty */
+        ;
+
+
+/* --------------------------------------------------------------------------------------------------
+                                            MAIN (C)
+-----------------------------------------------------------------------------------------------------*/
+main_program ::= 
+        /*cimports 
+        cconsts 
+        cvars*/
+        VOID MAIN LPAREN RPAREN LBRACE /*cstmts*/ RBRACE
+        ;
+
+/*cstmts ::= 
+        ;*/
