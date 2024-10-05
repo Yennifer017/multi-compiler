@@ -8,6 +8,7 @@ package compi2.multi.compilator;
 public class MultiCompilator {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        Fronted fronted = new Fronted();
+        fronted.setVisible(true);
     }
 }

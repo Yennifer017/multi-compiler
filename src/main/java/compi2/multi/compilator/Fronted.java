@@ -5,6 +5,7 @@ package compi2.multi.compilator;
  * @author yenni
  */
 
+import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.exceptions.FileException;
 import compi2.multi.compilator.files.AdmiFiles;
 import compi2.multi.compilator.util.AdmiFronted;
@@ -20,7 +21,7 @@ public class Fronted extends javax.swing.JFrame {
     private NumberLine numConsole, numDisplayFile;
     private AdmiFiles admiFiles;
     
-    //private Analyzator analyzator;
+    private Analyzator analyzator;
     private AdmiFronted admiFronted;
 
     /**
@@ -31,7 +32,7 @@ public class Fronted extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         initNumeracion();
         initVariables();
-        //analyzator = new Analyzator();
+        analyzator = new Analyzator();
         admiFronted = new AdmiFronted();
     }
 
@@ -144,7 +145,7 @@ public class Fronted extends javax.swing.JFrame {
         interfazPanel.setForeground(new java.awt.Color(13, 13, 13));
 
         display.setBackground(new java.awt.Color(0, 0, 43));
-        display.setFont(new java.awt.Font("Dialog", 0, 13)); // NOI18N
+        display.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         display.setForeground(new java.awt.Color(234, 234, 234));
         display.setCaretColor(new java.awt.Color(255, 255, 255));
         display.addCaretListener(new javax.swing.event.CaretListener() {
@@ -170,7 +171,7 @@ public class Fronted extends javax.swing.JFrame {
         displayScroll.setViewportView(display);
 
         console.setBackground(new java.awt.Color(0, 0, 43));
-        console.setFont(new java.awt.Font("Dialog", 0, 13)); // NOI18N
+        console.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
         console.setForeground(new java.awt.Color(234, 234, 234));
         console.setCaretColor(new java.awt.Color(255, 255, 255));
         consoleScroll.setViewportView(console);
@@ -496,11 +497,11 @@ public class Fronted extends javax.swing.JFrame {
     }//GEN-LAST:event_newFileOpActionPerformed
 
     private void AnalyzatorBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AnalyzatorBtnActionPerformed
-        /*console.setText(
+        console.setText(
             analyzator.comprobate(
                 display.getText()
             )
-        );*/
+        );
     }//GEN-LAST:event_AnalyzatorBtnActionPerformed
 
     private void showSTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showSTopActionPerformed

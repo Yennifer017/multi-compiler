@@ -28,7 +28,7 @@ import javax.swing.tree.DefaultTreeModel;
  */
 public class AdmiFiles {
 
-    public static final String aceptedExtensions[] = {"pass", "pp", "txt"};
+    public static final String aceptedExtensions[] = {"mlg", "txt"};
     private static final String EMPTY_NOTATION = "[none]";
     private static final String FILE_NAME_REGEX = "[A-Za-z][A-Za-z0-9_]*";
 
