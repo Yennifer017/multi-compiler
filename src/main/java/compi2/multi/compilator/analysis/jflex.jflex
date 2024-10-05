@@ -230,17 +230,20 @@ OctDigit          = [0-7]
 
         /* keywords */
         "break"         { return symbol(sym.BREAK); }
-        "boolean"         { return symbol(sym.BOOLEAN_TKN); }
+        "boolean"       { return symbol(sym.BOOLEAN_TKN); }
+        "char"          { return symbol(sym.CHAR_TKN); }
         "case"          { return symbol(sym.CASE); }
         "continue"      { return symbol(sym.CONTINUE); }
         "class"         { return symbol(sym.CLASS); }
+        "default"       { return symbol(sym.DEFAULT); }
         "do"            { return symbol(sym.DO); }
         "else"          { return symbol(sym.ELSE); }
         "extends"       { return symbol(sym.EXTENDS); }
         "float"         { return symbol(sym.FLOAT_TKN); }
         "for"           { return symbol(sym.FOR); }
         "if"            { return symbol(sym.IF); }
-        "return"          { return symbol(sym.RETURN); }
+        "int"           { return symbol(sym.INT_TKN); }
+        "return"        { return symbol(sym.RETURN); }
         "null"          { return symbol(sym.NULL_LIT); }
         "private"       { return symbol(sym.PRIVATE); }
         "protected"     { return symbol(sym.PROTECTED); }

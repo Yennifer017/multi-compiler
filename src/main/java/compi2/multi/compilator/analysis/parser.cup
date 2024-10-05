@@ -123,6 +123,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             CLEAR,
             CONST,
             CONTINUE,
+            DEFAULT,
             DO,
             DOWNTO,
             ELSE,
@@ -188,8 +189,7 @@ terminal float      FLOAT_LIT;
 
 
 /*----------------------------- Non-terminals ---------------------------------------*/
-non terminal        s, pascal_block, java_block, main_program, pcontent,
-                    jcontent
+non terminal        s, pascal_block, java_block, main_program, pcontent
                     ;
 
 /******************************* FOR PASCAL ****************************/
@@ -244,6 +244,38 @@ non terminal PassIf elif, conditional
                     ;
 non terminal List<SimpleCase> case_block
                     ;
+
+/******************************* FOR JAVA ****************************/
+non terminal
+jmodificator,
+jtype,
+jcontent,
+jclass,
+jherence,
+jinternal_block,
+jinternal,
+joptions_dec,
+jmethod_dec,
+jargs,
+jlist_args,
+jarg,
+jbracks_list,
+jbrack,
+jstmts,
+jif_stmt,
+jelif_stmt,
+jwhile_stmt,
+jdo_while_stmt,
+jfor_stmt,
+jswitch_stmt,
+jswitch_cases,
+jcase,
+jexp, 
+jbool_exp,
+jarit_exp,
+jexp_list,
+jarray_access
+;
 
 
 /*------------------------------------------------------------------------------
@@ -645,6 +677,18 @@ arit_exp ::=
                     {:
                         RESULT = new VectorUse(
                             i, e, new Position(ileft, iright)
+                        );
+                    :}
+            | ID:i LPAREN expression_list:l RPAREN
+                    {:
+                        RESULT = new FunctionUse(
+                            i, l, new Position(ileft, iright)
+                        );
+                    :}
+            | ID:i LPAREN RPAREN
+                    {:
+                        RESULT = new FunctionUse(
+                            i, new Position(ileft, iright)
                         );
                     :}
             | ID:i
@@ -1052,6 +1096,20 @@ simple_stmt ::= BREAK:b
                         new Label(i, new Position(ileft, iright)), e
                     );
                 :}
+        | ID:i LPAREN expression_list:el RPAREN
+                {:
+                    RESULT = new FunctionUseStmt(
+                        new Label(i, new Position(ileft, iright)),
+                        el
+                    );
+                :}
+        | ID:i LPAREN RPAREN
+                {:
+                    RESULT = new FunctionUseStmt(
+                        new Label(i, new Position(ileft, iright)),
+                        new LinkedList<>()
+                    );
+                :}
         | ID:i LBRACK expression:e1 RBRACK ASSIGNATION expression:e2
                 {:
                     RESULT = new ArrayAssign(
@@ -1197,8 +1255,172 @@ type_arg ::= VAR id_list:l COLON var_type:t
 java_block ::= JAVA_SECTION jcontent
         ;
 
-jcontent ::= JAVA_SECTION
+/*-------------------------UTIL----------------------------*/
+jmodificator ::= PUBLIC
+        | PRIVATE
+        | PROTECTED
         | /* empty */
+        ;
+
+jtype ::= INT_TKN
+        | STRING_TKN
+        | FLOAT_TKN
+        | BOOLEAN_TKN
+        | CHAR_TKN
+        | ID
+        ;
+
+/*-------------------------CLASES----------------------------*/
+jcontent ::= jcontent jclass
+        | /* empty */
+        ;
+
+jclass ::= PUBLIC CLASS ID jherence LBRACE jinternal_block RBRACE
+        ;
+
+jherence ::= EXTENDS ID
+        | /* empty */
+        ;
+
+/*-------------------------METHODS AND FIELDS----------------------------*/
+jinternal_block ::= jinternal jinternal_block
+        | /* empty */
+        ;
+
+jinternal ::= 
+        /* declarations */
+        jmodificator jtype ID joptions_dec
+        | jmodificator VOID ID jmethod_dec
+        
+        /* constructor */
+        | jmodificator ID LPAREN jargs RPAREN LBRACE jstmts RBRACE
+        ;
+
+joptions_dec ::= SEMICOLON
+        | jbracks_list SEMICOLON
+        | ASSIGNATION jexp SEMICOLON
+        | jbracks_list ASSIGNATION jexp SEMICOLON
+        | jmethod_dec
+        ;
+
+jmethod_dec ::= LPAREN jargs RPAREN LBRACE jstmts RBRACE
+        ;
+
+
+/*---------------------------------- ARGS --------------------------------*/
+
+jargs ::= jlist_args
+        | /* empty */
+        ;
+
+jlist_args ::= jlist_args COMMA jarg
+        | jarg
+        ;
+
+jarg ::= jtype ID
+        | jtype jbracks_list ID
+        ;
+
+jbracks_list ::= jbracks_list jbrack
+        | jbrack
+        ;
+
+jbrack ::= LBRACK RBRACK
+        ;
+
+
+/*--------------------------- STATEMENTS -----------------------------------*/
+
+jstmts ::= jif_stmt
+        | jwhile_stmt
+        | jdo_while_stmt
+        | jfor_stmt
+        | jswitch_stmt 
+        /*| jassign;
+        | jfunction_use
+        | jobject_func_use
+        | jdeclaration
+        | jarray_dec
+        */
+        | BREAK SEMICOLON
+        | CONTINUE SEMICOLON
+        ;
+
+/************************** CONDITIONAL *************************/
+
+jif_stmt ::= IF LPAREN jexp RPAREN LBRACE jstmts RBRACE jelif_stmt
+        ;
+
+jelif_stmt ::= ELSE LBRACE jstmts RBRACE
+        | ELSE jif_stmt
+        | /* empty */
+        ;
+
+/**************************** CICLOS ****************************/
+
+jwhile_stmt ::= WHILE LPAREN jexp RPAREN LBRACE jstmts RBRACE
+        ;
+
+jdo_while_stmt ::= DO LBRACE jstmts RBRACE WHILE LPAREN jexp RPAREN SEMICOLON
+        ;
+
+jfor_stmt ::= FOR RPAREN jexp SEMICOLON jexp SEMICOLON jexp RPAREN LBRACE jstmts RBRACE
+        ;
+
+/****************************** SWITCH **************************/
+
+jswitch_stmt ::= SWITCH LPAREN jexp RPAREN LBRACE jswitch_cases RBRACE
+        ;
+
+jswitch_cases ::= jswitch_cases jcase
+        | jcase
+        ;
+
+jcase ::= CASE jexp COLON jstmts
+        | DEFAULT COLON jstmts
+        ;
+
+/*------------------------------EXPRESSIONS --------------------------------------*/
+jexp ::= jexp AND jexp
+        | jexp OR jexp
+        | NOT jexp
+        | jbool_exp
+        ;
+
+jbool_exp ::= jarit_exp:e1 EQUALS:o jarit_exp:e2j
+        | jarit_exp:e1 DIFFERENT:o jarit_exp:e2j
+        | jarit_exp:e1 GRATER:o jarit_exp:e2j
+        | jarit_exp:e1 LESS:o jarit_exp:e2j
+        | jarit_exp:e1 GRATER_EQUALS:o jarit_exp:e2j
+        | jarit_exp:e1 LESS_EQUALS:o jarit_exp:e2j
+        | jarit_exp:ej
+        ;
+
+jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
+        | jarit_exp:e1 MINUS:o jarit_exp:e2
+        | jarit_exp:e1 TIMES:o jarit_exp:e2
+        | jarit_exp:e1 DIV:o jarit_exp:e2
+        | jarit_exp:e1 MOD:o jarit_exp:e2
+        | jarit_exp:e1 POWER:o jarit_exp:e2
+        | literals:e
+        | ID:i jarray_access
+        | ID:i LPAREN jexp_list:l RPAREN
+        | ID:i LPAREN RPAREN
+        | ID:i
+        %prec UMINUS
+        | LPAREN jexp:e RPAREN
+        %prec UMINUS
+        | PLUS:o jarit_exp:e
+        %prec UMINUS
+        | MINUS:o jarit_exp:e
+        ;
+
+jexp_list ::= jexp_list jexp 
+        | jexp
+        ;
+
+jarray_access ::= LBRACK jexp:e RBRACK
+        | jarray_access LBRACK jexp:e RBRACK
         ;
 
 
@@ -1209,6 +1431,7 @@ main_program ::=
         /*cimports 
         cconsts 
         cvars*/
+        MAIN_SECTION
         VOID MAIN LPAREN RPAREN LBRACE /*cstmts*/ RBRACE
         ;
 
