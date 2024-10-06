@@ -1,6 +1,8 @@
 
 package compi2.multi.compilator.semantic;
 
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
+import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;

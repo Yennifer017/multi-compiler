@@ -133,28 +133,12 @@
             <Property name="text" type="java.lang.String" value="Codigo"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="analyzeAllOp">
+            <MenuItem class="javax.swing.JMenuItem" name="see3DCop">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Analizar todo"/>
+                <Property name="text" type="java.lang.String" value="Ver codigo 3D"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="analyzeAllOpActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="showSTop">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Ver tabla de simbolos"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showSTopActionPerformed"/>
-              </Events>
-            </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="showTreeOp">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="Ver arbol de activaciones"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showTreeOpActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="see3DCopActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -455,7 +439,7 @@
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="cc" green="cc" red="cc" type="rgb"/>
             </Property>
-            <Property name="text" type="java.lang.String" value="Analizar"/>
+            <Property name="text" type="java.lang.String" value="Compilar"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AnalyzatorBtnActionPerformed"/>

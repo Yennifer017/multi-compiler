@@ -1,10 +1,10 @@
 
 package compi2.multi.compilator.analyzator;
 
-import compi2.multi.compilator.semantic.obj.DefAst;
-import compi2.multi.compilator.semantic.obj.Label;
-import compi2.multi.compilator.semantic.obj.Range;
-import compi2.multi.compilator.semantic.obj.SubRangeDef;
+import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.pobj.Range;
+import compi2.multi.compilator.semantic.pobj.SubRangeDef;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -31,6 +31,7 @@ public class AdmiFiles {
     public static final String aceptedExtensions[] = {"mlg", "txt"};
     private static final String EMPTY_NOTATION = "[none]";
     private static final String FILE_NAME_REGEX = "[A-Za-z][A-Za-z0-9_]*";
+    private static final String EXTENSION_SAVE_AS = ".mlg";
 
     private boolean isOpenProject;
     
@@ -218,8 +219,8 @@ public class AdmiFiles {
         if (path == null || !path.matches(FILE_NAME_REGEX)) {
             throw new FileException("El nombre del archivo es invalido");
         }
-        filesU.saveAs(content, ".pass", root, path);
-        return root + directoryU.getCarpetSeparator() + path + ".pass";
+        filesU.saveAs(content, EXTENSION_SAVE_AS, root, path);
+        return root + directoryU.getCarpetSeparator() + path + EXTENSION_SAVE_AS;
     }
 
     /** 

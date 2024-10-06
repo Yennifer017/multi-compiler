@@ -13,7 +13,7 @@ import lombok.Setter;
 public class SymbolTable extends HashMap<String, RowST>{
     private SymbolTable father;
     private int lastDir;
-    
+        
     public void incrementLastDir(int totalSpaces){
         lastDir += totalSpaces;
     }

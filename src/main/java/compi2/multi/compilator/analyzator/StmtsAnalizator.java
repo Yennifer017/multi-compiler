@@ -3,8 +3,8 @@ package compi2.multi.compilator.analyzator;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.ReturnCase;
-import compi2.multi.compilator.semantic.SemanticRestrictions;
+import compi2.multi.compilator.semantic.util.ReturnCase;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;

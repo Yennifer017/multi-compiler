@@ -2,13 +2,13 @@
 package compi2.multi.compilator.analyzator;
 
 
-import compi2.multi.compilator.semantic.module.Argument;
-import compi2.multi.compilator.semantic.PassIf;
-import compi2.multi.compilator.semantic.ast.IfAst;
-import compi2.multi.compilator.semantic.ast.SimpleCase;
+import compi2.multi.compilator.semantic.pmodule.Argument;
+import compi2.multi.compilator.semantic.util.PassIf;
+import compi2.multi.compilator.semantic.past.IfAst;
+import compi2.multi.compilator.semantic.past.SimpleCase;
 import compi2.multi.compilator.semantic.Statement;
-import compi2.multi.compilator.semantic.exp.Expression;
-import compi2.multi.compilator.semantic.obj.Label;
+import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.util.Label;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -102,9 +102,7 @@ public class Fronted extends javax.swing.JFrame {
         closeAllFilesOp = new javax.swing.JMenuItem();
         saveCloseAllFilesOp = new javax.swing.JMenuItem();
         CodeMenu = new javax.swing.JMenu();
-        analyzeAllOp = new javax.swing.JMenuItem();
-        showSTop = new javax.swing.JMenuItem();
-        showTreeOp = new javax.swing.JMenuItem();
+        see3DCop = new javax.swing.JMenuItem();
         InformationMenu = new javax.swing.JMenu();
         helpOp = new javax.swing.JMenuItem();
         creditsOp = new javax.swing.JMenuItem();
@@ -204,7 +202,7 @@ public class Fronted extends javax.swing.JFrame {
 
         AnalyzatorBtn.setBackground(new java.awt.Color(0, 0, 102));
         AnalyzatorBtn.setForeground(new java.awt.Color(204, 204, 204));
-        AnalyzatorBtn.setText("Analizar");
+        AnalyzatorBtn.setText("Compilar");
         AnalyzatorBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 AnalyzatorBtnActionPerformed(evt);
@@ -364,29 +362,13 @@ public class Fronted extends javax.swing.JFrame {
 
         CodeMenu.setText("Codigo");
 
-        analyzeAllOp.setText("Analizar todo");
-        analyzeAllOp.addActionListener(new java.awt.event.ActionListener() {
+        see3DCop.setText("Ver codigo 3D");
+        see3DCop.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                analyzeAllOpActionPerformed(evt);
+                see3DCopActionPerformed(evt);
             }
         });
-        CodeMenu.add(analyzeAllOp);
-
-        showSTop.setText("Ver tabla de simbolos");
-        showSTop.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showSTopActionPerformed(evt);
-            }
-        });
-        CodeMenu.add(showSTop);
-
-        showTreeOp.setText("Ver arbol de activaciones");
-        showTreeOp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showTreeOpActionPerformed(evt);
-            }
-        });
-        CodeMenu.add(showTreeOp);
+        CodeMenu.add(see3DCop);
 
         menu.add(CodeMenu);
 
@@ -507,17 +489,9 @@ public class Fronted extends javax.swing.JFrame {
         );
     }//GEN-LAST:event_AnalyzatorBtnActionPerformed
 
-    private void showSTopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showSTopActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_showSTopActionPerformed
-
-    private void showTreeOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTreeOpActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_showTreeOpActionPerformed
-
-    private void analyzeAllOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_analyzeAllOpActionPerformed
-        //QUITAR ESTOOOOOOOOOOOOOOOOOOOOOOO
-    }//GEN-LAST:event_analyzeAllOpActionPerformed
+    private void see3DCopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_see3DCopActionPerformed
+        //TODO: add option
+    }//GEN-LAST:event_see3DCopActionPerformed
 
     private void closeAllFilesOpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeAllFilesOpActionPerformed
         this.admiFiles.closeOpenFiles();
@@ -573,7 +547,6 @@ public class Fronted extends javax.swing.JFrame {
     private javax.swing.JButton ClearBtn;
     private javax.swing.JMenu CodeMenu;
     private javax.swing.JMenu InformationMenu;
-    private javax.swing.JMenuItem analyzeAllOp;
     private javax.swing.JLabel archivoTxt;
     private javax.swing.JMenuItem closeAllFilesOp;
     private javax.swing.JMenuItem closeDirectoryOp;
@@ -601,8 +574,7 @@ public class Fronted extends javax.swing.JFrame {
     private javax.swing.JMenuItem saveAsOp;
     private javax.swing.JMenuItem saveCloseAllFilesOp;
     private javax.swing.JMenuItem saveOp;
-    private javax.swing.JMenuItem showSTop;
-    private javax.swing.JMenuItem showTreeOp;
+    private javax.swing.JMenuItem see3DCop;
     private javax.swing.JMenu toolsMenu;
     private javax.swing.JPanel treeDirectory;
     private javax.swing.JTree treeDisplay;

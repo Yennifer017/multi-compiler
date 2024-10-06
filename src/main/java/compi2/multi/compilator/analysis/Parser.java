@@ -5,16 +5,40 @@
 
 package compi2.multi.compilator.analysis;
 
+import compi2.multi.compilator.semantic.util.PassIf;
+import compi2.multi.compilator.semantic.util.InitIf;
+import compi2.multi.compilator.semantic.DefiniteOperation;
+import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.pexp.UnaryOperation;
+import compi2.multi.compilator.semantic.pexp.VectorUse;
+import compi2.multi.compilator.semantic.pexp.SingleExp;
+import compi2.multi.compilator.semantic.pexp.FunctionUse;
+import compi2.multi.compilator.semantic.pexp.Operation;
+import compi2.multi.compilator.semantic.pmodule.ProcedureDec;
+import compi2.multi.compilator.semantic.pmodule.Argument;
+import compi2.multi.compilator.semantic.pmodule.FunctionDec;
+import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.pobj.SingleDef;
+import compi2.multi.compilator.semantic.pobj.ArrayDef;
+import compi2.multi.compilator.semantic.pobj.Range;
+import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.past.ForAst;
+import compi2.multi.compilator.semantic.past.CaseAst;
+import compi2.multi.compilator.semantic.past.ArrayAssign;
+import compi2.multi.compilator.semantic.past.RepeatAst;
+import compi2.multi.compilator.semantic.past.IfAst;
+import compi2.multi.compilator.semantic.past.SimpleCase;
+import compi2.multi.compilator.semantic.past.FunctionUseStmt;
+import compi2.multi.compilator.semantic.past.SimpleStmt;
+import compi2.multi.compilator.semantic.past.Assignation;
+import compi2.multi.compilator.semantic.past.WhileAst;
+import compi2.multi.compilator.semantic.past.ElseAst;
 import compi2.multi.compilator.semantic.Statement;
 import java_cup.runtime.*;
 import java.util.*;
 import compi2.multi.compilator.analysis.typet.*;
 import compi2.multi.compilator.analyzator.*;
 import compi2.multi.compilator.semantic.*;
-import compi2.multi.compilator.semantic.exp.*;
-import compi2.multi.compilator.semantic.obj.*;
-import compi2.multi.compilator.semantic.ast.*;
-import compi2.multi.compilator.semantic.module.*;
 import compi2.multi.compilator.util.Position;
 import java_cup.runtime.XMLElement;
 

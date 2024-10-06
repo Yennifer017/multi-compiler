@@ -5,8 +5,8 @@ package compi2.multi.compilator.analyzator;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.module.ModuleDec;
-import compi2.multi.compilator.semantic.obj.DefAst;
+import compi2.multi.compilator.semantic.pmodule.ModuleDec;
+import compi2.multi.compilator.semantic.DefAst;
 import java.util.List;
 
 /**

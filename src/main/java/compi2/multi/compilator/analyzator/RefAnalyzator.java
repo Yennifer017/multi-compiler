@@ -5,7 +5,7 @@ import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
-import compi2.multi.compilator.semantic.obj.Label;
+import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;
 

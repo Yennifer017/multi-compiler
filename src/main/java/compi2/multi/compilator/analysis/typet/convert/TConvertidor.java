@@ -4,8 +4,8 @@ package compi2.multi.compilator.analysis.typet.convert;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
-import compi2.multi.compilator.semantic.exp.DefiniteOperation;
-import compi2.multi.compilator.semantic.obj.Label;
+import compi2.multi.compilator.semantic.DefiniteOperation;
+import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;
 
@@ -151,7 +151,7 @@ public class TConvertidor {
                 primConvert.penalize(rightType, PrimitiveType.StringPT, semanticErrors);
                 return PrimitiveType.RealPT;
             }
-            case IntDivision, Module -> {
+            case Module -> {
                 primConvert.penalize(leftType, PrimitiveType.StringPT, semanticErrors);
                 primConvert.penalize(rightType, PrimitiveType.StringPT, semanticErrors);
                 primConvert.penalize(leftType, PrimitiveType.RealPT, semanticErrors);
