@@ -1,12 +1,10 @@
 
-package compi2.multi.compilator.semantic.ast;
+package compi2.multi.compilator.semantic;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
-import compi2.multi.compilator.semantic.ReturnCase;
-import compi2.multi.compilator.semantic.SemanticRestrictions;
 import compi2.multi.compilator.util.ErrorsRep;
 import compi2.multi.compilator.util.Position;
 import java.util.List;

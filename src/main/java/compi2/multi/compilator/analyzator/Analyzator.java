@@ -8,7 +8,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.module.FunctionDec;
 import compi2.multi.compilator.semantic.module.ProcedureDec;
 import compi2.multi.compilator.semantic.SemanticRestrictions;
-import compi2.multi.compilator.semantic.ast.Statement;
+import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.obj.DefAst;
 import java.io.StringReader;
 import java.util.ArrayList;

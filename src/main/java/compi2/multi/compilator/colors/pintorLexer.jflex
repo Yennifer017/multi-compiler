@@ -147,7 +147,7 @@ OctDigit          = [0-7]
         "&"             { return coloreado(TypeTkn.COMPARATOR); }
 
         /* literals */
-        {Identifier}    { return coloreado(TypeTkn.LITERALS); }
+        {Identifier}    { return coloreado(TypeTkn.ID); }
         {SimpleBoolean} { return coloreado(TypeTkn.BOOLEANS); }
         {DecIntegerLiteral}            { return coloreado(TypeTkn.LITERALS); }
         {DecFloatLiteral}              { return coloreado(TypeTkn.LITERALS);}

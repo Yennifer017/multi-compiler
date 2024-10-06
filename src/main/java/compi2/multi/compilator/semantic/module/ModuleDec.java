@@ -9,7 +9,7 @@ import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.analyzator.GenSymbolTab;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
 import compi2.multi.compilator.analyzator.StmtsAnalizator;
-import compi2.multi.compilator.semantic.ast.Statement;
+import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.obj.DefAst;
 import java.util.ArrayList;
 import java.util.List;

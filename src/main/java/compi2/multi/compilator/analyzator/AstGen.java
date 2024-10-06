@@ -6,7 +6,7 @@ import compi2.multi.compilator.semantic.module.Argument;
 import compi2.multi.compilator.semantic.PassIf;
 import compi2.multi.compilator.semantic.ast.IfAst;
 import compi2.multi.compilator.semantic.ast.SimpleCase;
-import compi2.multi.compilator.semantic.ast.Statement;
+import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.exp.Expression;
 import compi2.multi.compilator.semantic.obj.Label;
 import java.util.LinkedList;

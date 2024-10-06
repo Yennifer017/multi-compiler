@@ -7,7 +7,6 @@ package compi2.multi.compilator;
 
 import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.colors.AdmiColors;
-import compi2.multi.compilator.colors.Pintor;
 import compi2.multi.compilator.exceptions.FileException;
 import compi2.multi.compilator.files.AdmiFiles;
 import compi2.multi.compilator.util.AdmiFronted;

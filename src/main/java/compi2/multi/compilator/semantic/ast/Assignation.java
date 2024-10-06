@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.semantic.ast;
 
+import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;

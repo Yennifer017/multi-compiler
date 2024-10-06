@@ -16,7 +16,6 @@ public class PintorLexer {
 
   /** Initial size of the lookahead buffer. */
   private static final int ZZ_BUFFERSIZE = 16384;
-  private static final String ZZ_NL = System.getProperty("line.separator");
 
   // Lexical states.
   public static final int YYINITIAL = 0;
@@ -1109,23 +1108,6 @@ public class PintorLexer {
   }
 
 
-  private static String zzToPrintable(String str) {
-    StringBuilder builder = new StringBuilder();
-    for (int n = 0 ; n < str.length() ; ) {
-      int ch = str.codePointAt(n);
-      int charCount = Character.charCount(ch);
-      n += charCount;
-      if (ch > 31 && ch < 127) {
-        builder.append((char)ch);
-      } else if (charCount == 1) {
-        builder.append(String.format("\\u%04X", ch));
-      } else {
-        builder.append(String.format("\\U%06X", ch));
-      }
-    }
-    return builder.toString();
-  }
-
   /** Returns the maximum size of the scanner buffer, which limits the size of tokens. */
   private int zzMaxBufferLen() {
     return Integer.MAX_VALUE;
@@ -1472,234 +1454,168 @@ public class PintorLexer {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [424] { return coloreado(TypeTkn.ERROR); }");
             { return coloreado(TypeTkn.ERROR);
             }
           // fall through
           case 39: break;
           case 2:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [421] { /* ignoramos */ }");
             { /* ignoramos */
             }
           // fall through
           case 40: break;
           case 3:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [147] { return coloreado(TypeTkn.COMPARATOR); }");
             { return coloreado(TypeTkn.COMPARATOR);
             }
           // fall through
           case 41: break;
           case 4:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [157] { string.setLength(0); yybegin(STRING); }");
             { string.setLength(0); yybegin(STRING);
             }
           // fall through
           case 42: break;
           case 5:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [151] { return coloreado(TypeTkn.LITERALS); }");
             { return coloreado(TypeTkn.LITERALS);
             }
           // fall through
           case 43: break;
           case 6:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [84] { return coloreado(TypeTkn.OPERATOR); }");
             { return coloreado(TypeTkn.OPERATOR);
             }
           // fall through
           case 44: break;
           case 7:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [156] { string.setLength(0); yybegin(CHARLITERAL); }");
             { string.setLength(0); yybegin(CHARLITERAL);
             }
           // fall through
           case 45: break;
           case 8:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [94] { return coloreado(TypeTkn.DELIMITATOR); }");
             { return coloreado(TypeTkn.DELIMITATOR);
             }
           // fall through
           case 46: break;
           case 9:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [90] { return coloreado(TypeTkn.OTHERS); }");
             { return coloreado(TypeTkn.OTHERS);
             }
           // fall through
           case 47: break;
           case 10:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [152] { return coloreado(TypeTkn.BOOLEANS); }");
             { return coloreado(TypeTkn.BOOLEANS);
             }
           // fall through
           case 48: break;
           case 11:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [371] { return coloreado(TypeTkn.ID); }");
             { return coloreado(TypeTkn.ID);
             }
           // fall through
           case 49: break;
           case 12:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [376] { string.setLength(0); yybegin(P_CHAR_STRING); }");
             { string.setLength(0); yybegin(P_CHAR_STRING);
             }
           // fall through
           case 50: break;
           case 13:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [259] { string.setLength(0); yybegin(JSTRING); }");
             { string.setLength(0); yybegin(JSTRING);
             }
           // fall through
           case 51: break;
           case 14:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [258] { string.setLength(0); yybegin(JCHARLITERAL); }");
             { string.setLength(0); yybegin(JCHARLITERAL);
             }
           // fall through
           case 52: break;
           case 15:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [179] { return coloreadoStr(TypeTkn.ERROR); }");
             { return coloreadoStr(TypeTkn.ERROR);
             }
           // fall through
           case 53: break;
           case 16:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [401] { string.append( yytext() ); }");
             { string.append( yytext() );
             }
           // fall through
           case 54: break;
           case 17:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [399] { yybegin(PASCAL); return coloreadoStr(TypeTkn.STRINGS); }");
             { yybegin(PASCAL); return coloreadoStr(TypeTkn.STRINGS);
             }
           // fall through
           case 55: break;
           case 18:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [183] { yybegin(YYINITIAL); return coloreadoStr(TypeTkn.STRINGS); }");
             { yybegin(YYINITIAL); return coloreadoStr(TypeTkn.STRINGS);
             }
           // fall through
           case 56: break;
           case 19:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [288] { yybegin(JAVA); return coloreadoStr(TypeTkn.STRINGS); }");
             { yybegin(JAVA); return coloreadoStr(TypeTkn.STRINGS);
             }
           // fall through
           case 57: break;
           case 20:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [125] { return coloreado(TypeTkn.RESERVED_WORD); }");
             { return coloreado(TypeTkn.RESERVED_WORD);
             }
           // fall through
           case 58: break;
           case 21:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [379] { return coloreado(TypeTkn.COMMENTARY); }");
             { return coloreado(TypeTkn.COMMENTARY);
             }
           // fall through
           case 59: break;
           case 22:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [408] { string.append( \'\\\"\' ); }");
             { string.append( '\"' );
             }
           // fall through
           case 60: break;
           case 23:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [409] { string.append( \'\\\'\' ); }");
             { string.append( '\'' );
             }
           // fall through
           case 61: break;
           case 24:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [411] { char val = (char) Integer.parseInt(yytext().substring(1),8);"+ZZ_NL+"                                                                   string.append( val ); }");
             { char val = (char) Integer.parseInt(yytext().substring(1),8);
                                                                    string.append( val );
             }
           // fall through
           case 62: break;
           case 25:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [410] { string.append( \'\\\\\' ); }");
             { string.append( '\\' );
             }
           // fall through
           case 63: break;
           case 26:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [403] { string.append( \'\\b\' ); }");
             { string.append( '\b' );
             }
           // fall through
           case 64: break;
           case 27:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [406] { string.append( \'\\f\' ); }");
             { string.append( '\f' );
             }
           // fall through
           case 65: break;
           case 28:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [405] { string.append( \'\\n\' ); }");
             { string.append( '\n' );
             }
           // fall through
           case 66: break;
           case 29:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [407] { string.append( \'\\r\' ); }");
             { string.append( '\r' );
             }
           // fall through
           case 67: break;
           case 30:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [404] { string.append( \'\\t\' ); }");
             { string.append( '\t' );
             }
           // fall through
           case 68: break;
           case 31:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [267] { yybegin(JAVA); return coloreado(TypeTkn.STRINGS); }");
             { yybegin(JAVA); return coloreado(TypeTkn.STRINGS);
             }
           // fall through
           case 69: break;
           case 32:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [196] { char val = (char) Integer.parseInt(yytext().substring(1),8);"+ZZ_NL+"                                                string.append( val ); }");
             { char val = (char) Integer.parseInt(yytext().substring(1),8);
                                                 string.append( val );
             }
           // fall through
           case 70: break;
           case 33:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [172] { yybegin(YYINITIAL);"+ZZ_NL+"                                                int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);"+ZZ_NL+"                                                return coloreadoStr(TypeTkn.STRINGS); }");
             { yybegin(YYINITIAL);
                                                 int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);
                                                 return coloreadoStr(TypeTkn.STRINGS);
@@ -1707,8 +1623,6 @@ public class PintorLexer {
           // fall through
           case 71: break;
           case 34:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [395] { yybegin(PASCAL);"+ZZ_NL+"                                                            int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);"+ZZ_NL+"                                                          return coloreadoStr(TypeTkn.STRINGS); }");
             { yybegin(PASCAL);
                                                             int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);
                                                           return coloreadoStr(TypeTkn.STRINGS);
@@ -1716,8 +1630,6 @@ public class PintorLexer {
           // fall through
           case 72: break;
           case 35:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [278] { yybegin(JAVA);"+ZZ_NL+"                                                int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);"+ZZ_NL+"                                                return coloreadoStr(TypeTkn.STRINGS); }");
             { yybegin(JAVA);
                                                 int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);
                                                 return coloreadoStr(TypeTkn.STRINGS);
@@ -1725,104 +1637,22 @@ public class PintorLexer {
           // fall through
           case 73: break;
           case 36:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [113] { yybegin(JAVA); return coloreado(TypeTkn.SECTION); }");
             { yybegin(JAVA); return coloreado(TypeTkn.SECTION);
             }
           // fall through
           case 74: break;
           case 37:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [114] { yybegin(PASCAL); return coloreado(TypeTkn.SECTION); }");
             { yybegin(PASCAL); return coloreado(TypeTkn.SECTION);
             }
           // fall through
           case 75: break;
           case 38:
-            System.out.println("char: "+yychar+" "+"match: --"+zzToPrintable(yytext())+"--");
-            System.out.println("action [115] { yybegin(YYINITIAL); return coloreado(TypeTkn.SECTION); }");
             { yybegin(YYINITIAL); return coloreado(TypeTkn.SECTION);
             }
           // fall through
           case 76: break;
           default:
             zzScanError(ZZ_NO_MATCH);
-        }
-      }
-    }
-  }
-
-  /**
-   * Runs the scanner on input files.
-   *
-   * This main method is the debugging routine for the scanner.
-   * It prints debugging information about each returned token to
-   * System.out until the end of file is reached, or an error occured.
-   *
-   * @param argv   the command line, contains the filenames to run
-   *               the scanner on.
-   */
-  public static void main(String[] argv) {
-    if (argv.length == 0) {
-      System.out.println("Usage : java PintorLexer [ --encoding <name> ] <inputfile(s)>");
-    }
-    else {
-      int firstFilePos = 0;
-      String encodingName = "UTF-8";
-      if (argv[0].equals("--encoding")) {
-        firstFilePos = 2;
-        encodingName = argv[1];
-        try {
-          // Side-effect: is encodingName valid?
-          java.nio.charset.Charset.forName(encodingName);
-        } catch (Exception e) {
-          System.out.println("Invalid encoding '" + encodingName + "'");
-          return;
-        }
-      }
-      for (int i = firstFilePos; i < argv.length; i++) {
-        PintorLexer scanner = null;
-        java.io.FileInputStream stream = null;
-        java.io.Reader reader = null;
-        try {
-          stream = new java.io.FileInputStream(argv[i]);
-          reader = new java.io.InputStreamReader(stream, encodingName);
-          scanner = new PintorLexer(reader);
-          do {
-            System.out.println(scanner.yylex());
-          } while (!scanner.zzAtEOF);
-
-        }
-        catch (java.io.FileNotFoundException e) {
-          System.out.println("File not found : \""+argv[i]+"\"");
-        }
-        catch (java.io.IOException e) {
-          System.out.println("IO error scanning file \""+argv[i]+"\"");
-          System.out.println(e);
-        }
-        catch (Exception e) {
-          System.out.println("Unexpected exception:");
-          e.printStackTrace();
-        }
-        finally {
-          if (reader != null) {
-            try {
-              reader.close();
-            }
-            catch (java.io.IOException e) {
-              System.out.println("IO error closing file \""+argv[i]+"\"");
-              System.out.println(e);
-            }
-          }
-          if (stream != null) {
-            try {
-              stream.close();
-            }
-            catch (java.io.IOException e) {
-              System.out.println("IO error closing file \""+argv[i]+"\"");
-              System.out.println(e);
-            }
-          }
         }
       }
     }
