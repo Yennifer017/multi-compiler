@@ -6,6 +6,8 @@ package compi2.multi.compilator;
  */
 
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.colors.AdmiColors;
+import compi2.multi.compilator.colors.Pintor;
 import compi2.multi.compilator.exceptions.FileException;
 import compi2.multi.compilator.files.AdmiFiles;
 import compi2.multi.compilator.util.AdmiFronted;
@@ -23,7 +25,8 @@ public class Fronted extends javax.swing.JFrame {
     
     private Analyzator analyzator;
     private AdmiFronted admiFronted;
-
+    private AdmiColors admiColors;
+    
     /**
      * Creates new form Fronted
      */
@@ -34,6 +37,7 @@ public class Fronted extends javax.swing.JFrame {
         initVariables();
         analyzator = new Analyzator();
         admiFronted = new AdmiFronted();
+        admiColors = new AdmiColors(display);
     }
 
     private void initVariables() {

@@ -251,6 +251,7 @@ OctDigit          = [0-7]
         "String"        { return symbol(sym.STRING_TKN); }
         "switch"        { return symbol(sym.SWITCH); }
         "super"         { return symbol(sym.SUPER); }
+        "this"          { return symbol(sym.THIS); }
         "void"          { return symbol(sym.VOID); }
         "while"         { return symbol(sym.WHILE); }
 
@@ -400,19 +401,19 @@ OctDigit          = [0-7]
         {SingleCharacter}\'            { yybegin(PASCAL); return symbol(sym.CHAR_LIT, yytext().charAt(0)); }
 
         /* escape sequences */
-        "\\b"\'                        { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\b');}
-        "\\t"\'                        { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\t');}
-        "\\n"\'                        { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\n');}
-        "\\f"\'                        { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\f');}
-        "\\r"\'                        { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\r');}
-        "\\\""\'                       { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\"');}
-        "\\'"\'                        { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\'');}
-        "\\\\"\'                       { yybegin(YYINITIAL); return symbol(sym.CHAR_LIT, '\\'); }
-        \\[0-3]?{OctDigit}?{OctDigit}\' { yybegin(YYINITIAL);
+        "\\b"\'                        { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\b');}
+        "\\t"\'                        { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\t');}
+        "\\n"\'                        { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\n');}
+        "\\f"\'                        { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\f');}
+        "\\r"\'                        { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\r');}
+        "\\\""\'                       { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\"');}
+        "\\'"\'                        { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\'');}
+        "\\\\"\'                       { yybegin(PASCAL); return symbol(sym.CHAR_LIT, '\\'); }
+        \\[0-3]?{OctDigit}?{OctDigit}\' { yybegin(PASCAL);
                                                             int val = Integer.parseInt(yytext().substring(1,yylength()-1),8);
                                                           return symbol(sym.CHAR_LIT, (char)val); }
 
-        \'                             { yybegin(YYINITIAL); return symbol(sym.STRING_LIT, string.toString()); }
+        \'                             { yybegin(PASCAL); return symbol(sym.STRING_LIT, string.toString()); }
 
         {SingleCharacter}+             { string.append( yytext() ); }
         /* escape sequences */
