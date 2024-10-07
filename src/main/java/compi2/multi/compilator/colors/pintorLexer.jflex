@@ -144,7 +144,8 @@ OctDigit          = [0-7]
         "&&"            { return coloreado(TypeTkn.COMPARATOR); }
         "||"            { return coloreado(TypeTkn.COMPARATOR); }
         "!"             { return coloreado(TypeTkn.COMPARATOR); }
-        "&"             { return coloreado(TypeTkn.COMPARATOR); }
+        "&"             { return coloreado(TypeTkn.OTHERS); }
+        "#"             { return coloreado(TypeTkn.OTHERS); }
 
         /* literals */
         {Identifier}    { return coloreado(TypeTkn.ID); }
@@ -154,6 +155,9 @@ OctDigit          = [0-7]
 
         \'              { string.setLength(0); yybegin(CHARLITERAL); }
         \"              { string.setLength(0); yybegin(STRING); }
+
+        /* ignore */
+        {JComment}      { return coloreado(TypeTkn.COMMENTARY); }
     }
 
     <CHARLITERAL> {

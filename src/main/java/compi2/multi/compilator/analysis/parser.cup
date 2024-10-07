@@ -138,6 +138,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             FOR,
             FUNCTION,
             GETCH,
+            HASH,
             IF,
             IN,
             INCLUDE,
@@ -1471,7 +1472,7 @@ main_program ::=
         VOID MAIN LPAREN RPAREN LBRACE cstmts RBRACE
         ;
 
-/*********************** UTIL *********************************/
+/*--------------------------------- UTIL ---------------------------------*/
 
 ctype ::= INT_TKN   
         | CHAR_TKN
@@ -1488,9 +1489,9 @@ cparams ::= cexp COMMA cparams
         | cexp
         ;
 
-/*********************** INIT SECTION *************************/
+/*----------------------------- INIT SECTION ----------------------------*/
 
-cimports ::= cimports INCLUDE STRING_LIT
+cimports ::= cimports HASH INCLUDE STRING_LIT
         | /* empty */
         ;
 
@@ -1517,19 +1518,110 @@ c_j_construct ::= ID LPAREN RPAREN
         | ID LPAREN cparams RPAREN
         ;
 
-/************************ STATEMENTS ****************************/
+/*--------------------------- STATEMENTS ---------------------------------*/
 
-cstmts ::= cif_stmt 
-        | BREAK SEMICOLON
+cstmts ::= ccontrol_stmts
+        | single_stmt
+        | def_functions_stmt
         ;
 
 
+single_stmt ::= BREAK SEMICOLON
+        | CONTINUE SEMICOLON
+        ;
 
-cif_stmt ::= IF LPAREN cexp RPAREN LBRACE cstmts RBRACE
+def_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN SEMICOLON
+        | PRINTF LPAREN cexp_list RPAREN
+        | CLRSCR LPAREN RPAREN SEMICOLON
+        | GETCH LPAREN RPAREN SEMICOLON
+        ;
+
+ccontrol_stmts ::= cif_stmt
+        | celif_stmt
+        | cswitch_stmt
+        | cfor_stmt 
+        | cwhile_stmt
+        | cwhile_stmt
+        ;
+
+/************************conditional *************************/
+
+cif_stmt ::= IF LPAREN cexp RPAREN LBRACE cstmts RBRACE celif_stmt
+        ;
+
+celif_stmt ::= ELSE cif_stmt
+        | ELSE LBRACE cstmts RBRACE
         ;
 
 
-/************************ EXPRESSIONS ****************************/
+/************************ switch ********************************/
 
-cexp ::= INTEGER_LIT
+cswitch_stmt ::= SWITCH LPAREN cexp RPAREN LBRACE ccases RBRACE
+        ;
+
+ccases ::= ccases ccase
+        | ccase
+        ;
+
+ccase ::= CASE cexp COLON cstmts BREAK SEMICOLON
+        | DEFAULT COLON cstmts BREAK SEMICOLON
+        ;
+
+/********************** ciclos ************************************/
+
+cfor_stmt ::= FOR LPAREN casign SEMICOLON cexp SEMICOLON cexp RPAREN LBRACE cstmts RBRACE
+        ;
+cdo_while_stmt
+cwhile_stmt ::= WHILE LPAREN cexp RPAREN LBRACE cstmts RBRACE
+        ;
+
+cdo_while_stmt ::= DO LBRACE cstmts RBRACE 
+        WHILE LPAREN cexp RPAREN SEMICOLON
+        ;
+
+/************* functions / procedure / methods use******************/
+cinvocation_stmt ::= 
+
+
+
+/*---------------------------- EXPRESSIONS ------------------------------*/
+
+cexp ::= cexp AND cexp
+        | cexp OR cexp
+        | NOT jexp
+        | cbool_exp
+        ;
+
+cbool_exp ::= carit_exp:e1 EQUALS:o carit_exp:e2j
+        | carit_exp:e1 DIFFERENT:o carit_exp:e2j
+        | carit_exp:e1 GRATER:o carit_exp:e2j
+        | carit_exp:e1 LESS:o carit_exp:e2j
+        | carit_exp:e1 GRATER_EQUALS:o carit_exp:e2j
+        | carit_exp:e1 LESS_EQUALS:o carit_exp:e2j
+        | carit_exp:ej
+        ;
+
+carit_exp ::= carit_exp:e1 PLUS:o carit_exp:e2
+        | carit_exp:e1 MINUS:o carit_exp:e2
+        | carit_exp:e1 TIMES:o carit_exp:e2
+        | carit_exp:e1 DIV:o carit_exp:e2
+        | carit_exp:e1 MOD:o carit_exp:e2
+        | carit_exp:e1 POWER:o carit_exp:e2
+        | literals:e
+        | ID:i carray_access
+        | ID:i carray_access caccess
+        | ID:i LPAREN cexp_list:l RPAREN
+        | ID:i LPAREN RPAREN
+        | ID:i LPAREN cexp_list:l RPAREN caccess
+        | ID:i LPAREN RPAREN caccess
+        | ID:i caccess
+        | ID:i
+        | THIS caccess
+        | SUPER caccess
+        %prec UMINUS
+        | LPAREN cexp:e RPAREN
+        %prec UMINUS
+        | PLUS:o carit_exp:e
+        %prec UMINUS
+        | MINUS:o carit_exp:e
         ;

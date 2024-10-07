@@ -165,6 +165,7 @@ OctDigit          = [0-7]
         "||"            { return symbol(sym.OR); }
         "!"             { return symbol(sym.DIFFERENT); }
         "&"             { return symbol(sym.AMPERSAND); }
+        "#"             { return symbol(sym.HASH); }
 
         /* literals */
         {Identifier}    { return symbol( sym.ID, yytext() ); }
@@ -174,6 +175,9 @@ OctDigit          = [0-7]
 
         \'              { string.setLength(0); yybegin(CHARLITERAL); }
         \"              { string.setLength(0); yybegin(STRING); }
+
+        /* ignore */
+        {JComment}      {/* ignore */}
     }
 
     <CHARLITERAL> {

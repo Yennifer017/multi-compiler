@@ -104,6 +104,7 @@ public class sym {
   public static final int TO = 78;
   public static final int WITH = 84;
   public static final int EQUALS = 41;
+  public static final int HASH = 100;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
