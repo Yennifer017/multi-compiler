@@ -3,7 +3,7 @@ package compi2.multi.compilator.analyzator;
 
 
 import compi2.multi.compilator.analysis.symbolt.Category;
-import compi2.multi.compilator.analysis.symbolt.FunctionST;
+import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;

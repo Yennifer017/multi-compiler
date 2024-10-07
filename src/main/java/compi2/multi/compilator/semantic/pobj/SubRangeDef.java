@@ -4,7 +4,7 @@ package compi2.multi.compilator.semantic.pobj;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.analysis.symbolt.RowST;
-import compi2.multi.compilator.analysis.symbolt.SubrangeST;
+import compi2.multi.compilator.analysis.symbolt.estruc.SubrangeST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;

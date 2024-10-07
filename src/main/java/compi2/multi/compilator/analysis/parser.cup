@@ -195,10 +195,14 @@ terminal float      FLOAT_LIT;
 
 
 /*----------------------------- Non-terminals ---------------------------------------*/
-non terminal        s, pascal_block, java_block, main_program, pcontent
+non terminal        s, java_block, main_program
                     ;
 
 /******************************* FOR PASCAL ****************************/
+non terminal List<DefAst> pascal_block, pcontent, 
+                    procedure_b, procedures, 
+                    functions_b, functions
+                    ;
 non terminal List<Label> id_list
                     ;
 non terminal Label var_type
@@ -237,10 +241,6 @@ non terminal FunctionUseStmt definite_fun
 non terminal FunctionDec function_dec
                     ;
 non terminal ProcedureDec procedure_dec
-                    ;
-non terminal List<ProcedureDec> procedure_b, procedures
-                    ;
-non terminal List<FunctionDec> functions_b, functions
                     ;
 non terminal List<Argument> arguments, type_arg
                     ;
@@ -293,16 +293,33 @@ jarray_access
 non terminal 
 ctype,
 carray_dims,
+carray_access,
+caccess,
 cparams,
+cexp_list,
 cimports,
 cconst_b,
 cvars_b,
+cvars_dec,
 c_java_construct,
 c_j_construct,
 cstmts,
+single_stmt,
+def_functions_stmt,
+ccontrol_stmts,
 cif_stmt,
+celif_stmt,
+cswitch_stmt,
+ccases,
+ccase,
+cfor_stmt,
+cwhile_stmt,
+cdo_while_stmt,
+cinvocation_stmt,
 cexp,
-cvars_dec
+cbool_exp,
+carit_exp,
+casign
 ;
 
 
@@ -332,18 +349,36 @@ precedence left ELSE;
             The grammar 
 -----------------------------------------*/
 start with s;
-s ::=   pascal_block
+s ::=   pascal_block:pb
         java_block
         main_program
+            {:
+                analyzator.pascalSemanticAnalysis(pb);
+            :}
     ;
 
 /* --------------------------------------------------------------------------------------------------
                                             PASCAL
 -----------------------------------------------------------------------------------------------------*/
-pascal_block ::= PASCAL_SECTION pcontent
+pascal_block ::= PASCAL_SECTION pcontent:l
+            {:
+                RESULT = l;
+            :}
         ;
 
 pcontent ::= functions_b:lf procedure_b:lp
+            {:
+                if(lf != null && lp != null){
+                    lf.addAll(lp);
+                    RESULT = lf;
+                } else if (lf != null){
+                    RESULT = lf;
+                } else if (lp != null){
+                    RESULT = lp;
+                } else {
+                    RESULT = new LinkedList<>();
+                }
+            :}
         ;
 /*-------------------------------------- UTILITIES --------------------------------*/
 var_type ::= INT_TKN:t  
@@ -1119,7 +1154,7 @@ functions_b ::= functions:l
                 :}
         | /* empty */
                 {:
-                    RESULT = new LinkedList<FunctionDec>();
+                    RESULT = new LinkedList<>();
                 :}
         ;
 
@@ -1134,7 +1169,7 @@ functions ::= functions:l function_dec:d
                 :}
         | function_dec:d
                 {:
-                    LinkedList<FunctionDec> list = new LinkedList<>();
+                    LinkedList<DefAst> list = new LinkedList<>();
                     list.add(d);
                     RESULT = list;
                 :}
@@ -1159,7 +1194,7 @@ procedure_b ::= procedures:p
                 :} 
         | /* empty */
                 {:  
-                    RESULT = new LinkedList<ProcedureDec>();
+                    RESULT = new LinkedList<>();
                 :}
         ;
 
@@ -1174,7 +1209,7 @@ procedures ::= procedures:l procedure_dec:d
                 :}
         | procedure_dec:d
                 {:
-                    LinkedList<ProcedureDec> list = new LinkedList<>();
+                    LinkedList<DefAst> list = new LinkedList<>();
                     list.add(d);
                     RESULT = list;
                 :}
@@ -1489,6 +1524,10 @@ cparams ::= cexp COMMA cparams
         | cexp
         ;
 
+cexp_list ::= cexp_list COMMA cexp
+        | cexp
+        ;
+
 /*----------------------------- INIT SECTION ----------------------------*/
 
 cimports ::= cimports HASH INCLUDE STRING_LIT
@@ -1531,8 +1570,8 @@ single_stmt ::= BREAK SEMICOLON
         ;
 
 def_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN SEMICOLON
-        | PRINTF LPAREN cexp_list RPAREN
-        | CLRSCR LPAREN RPAREN SEMICOLON
+        | PRINT LPAREN cexp_list RPAREN
+        | CLEAR LPAREN RPAREN SEMICOLON
         | GETCH LPAREN RPAREN SEMICOLON
         ;
 
@@ -1541,7 +1580,7 @@ ccontrol_stmts ::= cif_stmt
         | cswitch_stmt
         | cfor_stmt 
         | cwhile_stmt
-        | cwhile_stmt
+        | cdo_while_stmt
         ;
 
 /************************conditional *************************/
@@ -1571,7 +1610,6 @@ ccase ::= CASE cexp COLON cstmts BREAK SEMICOLON
 
 cfor_stmt ::= FOR LPAREN casign SEMICOLON cexp SEMICOLON cexp RPAREN LBRACE cstmts RBRACE
         ;
-cdo_while_stmt
 cwhile_stmt ::= WHILE LPAREN cexp RPAREN LBRACE cstmts RBRACE
         ;
 
@@ -1581,6 +1619,7 @@ cdo_while_stmt ::= DO LBRACE cstmts RBRACE
 
 /************* functions / procedure / methods use******************/
 cinvocation_stmt ::= 
+        ;
 
 
 

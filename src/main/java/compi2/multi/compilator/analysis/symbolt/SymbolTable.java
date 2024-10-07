@@ -1,7 +1,7 @@
 
 package compi2.multi.compilator.analysis.symbolt;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter 
-public class SymbolTable extends HashMap<String, RowST>{
+public class SymbolTable extends LinkedHashMap<String, RowST>{
     private SymbolTable father;
     private int lastDir;
         

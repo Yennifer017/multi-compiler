@@ -6,6 +6,9 @@ package compi2.multi.compilator.analysis.symbolt;
  * @author blue-dragon
  */
 public enum Category {
+    Retorno("Retorno "),
+    InternalAnonymusST("tabla de simbolos interna"),
+    
     Variable("Variable"),
     Constant("Constante"),
     Function("Funcion"),
@@ -14,7 +17,14 @@ public enum Category {
     Param_ref("Parametro por referencia"),
     Subrange("Subrango"),
     Array("arreglo"),
-    Record("Record");
+    Record("Record"),
+    
+    JClass("Clase Java"),
+    JConstruct("Constructor"),
+    JField("atributo de clase"), 
+    JHeapDir("direccion dentro del heap"),
+    JMethod("metodo de una clase")
+    ;
     
     private String name;
     private Category(String name){

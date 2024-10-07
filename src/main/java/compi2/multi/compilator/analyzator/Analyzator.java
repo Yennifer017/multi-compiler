@@ -31,7 +31,9 @@ public class Analyzator {
     private GenTypeTab genTypeTab;
     private GenSymbolTab genSymbolTab;
     
-    private SymbolTable symbolTable;
+    private SymbolTable pascalSymbolTable;
+    private SymbolTable javaSymbolTable;
+    private SymbolTable cSymbolTable;
     private TypeTable typeTable;
     
     private List<FunctionDec> functionsGlobal; 
@@ -43,7 +45,7 @@ public class Analyzator {
         semanticErrors = new ArrayList<>();
         genTypeTab = new GenTypeTab();
         genSymbolTab = new GenSymbolTab();
-        
+        typeTable = new TypeTable(true);
     }
     
     /**
@@ -56,6 +58,7 @@ public class Analyzator {
         StringBuilder builder =  new StringBuilder();
         Lexer lexer = new Lexer(new StringReader(text));
         Parser parser = new Parser(lexer, this);
+        semanticErrors.clear();
         try {
             parser.parse();
             builder.append(getErrors("ERRORES LEXICOS", lexer.getErrors()));
@@ -109,6 +112,21 @@ public class Analyzator {
         this.statementsGlobal = null;
     }
     
+    public void pascalSemanticAnalysis(List<DefAst> definitions){
+        this.pascalSymbolTable =  new SymbolTable();
+        genSymbolTab.addPascalData(
+                pascalSymbolTable, typeTable, definitions, semanticErrors
+        );
+    }
+    
+    public void javaSemanticAnalysis(){
+        javaSymbolTable = new SymbolTable();
+    }
+    
+    public void cSemanticAnalysis(){
+        cSymbolTable = new SymbolTable();
+    }
+    
     /**
      *  Valida el codigo generado, a partir de los ast
      * @param types
@@ -120,11 +138,7 @@ public class Analyzator {
      */
     public void semanticAnalysis(List<DefAst> types, List<DefAst> consts, List<DefAst> variables, 
             List<FunctionDec> functions, List<ProcedureDec> procedures, List<Statement> statements){
-        semanticErrors = new ArrayList<>();
-        //typeTable = genTypeTab.generateTable(types, semanticErrors);
-        typeTable = new TypeTable(true);
-        symbolTable = new SymbolTable();
-        genSymbolTab.addData(symbolTable, typeTable, consts, semanticErrors);
+        /*genSymbolTab.addData(symbolTable, typeTable, consts, semanticErrors);
         genSymbolTab.addData(symbolTable, typeTable, variables, semanticErrors);
         genSymbolTab.addData(symbolTable, typeTable, functions, semanticErrors);
         genSymbolTab.addData(symbolTable, typeTable, procedures, semanticErrors);
@@ -144,7 +158,7 @@ public class Analyzator {
         this.functionsGlobal = functions;
         this.proceduresGlobal = procedures;
         this.statementsGlobal = statements;
-        System.out.println("Realizar el analisis semantico");
+        System.out.println("Realizar el analisis semantico");*/
     }
     
     

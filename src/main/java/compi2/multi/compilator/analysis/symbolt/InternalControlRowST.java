@@ -9,15 +9,16 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class RecordST extends RowST{
-    private int totalElements;
+public class InternalControlRowST extends RowST{
+    
+    private static final String GENERIC_NAME = "$internal_control_st";
+    
     private SymbolTable internalST;
 
-    public RecordST(String name, SymbolTable internalST) {
-        super(name, Category.Record, null);
+    public InternalControlRowST(SymbolTable internalST) {
+        super(GENERIC_NAME, Category.InternalAnonymusST, null);
         this.internalST = internalST;
     }
-
 
     @Override
     public boolean isLinked() {

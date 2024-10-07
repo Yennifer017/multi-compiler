@@ -1,7 +1,9 @@
 
-package compi2.multi.compilator.analysis.symbolt;
+package compi2.multi.compilator.analysis.symbolt.estruc;
 
 
+import compi2.multi.compilator.analysis.symbolt.Category;
+import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.typet.Limits;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import lombok.Getter;

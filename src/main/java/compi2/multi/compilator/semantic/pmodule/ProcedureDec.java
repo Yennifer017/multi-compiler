@@ -2,7 +2,7 @@
 package compi2.multi.compilator.semantic.pmodule;
 
 
-import compi2.multi.compilator.analysis.symbolt.FunctionST;
+import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -60,7 +60,7 @@ public class ProcedureDec extends ModuleDec {
         } else {
             internalST = new SymbolTable();
         }
-        genSymbolTab.addData(internalST, typeTable, varDef, semanticErrors);
+        genSymbolTab.addPascalData(internalST, typeTable, varDef, semanticErrors);
         stmtsAnalizator.validateInternalStmts(
                 internalST, 
                 typeTable, 

@@ -132,6 +132,7 @@ OctDigit          = [0-7]
         "JAVA"          { return coloreado(TypeTkn.RESERVED_WORD); }
         "main"          { return coloreado(TypeTkn.RESERVED_WORD); }
         "PASCAL"        { return coloreado(TypeTkn.RESERVED_WORD); }
+        "printf"         { return coloreado(TypeTkn.RESERVED_WORD); }
         "scanf"         { return coloreado(TypeTkn.RESERVED_WORD); }
         "string"        { return coloreado(TypeTkn.RESERVED_WORD); } //**********WARNING HERE
         "switch"        { return coloreado(TypeTkn.RESERVED_WORD); }

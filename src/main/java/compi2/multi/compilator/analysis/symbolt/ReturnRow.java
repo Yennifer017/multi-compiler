@@ -9,19 +9,18 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class SingleData extends RowST {
+public class ReturnRow extends RowST{
+    
     private int relativeDir;
 
-    public SingleData(String name, Category category, String type, int relativeDir) {
-        super(name, category, type);
+    public ReturnRow(int relativeDir) {
+        super(AdditionalInfoST.DIR_RETORNO_ROW.getNameRow(), Category.Retorno, null);
         this.relativeDir = relativeDir;
     }
-
 
     @Override
     public boolean isLinked() {
         return false;
     }
     
-
 }

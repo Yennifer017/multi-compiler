@@ -152,6 +152,7 @@ OctDigit          = [0-7]
         "JAVA"          { return symbol(sym.JAVA); }
         "main"          { return symbol(sym.MAIN); }
         "PASCAL"        { return symbol(sym.PASCAL); }
+        "printf"        { return symbol(sym.PRINT); }
         "scanf"         { return symbol(sym.SCANF); }
         "string"        { return symbol(sym.STRING_TKN); } //**********WARNING HERE
         "switch"        { return symbol(sym.SWITCH); }
