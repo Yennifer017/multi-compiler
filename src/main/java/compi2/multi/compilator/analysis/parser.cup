@@ -6,10 +6,14 @@ import java.util.*;
 import compi2.multi.compilator.analysis.typet.*;
 import compi2.multi.compilator.analyzator.*;
 import compi2.multi.compilator.semantic.*;
-import compi2.multi.compilator.semantic.exp.*;
-import compi2.multi.compilator.semantic.obj.*;
-import compi2.multi.compilator.semantic.ast.*;
-import compi2.multi.compilator.semantic.module.*;
+import compi2.multi.compilator.semantic.util.*;
+import compi2.multi.compilator.semantic.pexp.*;
+import compi2.multi.compilator.semantic.pobj.*;
+import compi2.multi.compilator.semantic.past.*;
+import compi2.multi.compilator.semantic.pmodule.*;
+import compi2.multi.compilator.semantic.jexp.*;
+import compi2.multi.compilator.semantic.jclases.*;
+import compi2.multi.compilator.semantic.jast.*;
 import compi2.multi.compilator.util.Position;
 /*-----------------------------------------------------------
   CUP Specification for the Parser Class
@@ -194,14 +198,12 @@ non terminal        s, pascal_block, java_block, main_program, pcontent
                     ;
 
 /******************************* FOR PASCAL ****************************/
-non terminal List<Label> id_list, list_access
+non terminal List<Label> id_list
                     ;
 non terminal Label var_type
                     ;
-non terminal List<DefAst> more_records, record_b,
+non terminal List<DefAst> 
                     list_vardec, var_b, var_dec
-                    ;
-non terminal DefAst def_record
                     ;
 non terminal Expression expression, bool_exp, arit_exp, literals
                     ;
@@ -229,7 +231,7 @@ non terminal CaseAst case_stmt
                     ;   
 non terminal ElseAst else_block
                     ;
-non terminal FunctionUseStmt definite_fun, writefn, readfn
+non terminal FunctionUseStmt definite_fun
                     ;
 non terminal FunctionDec function_dec
                     ;
@@ -250,6 +252,8 @@ non terminal List<SimpleCase> case_block
 non terminal
 jmodificator,
 jtype,
+jbracks_list,
+jbrack,
 jcontent,
 jclass,
 jherence,
@@ -260,9 +264,10 @@ jmethod_dec,
 jargs,
 jlist_args,
 jarg,
-jbracks_list,
-jbrack,
-jstmts,
+jstmts_block,
+jstmt,
+jcontrol_stmts,
+jsimple_stmts,
 jif_stmt,
 jelif_stmt,
 jwhile_stmt,
@@ -271,11 +276,32 @@ jfor_stmt,
 jswitch_stmt,
 jswitch_cases,
 jcase,
-jexp, 
+jassign,
+jdeclaration,
+jmethod_use,
+jaccess,
+jcomplex_access,
+jexp,
 jbool_exp,
 jarit_exp,
 jexp_list,
 jarray_access
+;
+
+/********************** FOR MAIN PROGRAM (C) ****************************/
+non terminal 
+ctype,
+carray_dims,
+cparams,
+cimports,
+cconst_b,
+cvars_b,
+c_java_construct,
+c_j_construct,
+cstmts,
+cif_stmt,
+cexp,
+cvars_dec
 ;
 
 
@@ -393,60 +419,6 @@ arr_range ::= LBRACK expression:e1 DOT DOT expression:e2 RBRACK
                          RESULT = new Range(e1, e2);
                     :}
             ;
-
-list_access ::=  list_access:l DOT ID:i 
-                    {:
-                        if(l != null){
-                            l.add(new Label(i, new Position(ileft, iright)));
-                        } else {
-                            l = new LinkedList<>();
-                        }
-                        RESULT = l;
-                    :}
-            | ID:i
-                    {:
-                        ArrayList<Label> access = new ArrayList<>();
-                        access.add(new Label(i, new Position(ileft, iright)));
-                        RESULT = access;
-                    :}
-            ;
-
-record_b ::= def_record:d more_records:l
-                    {:
-                        if(l != null){
-                            l.add(0, d);
-                        } else {
-                            l = new LinkedList<>();
-                        }
-                        RESULT = l;
-                    :}
-            ;
-
-def_record ::= ID:i COLON var_type:t SEMICOLON
-                    {:
-                        RESULT = new SingleDef(new Label(i, new Position(ileft, iright)), t);
-                    :}
-            | ID:i COLON PACKED ARRAY arr_range:r OF var_type:t SEMICOLON
-                    {:
-                        RESULT = new ArrayDef(new Label(i, new Position(ileft, iright)), t, r);
-                    :}
-            ;
-
-more_records ::= def_record:d more_records:l
-                    {:
-                        if(l != null){
-                            l.add(0, d);
-                        } else {
-                            l = new LinkedList<>();
-                        }
-                        RESULT = l;
-                    :}
-            | /* empty */
-                    {:
-                        RESULT = new LinkedList<DefAst>();
-                    :}
-            ;
-
 
 expression_list ::= expression_list:l COMMA expression:e
                     {:
@@ -652,7 +624,7 @@ arit_exp ::=
             | arit_exp:e1 DIV:o arit_exp:e2
                     {:
                         RESULT = new Operation(
-                            DefiniteOperation.IntDivision, e1, e2,
+                            DefiniteOperation.Division, e1, e2,
                             new Position(oleft, oright)
                         );
                     :}
@@ -1263,12 +1235,33 @@ jmodificator ::= PUBLIC
         | /* empty */
         ;
 
-jtype ::= INT_TKN
+jtype ::= INT_TKN jbracks_list
+        | STRING_TKN jbracks_list
+        | FLOAT_TKN jbracks_list
+        | BOOLEAN_TKN jbracks_list
+        | CHAR_TKN jbracks_list
+        | ID jbracks_list
+        | INT_TKN
         | STRING_TKN
         | FLOAT_TKN
         | BOOLEAN_TKN
         | CHAR_TKN
         | ID
+        ;
+
+jbracks_list ::= jbracks_list jbrack
+        | jbrack
+        ;
+
+jbrack ::= LBRACK RBRACK
+        ;
+
+jarray_access ::= LBRACK jexp:e RBRACK
+        | jarray_access LBRACK jexp:e RBRACK
+        ;
+
+jexp_list ::= jexp_list COMMA jexp 
+        | jexp
         ;
 
 /*-------------------------CLASES----------------------------*/
@@ -1289,22 +1282,24 @@ jinternal_block ::= jinternal jinternal_block
         ;
 
 jinternal ::= 
-        /* declarations */
+            /* declarations */
         jmodificator jtype ID joptions_dec
         | jmodificator VOID ID jmethod_dec
         
-        /* constructor */
-        | jmodificator ID LPAREN jargs RPAREN LBRACE jstmts RBRACE
+            /* constructor */
+        | jmodificator ID LPAREN jargs RPAREN LBRACE jstmts_block RBRACE
         ;
 
-joptions_dec ::= SEMICOLON
-        | jbracks_list SEMICOLON
+joptions_dec ::= 
+            /*simple field*/
+        SEMICOLON
+            /*simple and declaration field*/
         | ASSIGNATION jexp SEMICOLON
-        | jbracks_list ASSIGNATION jexp SEMICOLON
+            /*method*/
         | jmethod_dec
         ;
 
-jmethod_dec ::= LPAREN jargs RPAREN LBRACE jstmts RBRACE
+jmethod_dec ::= LPAREN jargs RPAREN LBRACE jstmts_block RBRACE
         ;
 
 
@@ -1319,53 +1314,52 @@ jlist_args ::= jlist_args COMMA jarg
         ;
 
 jarg ::= jtype ID
-        | jtype jbracks_list ID
         ;
-
-jbracks_list ::= jbracks_list jbrack
-        | jbrack
-        ;
-
-jbrack ::= LBRACK RBRACK
-        ;
-
 
 /*--------------------------- STATEMENTS -----------------------------------*/
 
-jstmts ::= jif_stmt
+jstmts_block ::= jstmts_block jstmt
+        | jstmt
+        ;
+
+jstmt ::= jcontrol_stmts
+        | jsimple_stmts
+        | jdeclaration
+        | jmethod_use
+        | jassign
+        ;
+
+jcontrol_stmts ::= jif_stmt
         | jwhile_stmt
         | jdo_while_stmt
         | jfor_stmt
         | jswitch_stmt 
-        /*| jassign;
-        | jfunction_use
-        | jobject_func_use
-        | jdeclaration
-        | jarray_dec
-        */
-        | BREAK SEMICOLON
+        ;
+
+jsimple_stmts ::= BREAK SEMICOLON
         | CONTINUE SEMICOLON
+        | RETURN jexp SEMICOLON
         ;
 
 /************************** CONDITIONAL *************************/
 
-jif_stmt ::= IF LPAREN jexp RPAREN LBRACE jstmts RBRACE jelif_stmt
+jif_stmt ::= IF LPAREN jexp RPAREN LBRACE jstmts_block RBRACE jelif_stmt
         ;
 
-jelif_stmt ::= ELSE LBRACE jstmts RBRACE
+jelif_stmt ::= ELSE LBRACE jstmts_block RBRACE
         | ELSE jif_stmt
         | /* empty */
         ;
 
 /**************************** CICLOS ****************************/
 
-jwhile_stmt ::= WHILE LPAREN jexp RPAREN LBRACE jstmts RBRACE
+jwhile_stmt ::= WHILE LPAREN jexp RPAREN LBRACE jstmts_block RBRACE
         ;
 
-jdo_while_stmt ::= DO LBRACE jstmts RBRACE WHILE LPAREN jexp RPAREN SEMICOLON
+jdo_while_stmt ::= DO LBRACE jstmts_block RBRACE WHILE LPAREN jexp RPAREN SEMICOLON
         ;
 
-jfor_stmt ::= FOR RPAREN jexp SEMICOLON jexp SEMICOLON jexp RPAREN LBRACE jstmts RBRACE
+jfor_stmt ::= FOR RPAREN jexp SEMICOLON jexp SEMICOLON jexp RPAREN LBRACE jstmts_block RBRACE
         ;
 
 /****************************** SWITCH **************************/
@@ -1377,9 +1371,53 @@ jswitch_cases ::= jswitch_cases jcase
         | jcase
         ;
 
-jcase ::= CASE jexp COLON jstmts
-        | DEFAULT COLON jstmts
+jcase ::= CASE jexp COLON jstmts_block
+        | DEFAULT COLON jstmts_block
         ;
+
+
+
+/****************************** ASSIGNATIONS **************************/
+jassign ::= ID ASSIGNATION jexp SEMICOLON
+        | THIS jaccess ASSIGNATION jexp SEMICOLON
+        | SUPER jaccess ASSIGNATION jexp SEMICOLON
+        | ID jaccess ASSIGNATION jexp SEMICOLON
+        | ID LPAREN RPAREN jaccess ASSIGNATION jexp SEMICOLON
+        | ID LPAREN jexp_list RPAREN jaccess ASSIGNATION jexp SEMICOLON
+        | ID jarray_access jaccess ASSIGNATION jexp SEMICOLON
+        ;
+
+/****************************** OTHERS **************************/
+jdeclaration ::= jtype ID ASSIGNATION jexp SEMICOLON
+        | jtype ID SEMICOLON
+        ;
+
+jmethod_use ::= THIS jaccess SEMICOLON
+        | THIS LPAREN RPAREN SEMICOLON
+        | THIS LPAREN jexp_list RPAREN SEMICOLON
+        | SUPER jaccess SEMICOLON
+        | SUPER LPAREN RPAREN SEMICOLON
+        | SUPER LPAREN jexp_list RPAREN SEMICOLON
+        | ID jaccess SEMICOLON
+        | ID LPAREN RPAREN SEMICOLON
+        | ID LPAREN jexp_list RPAREN SEMICOLON
+        | ID LPAREN RPAREN jaccess SEMICOLON
+        | ID LPAREN jexp_list RPAREN jaccess SEMICOLON
+        | ID jarray_access jaccess SEMICOLON
+        ;
+
+jaccess ::= DOT jcomplex_access jaccess
+        | DOT jcomplex_access
+        ;
+
+jcomplex_access ::= ID
+        | ID LPAREN RPAREN 
+        | ID LPAREN RPAREN jarray_access
+        | ID LPAREN jexp_list RPAREN
+        | ID LPAREN jexp_list RPAREN jarray_access
+        | ID jarray_access
+        ;
+
 
 /*------------------------------EXPRESSIONS --------------------------------------*/
 jexp ::= jexp AND jexp
@@ -1405,9 +1443,15 @@ jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
         | jarit_exp:e1 POWER:o jarit_exp:e2
         | literals:e
         | ID:i jarray_access
+        | ID:i jarray_access jaccess
         | ID:i LPAREN jexp_list:l RPAREN
         | ID:i LPAREN RPAREN
+        | ID:i LPAREN jexp_list:l RPAREN jaccess
+        | ID:i LPAREN RPAREN jaccess
+        | ID:i jaccess
         | ID:i
+        | THIS jaccess
+        | SUPER jaccess
         %prec UMINUS
         | LPAREN jexp:e RPAREN
         %prec UMINUS
@@ -1416,25 +1460,76 @@ jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
         | MINUS:o jarit_exp:e
         ;
 
-jexp_list ::= jexp_list jexp 
-        | jexp
-        ;
-
-jarray_access ::= LBRACK jexp:e RBRACK
-        | jarray_access LBRACK jexp:e RBRACK
-        ;
-
-
 /* --------------------------------------------------------------------------------------------------
                                             MAIN (C)
 -----------------------------------------------------------------------------------------------------*/
-main_program ::= 
-        /*cimports 
-        cconsts 
-        cvars*/
+main_program ::=  
         MAIN_SECTION
-        VOID MAIN LPAREN RPAREN LBRACE /*cstmts*/ RBRACE
+        cimports 
+        cconst_b
+        cvars_b
+        VOID MAIN LPAREN RPAREN LBRACE cstmts RBRACE
         ;
 
-/*cstmts ::= 
-        ;*/
+/*********************** UTIL *********************************/
+
+ctype ::= INT_TKN   
+        | CHAR_TKN
+        | FLOAT_TKN
+        | STRING_TKN
+        | BOOLEAN_TKN
+        ;
+
+carray_dims ::= carray_dims LBRACK cexp RBRACK
+        | LBRACK cexp RBRACK
+        ;
+
+cparams ::= cexp COMMA cparams
+        | cexp
+        ;
+
+/*********************** INIT SECTION *************************/
+
+cimports ::= cimports INCLUDE STRING_LIT
+        | /* empty */
+        ;
+
+cconst_b ::= cconst_b CONST ctype ID ASSIGNATION literals SEMICOLON
+        | /* empty */
+        ;
+
+cvars_b ::= cvars_b cvars_dec
+        | /* empty */
+        ;
+
+cvars_dec ::= ctype ID SEMICOLON
+        | ctype ID ASSIGNATION cexp SEMICOLON
+        | ctype ARRAY carray_dims SEMICOLON
+        | JAVA DOT ID c_java_construct SEMICOLON
+        | JAVA DOT ID ARRAY carray_dims SEMICOLON
+        ;
+
+c_java_construct ::= c_j_construct COMMA c_java_construct
+        | c_j_construct
+        ;
+
+c_j_construct ::= ID LPAREN RPAREN
+        | ID LPAREN cparams RPAREN
+        ;
+
+/************************ STATEMENTS ****************************/
+
+cstmts ::= cif_stmt 
+        | BREAK SEMICOLON
+        ;
+
+
+
+cif_stmt ::= IF LPAREN cexp RPAREN LBRACE cstmts RBRACE
+        ;
+
+
+/************************ EXPRESSIONS ****************************/
+
+cexp ::= INTEGER_LIT
+        ;
