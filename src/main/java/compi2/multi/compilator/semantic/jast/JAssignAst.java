@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author blue-dragon
  */
-public class JAssignAst extends Statement implements JSimpleStmt{
+public class JAssignAst extends Statement{
 
     public JAssignAst(Position initPos) {
         super(initPos);
@@ -24,9 +24,5 @@ public class JAssignAst extends Statement implements JSimpleStmt{
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    @Override
-    public ReturnCase validateSS(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
 }

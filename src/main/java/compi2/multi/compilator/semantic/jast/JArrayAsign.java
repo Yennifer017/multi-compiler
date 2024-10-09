@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author blue-dragon
  */
-public class JArrayAsign extends Statement implements JSimpleStmt{
+public class JArrayAsign extends Statement{
 
     public JArrayAsign(Position initPos) {
         super(initPos);
@@ -21,11 +21,6 @@ public class JArrayAsign extends Statement implements JSimpleStmt{
 
     @Override
     public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public ReturnCase validateSS(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     

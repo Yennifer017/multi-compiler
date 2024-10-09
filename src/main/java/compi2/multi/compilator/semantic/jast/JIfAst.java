@@ -21,14 +21,14 @@ public class JIfAst extends JControlStmt{
     private List<IfAst> elifs;
     private ElseAst elseStmt;
 
-    public JIfAst(Expression condition, List<Statement> statements, Position initPos) {
+    public JIfAst(Position initPos, Expression condition, List<Statement> statements) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = statements;
     }
 
-    public JIfAst(Expression condition, List<Statement> statements, 
-            List<IfAst> elifs, ElseAst elseStmt, Position initPos) {
+    public JIfAst(Position initPos, Expression condition, List<Statement> statements, 
+            List<IfAst> elifs, ElseAst elseStmt) {
         super(initPos);
         this.condition = condition;
         this.elifs = elifs;

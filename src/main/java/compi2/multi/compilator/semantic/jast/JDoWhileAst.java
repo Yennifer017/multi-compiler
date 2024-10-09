@@ -17,7 +17,7 @@ import java.util.List;
 public class JDoWhileAst extends JControlStmt{
     Expression condition;
 
-    public JDoWhileAst(Expression condition, List<Statement> internalStmts, Position initPos) {
+    public JDoWhileAst(Position initPos, Expression condition, List<Statement> internalStmts) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = internalStmts;

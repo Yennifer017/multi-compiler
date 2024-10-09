@@ -14,8 +14,9 @@ import java.util.List;
  * @author blue-dragon
  */
 public class JElseAst extends JControlStmt{
-    public JElseAst(List<Statement> stmts){
-        super(null);
+    
+    public JElseAst(Position initPos, List<Statement> stmts){
+        super(initPos);
         super.internalStmts = stmts;
     }
 
@@ -25,7 +26,4 @@ public class JElseAst extends JControlStmt{
         return super.validateInternalStmts(symbolTable, typeTable, semanticErrors, restrictions);
     }
     
-    public void setInitPos(Position initPos){
-        super.initPos = initPos;
-    }
 }

@@ -255,19 +255,7 @@ non terminal List<SimpleCase> case_block
 
 /******************************* FOR JAVA ****************************/
 non terminal
-jlist_args,
-jarg,
-jstmt,
-jcontrol_stmts,
 jsimple_stmts,
-jif_stmt,
-jelif_stmt,
-jwhile_stmt,
-jdo_while_stmt,
-jfor_stmt,
-jswitch_stmt,
-jswitch_cases,
-jcase,
 jassign,
 jdeclaration,
 jmethod_use,
@@ -278,7 +266,8 @@ jarit_exp,
 jexp_list,
 jarray_access,
 jliterals,
-jdefinite_funcs
+jdefinite_funcs,
+jconstruct_use
 ;
 
 non terminal jbrack
@@ -297,9 +286,12 @@ non terminal JDef jinternal
     ;
 non terminal Typable joptions_dec
     ;
-non terminal List<JArg> jargs
+non terminal List<JArg> jargs, jlist_args
     ;
 non terminal List<Statement> jstmts_block
+    ;
+non terminal Statement jstmt, jfor_reduced_stmt,
+        jcontrol_stmts
     ;
 non terminal JMethod jmethod_dec
     ;
@@ -308,6 +300,22 @@ non terminal Expression jexp
 non terminal JType jtype
     ;
 non terminal Index jbracks_list
+    ;
+non terminal JArg jarg
+    ;
+non terminal JWhileAst jwhile_stmt
+    ;
+non terminal JDoWhileAst jdo_while_stmt
+    ;
+non terminal JForAst jfor_stmt
+    ;
+non terminal JSwitchAst jswitch_stmt
+    ;
+non terminal List<JCase> jswitch_cases
+    ;
+non terminal JCase jcase
+    ;
+non terminal JPassIf jif_stmt, jelif_stmt
     ;
 
 
@@ -372,10 +380,11 @@ precedence left ELSE;
 -----------------------------------------*/
 start with s;
 s ::=   pascal_block:pb
-        java_block
+        java_block:jb
         main_program
             {:
                 analyzator.pascalSemanticAnalysis(pb);
+                analyzator.javaSemanticAnalysis(jb);
             :}
     ;
 
@@ -1558,41 +1567,85 @@ jmethod_dec ::= LPAREN jargs:la RPAREN LBRACE jstmts_block:ls RBRACE
 
 /*---------------------------------- ARGS --------------------------------*/
 
-jargs ::= jlist_args
+jargs ::= jlist_args:l
+            {:
+                RESULT = l;
+            :}
         | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
-jlist_args ::= jlist_args COMMA jarg
-        | jarg
+jlist_args ::= jlist_args:l COMMA jarg:a
+            {:
+                l.add(a);
+                RESULT = l;
+            :}
+        | jarg:a
+            {:
+                List<JArg> list = new LinkedList<>();
+                list.add(a);
+                RESULT = list;
+            :}
         ;
 
-jarg ::= jtype ID
+jarg ::= jtype:t ID:id
+            {:
+                RESULT = new JArg(
+                    t, new Label(id, new Position(idleft, idright))
+                );
+            :}
         ;
 
 /*--------------------------- STATEMENTS -----------------------------------*/
 
-jstmts_block ::= jstmts_block jstmt
-        | jstmt
+jstmts_block ::= jstmts_block:l jstmt:s
+            {:
+                l.add(s);
+                RESULT = l;
+            :}
+        | jstmt:s
+            {:
+                List<Statement> list = new LinkedList<>();
+                list.add(s);
+                RESULT = list;
+            :}
         ;
 
-jstmt ::= jcontrol_stmts
-        | jsimple_stmts
-        | jdeclaration
-        | jmethod_use
-        | jassign
-        | jdefinite_funcs
+jstmt ::= jcontrol_stmts:s
+            {: RESULT = s; :}
+        | jsimple_stmts:s SEMICOLON
+            {: RESULT = s; :}
+        | jdeclaration:s SEMICOLON
+            {: RESULT = s; :}
+        | jmethod_use:s SEMICOLON
+            {: RESULT = s; :}
+        | jconstruct_use:s SEMICOLON
+            {: RESULT = s; :}
+        | jassign:s SEMICOLON
+            {: RESULT = s; :}
+        | jdefinite_funcs:s SEMICOLON
+            {: RESULT = s; :}
         ;
 
-jcontrol_stmts ::= jif_stmt
-        | jwhile_stmt
-        | jdo_while_stmt
-        | jfor_stmt
-        | jswitch_stmt 
+jcontrol_stmts ::= jif_stmt:pi
+            {:
+                //convertir
+            :}
+        | jwhile_stmt:s
+            {: RESULT = s; :}
+        | jdo_while_stmt:s
+            {: RESULT = s; :}
+        | jfor_stmt:s
+            {: RESULT = s; :}
+        | jswitch_stmt:s
+            {: RESULT = s; :}
         ;
 
-jsimple_stmts ::= BREAK SEMICOLON
-        | CONTINUE SEMICOLON
-        | RETURN jexp SEMICOLON
+jsimple_stmts ::= BREAK
+        | CONTINUE
+        | RETURN jexp
         ; 
 
 jdefinite_funcs ::= PRINT LPAREN jexp_list RPAREN
@@ -1601,67 +1654,150 @@ jdefinite_funcs ::= PRINT LPAREN jexp_list RPAREN
 
 /************************** CONDITIONAL *************************/
 
-jif_stmt ::= IF LPAREN jexp RPAREN LBRACE jstmts_block RBRACE jelif_stmt
+jif_stmt ::= IF:i LPAREN jexp:e RPAREN LBRACE jstmts_block:ls RBRACE jelif_stmt:pi
+            {:
+                RESULT = astGen.generateJPassIf(
+                    pi,
+                    new JIfAst(
+                        new Position(ileft, iright),
+                        e, ls
+                    )
+                );
+            :}
         ;
 
-jelif_stmt ::= ELSE LBRACE jstmts_block RBRACE
-        | ELSE jif_stmt
+jelif_stmt ::= ELSE:e LBRACE jstmts_block:ls RBRACE
+            {:
+                JElseStmt elseStmt = new JElseAst(
+                    new Position(eleft, eright);
+                    ls
+                );
+                RESULT = new PassIf(elseStmt);
+            :}
+        | ELSE jif_stmt:pi
+            {:
+                RESULT = pi
+            :}
         | /* empty */
+            {:
+                RESULT = new PassIf();
+            :}
         ;
 
 /**************************** CICLOS ****************************/
 
-jwhile_stmt ::= WHILE LPAREN jexp RPAREN LBRACE jstmts_block RBRACE
+jwhile_stmt ::= WHILE:w LPAREN jexp:e RPAREN LBRACE jstmts_block:ls RBRACE
+            {:
+                RESULT = new JWhileAst(
+                    new Position(wleft, wright);
+                    e, ls
+                );
+            :}
         ;
 
-jdo_while_stmt ::= DO LBRACE jstmts_block RBRACE WHILE LPAREN jexp RPAREN SEMICOLON
+jdo_while_stmt ::= DO:d LBRACE jstmts_block:ls RBRACE WHILE LPAREN jexp:e RPAREN SEMICOLON
+            {:
+                RESULT = new JDoWhileAst(
+                    new Position(dleft, dright),
+                    e, ls
+                );
+            :}
+        ;   
+
+jfor_stmt ::= FOR:f RPAREN jfor_reduced_stmt:s1 SEMICOLON jexp:e SEMICOLON jfor_reduced_stmt:s2 RPAREN 
+              LBRACE jstmts_block:ls RBRACE
+            {:
+                RESULT = new JForAst(
+                    new Position(fleft, fright),
+                    s1, e, s2, ls
+                );
+            :}
         ;
 
-jfor_stmt ::= FOR RPAREN jexp SEMICOLON jexp SEMICOLON jexp RPAREN LBRACE jstmts_block RBRACE
+jfor_reduced_stmt ::= 
+          jdeclaration:s    {: RESULT = s;    :}
+        | jmethod_use:s     {: RESULT = s;    :}        
+        | jassign:s         {: RESULT = s;    :}
+        | /* empty */       {: RESULT = null; :}
         ;
 
 /****************************** SWITCH **************************/
 
-jswitch_stmt ::= SWITCH LPAREN jexp RPAREN LBRACE jswitch_cases RBRACE
+jswitch_stmt ::= SWITCH:s LPAREN jexp:e RPAREN LBRACE jswitch_cases:lc RBRACE
+            {:
+                RESULT = new JSwitchAst(
+                    new Position(sleft, sright),
+                    e, lc
+                );
+            :}
         ;
 
-jswitch_cases ::= jswitch_cases jcase
-        | jcase
+jswitch_cases ::= jswitch_cases:l jcase:c
+            {:
+                l.add(c);
+                RESULT = l;
+            :}
+        | jcase:c
+            {:
+                List<JCase> list = new LinkedList<>();
+                list.add(c);
+                RESULT = list;
+            :}
         ;
 
 jcase ::= CASE jexp COLON jstmts_block
+            {:
+
+            :}
         | DEFAULT COLON jstmts_block
+            {:
+
+            :}
         ;
 
 
 
 /****************************** ASSIGNATIONS **************************/
-jassign ::= ID ASSIGNATION jexp SEMICOLON
-        | THIS jaccess ASSIGNATION jexp SEMICOLON
-        | SUPER jaccess ASSIGNATION jexp SEMICOLON
-        | ID jaccess ASSIGNATION jexp SEMICOLON
-        | ID LPAREN RPAREN jaccess ASSIGNATION jexp SEMICOLON
-        | ID LPAREN jexp_list RPAREN jaccess ASSIGNATION jexp SEMICOLON
+jassign ::= ID ASSIGNATION jexp 
+        | ID PLUS PLUS 
+        | ID MINUS MINUS 
+        | THIS jaccess ASSIGNATION jexp 
+        | THIS jaccess PLUS PLUS
+        | THIS jaccess MINUS MINUS
+        | SUPER jaccess ASSIGNATION jexp
+        | SUPER jaccess PLUS PLUS
+        | ID jaccess ASSIGNATION jexp
+        | ID jaccess PLUS PLUS
+        | ID LPAREN RPAREN jaccess ASSIGNATION jexp
+        | ID LPAREN RPAREN jaccess PLUS PLUS 
+        | ID LPAREN RPAREN jaccess MINUS MINUS
+        | ID LPAREN jexp_list RPAREN jaccess ASSIGNATION jexp
+        | ID LPAREN jexp_list RPAREN jaccess PLUS PLUS
+        | ID LPAREN jexp_list RPAREN jaccess MINUS MINUS
         | ID jarray_access jaccess ASSIGNATION jexp SEMICOLON
+        | ID jarray_access jaccess PLUS PLUS
+        | ID jarray_access jaccess MINUS MINUS
         ;
 
 /****************************** OTHERS **************************/
-jdeclaration ::= jtype ID ASSIGNATION jexp SEMICOLON
-        | jtype ID SEMICOLON
+jdeclaration ::= jtype ID ASSIGNATION jexp
+        | jtype ID 
         ;
 
-jmethod_use ::= THIS jaccess SEMICOLON
-        | THIS LPAREN RPAREN SEMICOLON
-        | THIS LPAREN jexp_list RPAREN SEMICOLON
-        | SUPER jaccess SEMICOLON
-        | SUPER LPAREN RPAREN SEMICOLON
-        | SUPER LPAREN jexp_list RPAREN SEMICOLON
-        | ID jaccess SEMICOLON
-        | ID LPAREN RPAREN SEMICOLON
-        | ID LPAREN jexp_list RPAREN SEMICOLON
-        | ID LPAREN RPAREN jaccess SEMICOLON
-        | ID LPAREN jexp_list RPAREN jaccess SEMICOLON
-        | ID jarray_access jaccess SEMICOLON
+jmethod_use ::= THIS jaccess
+        | SUPER jaccess 
+        | ID jaccess 
+        | ID LPAREN RPAREN 
+        | ID LPAREN jexp_list RPAREN 
+        | ID LPAREN RPAREN jaccess 
+        | ID LPAREN jexp_list RPAREN jaccess 
+        | ID jarray_access jaccess 
+        ;
+
+jconstruct_use ::= THIS LPAREN RPAREN
+        | THIS LPAREN jexp_list RPAREN
+        | SUPER LPAREN RPAREN 
+        | SUPER LPAREN jexp_list RPAREN 
         ;
 
 jaccess ::= DOT jcomplex_access jaccess
@@ -1678,10 +1814,10 @@ jcomplex_access ::= ID
 
 
 /*------------------------------EXPRESSIONS --------------------------------------*/
-jexp ::= jexp AND jexp
-        | jexp OR jexp
-        | NOT jexp
-        | jbool_exp
+jexp ::= jexp:e AND jexp:e
+        | jexp:e OR jexp:e
+        | NOT jexp:e
+        | jbool_exp:e
         ;
 
 jbool_exp ::= jarit_exp:e1 EQUALS:o jarit_exp:e2j

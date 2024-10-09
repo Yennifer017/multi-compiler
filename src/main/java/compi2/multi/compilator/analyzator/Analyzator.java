@@ -10,6 +10,7 @@ import compi2.multi.compilator.semantic.pmodule.ProcedureDec;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.jclases.JClass;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,7 +120,7 @@ public class Analyzator {
         );
     }
     
-    public void javaSemanticAnalysis(){
+    public void javaSemanticAnalysis(List<JClass> classes){
         javaSymbolTable = new SymbolTable();
     }
     

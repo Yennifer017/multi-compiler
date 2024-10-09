@@ -18,7 +18,7 @@ public class JWhileAst extends JControlStmt{
 
     private Expression condition;
 
-    public JWhileAst(Expression condition, List<Statement> internalStmts, Position initPos) {
+    public JWhileAst(Position initPos, Expression condition, List<Statement> internalStmts) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = internalStmts;

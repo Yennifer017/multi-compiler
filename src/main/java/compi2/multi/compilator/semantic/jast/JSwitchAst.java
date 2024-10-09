@@ -3,19 +3,28 @@ package compi2.multi.compilator.semantic.jast;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author blue-dragon
  */
+@Getter @Setter
 public class JSwitchAst extends JControlStmt{
-
-    public JSwitchAst(Position initPos) {
+    
+    List<JCase> cases;
+    Expression expression;
+    
+    public JSwitchAst(Position initPos, Expression expression, List<JCase> cases) {
         super(initPos);
+        this.expression = expression;
+        this.cases = cases;
     }
 
     @Override

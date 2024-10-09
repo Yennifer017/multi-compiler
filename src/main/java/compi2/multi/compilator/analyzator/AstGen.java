@@ -8,6 +8,8 @@ import compi2.multi.compilator.semantic.past.IfAst;
 import compi2.multi.compilator.semantic.past.SimpleCase;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.jast.JIfAst;
+import compi2.multi.compilator.semantic.util.JPassIf;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +73,18 @@ public class AstGen {
         } catch (NullPointerException e) {
         }
         return list;
+    }
+    
+    public JPassIf generateJPassIf(JPassIf pass, JIfAst ifAst){
+        try {
+            if (pass.getIfs() == null) {
+                pass.setIfs(new LinkedList<>());
+            }
+            pass.getIfs().add(0, ifAst);
+        } catch (NullPointerException e) {
+            
+        }
+        return pass;
     }
     
 }
