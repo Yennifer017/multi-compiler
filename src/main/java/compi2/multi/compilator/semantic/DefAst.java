@@ -4,7 +4,6 @@ package compi2.multi.compilator.semantic;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
-import compi2.multi.compilator.analysis.typet.Type;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.analyzator.RefAnalyzator;

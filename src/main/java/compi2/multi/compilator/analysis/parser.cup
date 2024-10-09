@@ -3,6 +3,7 @@ package compi2.multi.compilator.analysis;
 
 import java_cup.runtime.*;
 import java.util.*;
+import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.typet.*;
 import compi2.multi.compilator.analyzator.*;
 import compi2.multi.compilator.semantic.*;
@@ -13,8 +14,10 @@ import compi2.multi.compilator.semantic.past.*;
 import compi2.multi.compilator.semantic.pmodule.*;
 import compi2.multi.compilator.semantic.jexp.*;
 import compi2.multi.compilator.semantic.jclases.*;
+import compi2.multi.compilator.semantic.jclases.components.*;
 import compi2.multi.compilator.semantic.jast.*;
 import compi2.multi.compilator.util.Position;
+import compi2.multi.compilator.util.Index;
 /*-----------------------------------------------------------
   CUP Specification for the Parser Class
   -----------------------------------------------------------*/
@@ -145,6 +148,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             INT_TKN,
             JAVA,
             MAIN,
+            NEW,
             NOT,
             NULL_LIT,
             OF,
@@ -195,7 +199,7 @@ terminal float      FLOAT_LIT;
 
 
 /*----------------------------- Non-terminals ---------------------------------------*/
-non terminal        s, java_block, main_program
+non terminal        s, main_program
                     ;
 
 /******************************* FOR PASCAL ****************************/
@@ -251,21 +255,8 @@ non terminal List<SimpleCase> case_block
 
 /******************************* FOR JAVA ****************************/
 non terminal
-jmodificator,
-jtype,
-jbracks_list,
-jbrack,
-jcontent,
-jclass,
-jherence,
-jinternal_block,
-jinternal,
-joptions_dec,
-jmethod_dec,
-jargs,
 jlist_args,
 jarg,
-jstmts_block,
 jstmt,
 jcontrol_stmts,
 jsimple_stmts,
@@ -282,12 +273,43 @@ jdeclaration,
 jmethod_use,
 jaccess,
 jcomplex_access,
-jexp,
 jbool_exp,
 jarit_exp,
 jexp_list,
-jarray_access
+jarray_access,
+jliterals,
+jdefinite_funcs
 ;
+
+non terminal jbrack
+    ;
+non terminal List<JClass> java_block, jcontent
+    ;
+non terminal JClass jclass
+    ;
+non terminal AccessMod jmodificator
+    ;
+non terminal Label jherence
+    ;
+non terminal List<JDef> jinternal_block
+    ;
+non terminal JDef jinternal
+    ;
+non terminal Typable joptions_dec
+    ;
+non terminal List<JArg> jargs
+    ;
+non terminal List<Statement> jstmts_block
+    ;
+non terminal JMethod jmethod_dec
+    ;
+non terminal Expression jexp
+    ;
+non terminal JType jtype
+    ;
+non terminal Index jbracks_list
+    ;
+
 
 /********************** FOR MAIN PROGRAM (C) ****************************/
 non terminal 
@@ -1261,32 +1283,158 @@ type_arg ::= VAR id_list:l COLON var_type:t
 /* --------------------------------------------------------------------------------------------------
                                             JAVA
 -----------------------------------------------------------------------------------------------------*/
-java_block ::= JAVA_SECTION jcontent
+java_block ::= JAVA_SECTION jcontent:lc
+            {:
+                RESULT = lc;
+            :}
         ;
 
 /*-------------------------UTIL----------------------------*/
 jmodificator ::= PUBLIC
+            {: 
+                RESULT = AccessMod.PUBLIC; 
+            :}
         | PRIVATE
+            {: 
+                RESULT = AccessMod.PRIVATE; 
+            :}
         | PROTECTED
-        | /* empty */
+            {: 
+                RESULT = AccessMod.PROTECTED; 
+            :}
         ;
 
-jtype ::= INT_TKN jbracks_list
-        | STRING_TKN jbracks_list
-        | FLOAT_TKN jbracks_list
-        | BOOLEAN_TKN jbracks_list
-        | CHAR_TKN jbracks_list
-        | ID jbracks_list
-        | INT_TKN
-        | STRING_TKN
-        | FLOAT_TKN
-        | BOOLEAN_TKN
-        | CHAR_TKN
-        | ID
+jtype ::= INT_TKN:t jbracks_list:i
+            {:
+                RESULT = new JArrayType(
+                    new Label(
+                        PrimitiveType.IntegerPT.getName(), 
+                        new Position(tleft, tright)
+                    ),
+                    JReferType.PrimitiveData,
+                    i.getNumber()
+                );
+            :}
+        | STRING_TKN:t jbracks_list:i
+            {:
+                RESULT = new JArrayType(
+                    new Label(
+                        PrimitiveType.StringPT.getName(), 
+                        new Position(tleft, tright)
+                    ),
+                    JReferType.PrimitiveData,
+                    i.getNumber()
+                );
+            :}
+        | FLOAT_TKN:t jbracks_list:i
+            {:
+                RESULT = new JArrayType(
+                    new Label(
+                        PrimitiveType.RealPT.getName(), 
+                        new Position(tleft, tright)
+                    ),
+                    JReferType.PrimitiveData,
+                    i.getNumber()
+                );
+            :}
+        | BOOLEAN_TKN:t jbracks_list:i
+            {:
+                RESULT = new JArrayType(
+                    new Label(
+                        PrimitiveType.BooleanPT.getName(), 
+                        new Position(tleft, tright)
+                    ),
+                    JReferType.PrimitiveData,
+                    i.getNumber()
+                );
+            :}
+        | CHAR_TKN:t jbracks_list:i
+            {:
+                RESULT = new JArrayType(
+                    new Label(
+                        PrimitiveType.CharPT.getName(), 
+                        new Position(tleft, tright)
+                    ),
+                    JReferType.PrimitiveData,
+                    i.getNumber()
+                );
+            :}
+        | ID:id jbracks_list:i
+            {:
+                RESULT = new JArrayType(
+                    new Label( id, new Position(idleft, idright)),
+                    JReferType.ObjectReference,
+                    i.getNumber()
+                );
+            :}
+        | INT_TKN:t
+            {:
+                RESULT = new JType(
+                    JReferType.PrimitiveData,
+                    new Label(
+                        PrimitiveType.IntegerPT.getName(), 
+                        new Position(tleft, tright)
+                    )
+                );
+            :}
+        | STRING_TKN:t
+            {:
+                RESULT = new JType(
+                    JReferType.PrimitiveData,
+                    new Label(
+                        PrimitiveType.StringPT.getName(), 
+                        new Position(tleft, tright)
+                    )
+                );
+            :}
+        | FLOAT_TKN:t
+            {:
+                RESULT = new JType(
+                    JReferType.PrimitiveData,
+                    new Label(
+                        PrimitiveType.RealPT.getName(), 
+                        new Position(tleft, tright)
+                    )
+                );
+            :}
+        | BOOLEAN_TKN:t
+            {:
+                RESULT = new JType(
+                    JReferType.PrimitiveData,
+                    new Label(
+                        PrimitiveType.BooleanPT.getName(), 
+                        new Position(tleft, tright)
+                    )
+                );
+            :}
+        | CHAR_TKN:t
+            {:
+                RESULT = new JType(
+                    JReferType.PrimitiveData,
+                    new Label(
+                        PrimitiveType.CharPT.getName(), 
+                        new Position(tleft, tright)
+                    )
+                );
+            :}
+        | ID:id
+            {:
+                RESULT = new JType(
+                    JReferType.ObjectReference,
+                    new Label(id, new Position(idleft, idright))
+                );
+            :}
         ;
 
-jbracks_list ::= jbracks_list jbrack
+jbracks_list ::= jbracks_list:i jbrack
+            {:
+                i.increment();
+                RESULT = i;
+            :}
         | jbrack
+            {:
+                RESULT = new Index();
+            :}
         ;
 
 jbrack ::= LBRACK RBRACK
@@ -1300,42 +1448,111 @@ jexp_list ::= jexp_list COMMA jexp
         | jexp
         ;
 
+jliterals ::= INTEGER_LIT
+        | STRING_LIT
+        | BOOLEAN_LIT
+        | CHAR_LIT
+        | FLOAT_LIT
+        ;
+
 /*-------------------------CLASES----------------------------*/
-jcontent ::= jcontent jclass
+jcontent ::= jcontent:l jclass:c
+            {:
+                l.add(c);
+                RESULT = l;
+            :}
         | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
-jclass ::= PUBLIC CLASS ID jherence LBRACE jinternal_block RBRACE
+jclass ::= PUBLIC CLASS ID:id jherence:h LBRACE jinternal_block:ld RBRACE
+            {:
+                RESULT = new JClass(
+                    new Label(id, new Position(idleft, idright)),
+                    h, ld
+                );
+            :}
         ;
 
-jherence ::= EXTENDS ID
+jherence ::= EXTENDS ID:id
+            {:
+                RESULT = new Label(
+                    id, 
+                    new Position(idleft, idright)
+                );
+            :}
         | /* empty */
+            {:
+                RESULT = null;
+            :}
         ;
 
 /*-------------------------METHODS AND FIELDS----------------------------*/
-jinternal_block ::= jinternal jinternal_block
+jinternal_block ::= jinternal_block:l jinternal:d
+            {:
+                l.add(d);
+                RESULT = l;
+            :}
         | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
 jinternal ::= 
-            /* declarations */
-        jmodificator jtype ID joptions_dec
-        | jmodificator VOID ID jmethod_dec
-        
-            /* constructor */
-        | jmodificator ID LPAREN jargs RPAREN LBRACE jstmts_block RBRACE
+        /* declarations */
+        jmodificator:a jtype:t ID:id joptions_dec:d
+            {:
+                d.defineType(t);
+                JDef jdef = (JDef) d;
+                jdef.setAccess(a);
+                jdef.setName(new Label(id, new Position(idleft, idright)));
+                RESULT = jdef;
+            :}
+        /* void method */
+        | jmodificator:a VOID ID:id jmethod_dec:m
+            {:
+                m.setAccess(a);
+                m.setName(new Label(id, new Position(idleft, idright)));
+                m.setType(new JType());
+                RESULT = m;
+            :}
+        /* constructor */
+        | jmodificator:m ID:id LPAREN jargs:la RPAREN LBRACE jstmts_block:ls RBRACE
+            {:
+                RESULT = new JConstructor(
+                    new Label(id, new Position(idleft, idright)),
+                    m, la, ls
+                );
+            :}
         ;
 
 joptions_dec ::= 
-            /*simple field*/
+        /*simple field*/
         SEMICOLON
-            /*simple and declaration field*/
-        | ASSIGNATION jexp SEMICOLON
-            /*method*/
-        | jmethod_dec
+            {:
+                RESULT = new JField();
+            :}
+        /*simple and declaration field*/
+        | ASSIGNATION jexp:e SEMICOLON
+            {:
+                JField field = new JField();
+                field.setExpAssign(e);
+                RESULT = field;
+            :}
+        /*method*/
+        | jmethod_dec:m
+            {:
+                RESULT = m;
+            :}
         ;
 
-jmethod_dec ::= LPAREN jargs RPAREN LBRACE jstmts_block RBRACE
+jmethod_dec ::= LPAREN jargs:la RPAREN LBRACE jstmts_block:ls RBRACE
+            {:
+                RESULT = new JMethod(null, null, la, ls);
+            :}
         ;
 
 
@@ -1363,6 +1580,7 @@ jstmt ::= jcontrol_stmts
         | jdeclaration
         | jmethod_use
         | jassign
+        | jdefinite_funcs
         ;
 
 jcontrol_stmts ::= jif_stmt
@@ -1375,6 +1593,10 @@ jcontrol_stmts ::= jif_stmt
 jsimple_stmts ::= BREAK SEMICOLON
         | CONTINUE SEMICOLON
         | RETURN jexp SEMICOLON
+        ; 
+
+jdefinite_funcs ::= PRINT LPAREN jexp_list RPAREN
+        | PRINTLN LPAREN jexp_list RPAREN
         ;
 
 /************************** CONDITIONAL *************************/
@@ -1477,7 +1699,7 @@ jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
         | jarit_exp:e1 DIV:o jarit_exp:e2
         | jarit_exp:e1 MOD:o jarit_exp:e2
         | jarit_exp:e1 POWER:o jarit_exp:e2
-        | literals:e
+        | jliterals:e
         | ID:i jarray_access
         | ID:i jarray_access jaccess
         | ID:i LPAREN jexp_list:l RPAREN
@@ -1488,6 +1710,8 @@ jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
         | ID:i
         | THIS jaccess
         | SUPER jaccess
+        | NEW ID LPAREN RPAREN
+        | NEW ID LPAREN jexp_list RPAREN
         %prec UMINUS
         | LPAREN jexp:e RPAREN
         %prec UMINUS

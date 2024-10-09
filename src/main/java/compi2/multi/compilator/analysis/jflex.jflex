@@ -249,6 +249,7 @@ OctDigit          = [0-7]
         "if"            { return symbol(sym.IF); }
         "int"           { return symbol(sym.INT_TKN); }
         "return"        { return symbol(sym.RETURN); }
+        "new"           { return symbol(sym.NEW); }
         "null"          { return symbol(sym.NULL_LIT); }
         "private"       { return symbol(sym.PRIVATE); }
         "protected"     { return symbol(sym.PROTECTED); }

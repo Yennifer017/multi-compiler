@@ -230,6 +230,7 @@ OctDigit          = [0-7]
         "if"            { return coloreado(TypeTkn.RESERVED_WORD); }
         "int"           { return coloreado(TypeTkn.RESERVED_WORD); }
         "return"        { return coloreado(TypeTkn.RESERVED_WORD); }
+        "new"           { return coloreado(TypeTkn.RESERVED_WORD); }
         "null"          { return coloreado(TypeTkn.RESERVED_WORD); }
         "private"       { return coloreado(TypeTkn.RESERVED_WORD); }
         "protected"     { return coloreado(TypeTkn.RESERVED_WORD); }

@@ -8,6 +8,5 @@ package compi2.multi.compilator.analysis.symbolt;
 public enum AccessMod {
     PUBLIC,
     PRIVATE,
-    PROTECTED,
-    DEFAULT;
+    PROTECTED;
 }

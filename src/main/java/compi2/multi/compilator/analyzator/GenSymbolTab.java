@@ -7,7 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.pmodule.ModuleDec;
 import compi2.multi.compilator.semantic.DefAst;
-import compi2.multi.compilator.semantic.jclases.JClase;
+import compi2.multi.compilator.semantic.jclases.JClass;
 import java.util.List;
 
 /**
@@ -36,9 +36,9 @@ public class GenSymbolTab extends Generator{
     }
     
     public void addJavaClases(SymbolTable symbolTable, TypeTable typeTable,
-            List<JClase> classes, List<String> semanticErrors){
+            List<JClass> classes, List<String> semanticErrors){
         if(classes != null && !classes.isEmpty()){
-            for (JClase clase : classes) {
+            for (JClass clase : classes) {
                 
             }
         }
