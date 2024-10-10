@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.semantic.jast;
+package compi2.multi.compilator.semantic.jast.others;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -13,9 +13,9 @@ import java.util.List;
  *
  * @author blue-dragon
  */
-public class JArrayAsign extends Statement{
+public class JDeclarationAst extends Statement {
 
-    public JArrayAsign(Position initPos) {
+    public JDeclarationAst(Position initPos) {
         super(initPos);
     }
 

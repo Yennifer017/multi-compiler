@@ -1,9 +1,10 @@
 
-package compi2.multi.compilator.semantic.jast;
+package compi2.multi.compilator.semantic.jast.others;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.util.JPassExp;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
@@ -17,21 +18,20 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JSwitchAst extends JControlStmt{
+public class JAssignAst extends Statement{
     
-    List<JCase> cases;
-    JPassExp expression;
+    private JPassExp value;
     
-    public JSwitchAst(Position initPos, JPassExp expression, List<JCase> cases) {
+    public JAssignAst(Position initPos, JPassExp expToAssign, JPassExp value) {
         super(initPos);
-        this.expression = expression;
-        this.cases = cases;
+        
+        this.value = value;
     }
 
     @Override
-    public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, 
-            List<String> semanticErrors, SemanticRestrictions restrictions) {
+    public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
     
 }

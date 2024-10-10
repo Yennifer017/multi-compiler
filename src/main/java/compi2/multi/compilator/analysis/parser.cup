@@ -16,6 +16,8 @@ import compi2.multi.compilator.semantic.jexp.*;
 import compi2.multi.compilator.semantic.jclases.*;
 import compi2.multi.compilator.semantic.jclases.components.*;
 import compi2.multi.compilator.semantic.jast.*;
+import compi2.multi.compilator.semantic.jast.inv.*;
+import compi2.multi.compilator.semantic.jast.others.*;
 import compi2.multi.compilator.util.Position;
 import compi2.multi.compilator.util.Index;
 /*-----------------------------------------------------------
@@ -255,18 +257,10 @@ non terminal List<SimpleCase> case_block
 
 /******************************* FOR JAVA ****************************/
 non terminal
-jsimple_stmts,
-jassign,
 jdeclaration,
 jmethod_use,
 jaccess,
 jcomplex_access,
-jbool_exp,
-jarit_exp,
-jexp_list,
-jarray_access,
-jliterals,
-jdefinite_funcs,
 jconstruct_use
 ;
 
@@ -291,11 +285,10 @@ non terminal List<JArg> jargs, jlist_args
 non terminal List<Statement> jstmts_block
     ;
 non terminal Statement jstmt, jfor_reduced_stmt,
-        jcontrol_stmts
+        jcontrol_stmts,
+        jsimple_stmts
     ;
 non terminal JMethod jmethod_dec
-    ;
-non terminal Expression jexp
     ;
 non terminal JType jtype
     ;
@@ -316,6 +309,17 @@ non terminal List<JCase> jswitch_cases
 non terminal JCase jcase
     ;
 non terminal JPassIf jif_stmt, jelif_stmt
+    ;
+non terminal JAssignAst jassign
+    ;
+non terminal JLiteral jliterals
+    ;
+non terminal JPassExp jarit_exp, jbool_exp, jexp
+    ;
+non terminal List<JPassExp> jexp_list,
+        jarray_access
+    ;
+non terminal JDefiniteFunc jdefinite_funcs
     ;
 
 
@@ -1449,19 +1453,67 @@ jbracks_list ::= jbracks_list:i jbrack
 jbrack ::= LBRACK RBRACK
         ;
 
-jarray_access ::= LBRACK jexp:e RBRACK
-        | jarray_access LBRACK jexp:e RBRACK
+jarray_access ::= LBRACK jexp:pe RBRACK
+            {:
+                List<JPassExp> list = new LinkedList<>();
+                list.add(pe);
+                RESULT = list;
+            :}
+        | jarray_access:l LBRACK jexp:pe RBRACK
+            {:
+                l.add(pe);
+                RESULT = l;
+            :}
         ;
 
-jexp_list ::= jexp_list COMMA jexp 
-        | jexp
+jexp_list ::= jexp_list:l COMMA jexp:pe 
+            {:
+                l.add(pe);
+                RESULT = l;
+            :}
+        | jexp:pe
+            {:
+                List<JPassExp> list = new LinkedList<>();
+                list.add(pe);
+                RESULT = list;
+            :}
         ;
 
-jliterals ::= INTEGER_LIT
-        | STRING_LIT
-        | BOOLEAN_LIT
-        | CHAR_LIT
-        | FLOAT_LIT
+jliterals ::= INTEGER_LIT:o
+            {:
+                RESULT = new JLiteral(
+                    new Position(oleft, oright),
+                    o
+                );
+            :}
+        | STRING_LIT:o
+            {:
+                RESULT = new JLiteral(
+                    new Position(oleft, oright),
+                    o
+                );
+            :}
+        | BOOLEAN_LIT:o
+            {:
+                RESULT = new JLiteral(
+                    new Position(oleft, oright),
+                    o
+                );
+            :}
+        | CHAR_LIT:o
+            {:
+                RESULT = new JLiteral(
+                    new Position(oleft, oright),
+                    o
+                );
+            :}
+        | FLOAT_LIT:o
+            {:
+                RESULT = new JLiteral(
+                    new Position(oleft, oright),
+                    o
+                );
+            :}
         ;
 
 /*-------------------------CLASES----------------------------*/
@@ -1631,7 +1683,7 @@ jstmt ::= jcontrol_stmts:s
 
 jcontrol_stmts ::= jif_stmt:pi
             {:
-                //convertir
+                RESULT = astGen.transformPassJIf(pi);
             :}
         | jwhile_stmt:s
             {: RESULT = s; :}
@@ -1643,13 +1695,38 @@ jcontrol_stmts ::= jif_stmt:pi
             {: RESULT = s; :}
         ;
 
-jsimple_stmts ::= BREAK
-        | CONTINUE
-        | RETURN jexp
+jsimple_stmts ::= BREAK:s
+            {:
+                RESULT = new JSimpleStmt(
+                    new Position(sleft, sright), true
+                );
+            :}
+        | CONTINUE:s
+            {:
+                RESULT = new JSimpleStmt(
+                    new Position(sleft, sright), false
+                );
+            :}
+        | RETURN:s jexp:pe
+            {:
+                RESULT = new JReturnStmt(
+                    new Position(sleft, sright), pe
+                );
+            :}
         ; 
 
-jdefinite_funcs ::= PRINT LPAREN jexp_list RPAREN
-        | PRINTLN LPAREN jexp_list RPAREN
+jdefinite_funcs ::= PRINT:p LPAREN jexp_list:lpe RPAREN
+            {:
+                RESULT = new JDefiniteFunc(
+                    new Position(pleft, pright), lpe, false
+                );
+            :}
+        | PRINTLN:p LPAREN jexp_list:lpe RPAREN
+            {:
+                RESULT = new JDefiniteFunc(
+                    new Position(pleft, pright), lpe, true
+                );
+            :}
         ;
 
 /************************** CONDITIONAL *************************/
@@ -1668,19 +1745,19 @@ jif_stmt ::= IF:i LPAREN jexp:e RPAREN LBRACE jstmts_block:ls RBRACE jelif_stmt:
 
 jelif_stmt ::= ELSE:e LBRACE jstmts_block:ls RBRACE
             {:
-                JElseStmt elseStmt = new JElseAst(
-                    new Position(eleft, eright);
+                JElseAst elseStmt = new JElseAst(
+                    new Position(eleft, eright),
                     ls
                 );
-                RESULT = new PassIf(elseStmt);
+                RESULT = new JPassIf(elseStmt);
             :}
         | ELSE jif_stmt:pi
             {:
-                RESULT = pi
+                RESULT = pi;
             :}
         | /* empty */
             {:
-                RESULT = new PassIf();
+                RESULT = new JPassIf();
             :}
         ;
 
@@ -1689,7 +1766,7 @@ jelif_stmt ::= ELSE:e LBRACE jstmts_block:ls RBRACE
 jwhile_stmt ::= WHILE:w LPAREN jexp:e RPAREN LBRACE jstmts_block:ls RBRACE
             {:
                 RESULT = new JWhileAst(
-                    new Position(wleft, wright);
+                    new Position(wleft, wright),
                     e, ls
                 );
             :}
@@ -1745,21 +1822,27 @@ jswitch_cases ::= jswitch_cases:l jcase:c
             :}
         ;
 
-jcase ::= CASE jexp COLON jstmts_block
+jcase ::= CASE jexp:e COLON jstmts_block:ls
             {:
-
+                RESULT = new JCase(e, ls);
             :}
-        | DEFAULT COLON jstmts_block
+        | DEFAULT COLON jstmts_block:ls
             {:
-
+                RESULT = new JCase(ls);
             :}
         ;
 
 
 
 /****************************** ASSIGNATIONS **************************/
-jassign ::= ID ASSIGNATION jexp 
-        | ID PLUS PLUS 
+jassign ::= ID:id ASSIGNATION jexp:e 
+            {:
+                
+            :}
+        | ID:id PLUS PLUS 
+            {:
+                
+            :}
         | ID MINUS MINUS 
         | THIS jaccess ASSIGNATION jexp 
         | THIS jaccess PLUS PLUS
@@ -1781,7 +1864,13 @@ jassign ::= ID ASSIGNATION jexp
 
 /****************************** OTHERS **************************/
 jdeclaration ::= jtype ID ASSIGNATION jexp
-        | jtype ID 
+            {:
+                
+            :}
+        | jtype ID
+            {:
+
+            :}
         ;
 
 jmethod_use ::= THIS jaccess
@@ -1814,28 +1903,171 @@ jcomplex_access ::= ID
 
 
 /*------------------------------EXPRESSIONS --------------------------------------*/
-jexp ::= jexp:e AND jexp:e
-        | jexp:e OR jexp:e
-        | NOT jexp:e
+jexp ::= jexp:p1 AND:o jexp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.And, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jexp:p1 OR:o jexp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Or, 
+                        p1, p2
+                    )
+                );
+            :}
+        | NOT:o jexp:p
+            {:
+                RESULT = new JPassExp(
+                    new JUnaryOp(
+                        new Position(oleft, oright),
+                        p, DefiniteOperation.Not
+                    )
+                );
+            :}
         | jbool_exp:e
+            {:
+                RESULT = e;
+            :}
         ;
 
-jbool_exp ::= jarit_exp:e1 EQUALS:o jarit_exp:e2j
-        | jarit_exp:e1 DIFFERENT:o jarit_exp:e2j
-        | jarit_exp:e1 GRATER:o jarit_exp:e2j
-        | jarit_exp:e1 LESS:o jarit_exp:e2j
-        | jarit_exp:e1 GRATER_EQUALS:o jarit_exp:e2j
-        | jarit_exp:e1 LESS_EQUALS:o jarit_exp:e2j
-        | jarit_exp:ej
+jbool_exp ::= jarit_exp:p1 EQUALS:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.EqualsTo, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 DIFFERENT:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.DifferentTo, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 GRATER:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.GraterThan, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 LESS:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.LessThan, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 GRATER_EQUALS:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.GraterEq, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 LESS_EQUALS:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.LessEq, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p
+            {:
+                RESULT = p;
+            :}
         ;
 
-jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
-        | jarit_exp:e1 MINUS:o jarit_exp:e2
-        | jarit_exp:e1 TIMES:o jarit_exp:e2
-        | jarit_exp:e1 DIV:o jarit_exp:e2
-        | jarit_exp:e1 MOD:o jarit_exp:e2
-        | jarit_exp:e1 POWER:o jarit_exp:e2
-        | jliterals:e
+jarit_exp ::= jarit_exp:p1 PLUS:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Addition, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 MINUS:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Substraction, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 TIMES:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Multiplication, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 DIV:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Division, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 MOD:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Module, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jarit_exp:p1 POWER:o jarit_exp:p2
+            {:
+                RESULT = new JPassExp(
+                    new JOperation(
+                        new Position(oleft, oright), 
+                        DefiniteOperation.Power, 
+                        p1, p2
+                    )
+                );
+            :}
+        | jliterals:l
+            {:
+                RESULT = new JPassExp(astGen.genListInv(l));
+            :}
         | ID:i jarray_access
         | ID:i jarray_access jaccess
         | ID:i LPAREN jexp_list:l RPAREN
@@ -1844,16 +2076,40 @@ jarit_exp ::= jarit_exp:e1 PLUS:o jarit_exp:e2
         | ID:i LPAREN RPAREN jaccess
         | ID:i jaccess
         | ID:i
+            {:
+                RESULT = new JPassExp(astGen.genListInv(
+                    new JVarUse(new Position(ileft, iright), i)
+                ));
+            :}
         | THIS jaccess
         | SUPER jaccess
         | NEW ID LPAREN RPAREN
         | NEW ID LPAREN jexp_list RPAREN
         %prec UMINUS
-        | LPAREN jexp:e RPAREN
+        | LPAREN jexp:p RPAREN
+            {:
+                RESULT = p;
+            :}
         %prec UMINUS
-        | PLUS:o jarit_exp:e
+        | PLUS:o jarit_exp:pe
+            {:
+                RESULT = new JPassExp(
+                    new JUnaryOp(
+                        new Position(oleft, oright), 
+                        pe, DefiniteOperation.Addition
+                    )
+                );
+            :}
         %prec UMINUS
-        | MINUS:o jarit_exp:e
+        | MINUS:o jarit_exp:pe
+            {:
+                RESULT = new JPassExp(
+                    new JUnaryOp(
+                        new Position(oleft, oright),
+                        pe, DefiniteOperation.Substraction
+                    )
+                );
+            :}
         ;
 
 /* --------------------------------------------------------------------------------------------------
