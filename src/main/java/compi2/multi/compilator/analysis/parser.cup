@@ -256,13 +256,6 @@ non terminal List<SimpleCase> case_block
                     ;
 
 /******************************* FOR JAVA ****************************/
-non terminal
-jdeclaration,
-jmethod_use,
-jaccess,
-jcomplex_access,
-jconstruct_use
-;
 
 non terminal jbrack
     ;
@@ -321,7 +314,16 @@ non terminal List<JPassExp> jexp_list,
     ;
 non terminal JDefiniteFunc jdefinite_funcs
     ;
-
+non terminal List<JInvocation> jaccess
+    ;
+non terminal JInvocation jcomplex_access
+    ;
+non terminal JDeclaration jdeclaration
+    ;
+non terminal JMethodUseStmt jmethod_use
+    ;
+non terminal JConstructUse jconstruct_use
+    ;
 
 /********************** FOR MAIN PROGRAM (C) ****************************/
 non terminal 
@@ -1837,11 +1839,28 @@ jcase ::= CASE jexp:e COLON jstmts_block:ls
 /****************************** ASSIGNATIONS **************************/
 jassign ::= ID:id ASSIGNATION jexp:e 
             {:
-                
+                Position initPos = new Position(idleft,idright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(new JVarUse(initPos, id, JContextRef.Local)),
+                    e
+                );
             :}
         | ID:id PLUS PLUS 
             {:
-                
+                Position initPos =  new Position(idleft, idright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(new JVarUse(initPos, id, JContextRef.Local)),
+                    new JPassExp( 
+                        new JOperation(
+                            initPos, 
+                            DefiniteOperation.Addition,
+                            new JPassExp(),
+                            new JPassExp()
+                        )
+                    )
+                )
             :}
         | ID MINUS MINUS 
         | THIS jaccess ASSIGNATION jexp 
@@ -1863,42 +1882,141 @@ jassign ::= ID:id ASSIGNATION jexp:e
         ;
 
 /****************************** OTHERS **************************/
-jdeclaration ::= jtype ID ASSIGNATION jexp
+jdeclaration ::= jtype:t ID:i ASSIGNATION jexp:pe
+            {:
+                RESULT = new JDeclaration(
+                    new Position(ileft, iright),
+                    i, t, pe
+                );
+            :}
+        | jtype:t ID:i
+            {:
+                RESULT = new JDeclaration(
+                    new Position(ileft, iright),
+                    i, t
+                );
+            :}
+        ;
+
+jmethod_use ::= THIS jaccess:li
             {:
                 
             :}
-        | jtype ID
+        | SUPER jaccess:li
+            {:
+                
+            :}
+        | ID jaccess:li
+            {:
+
+            :}
+        | ID LPAREN RPAREN
+            {:
+
+            :}
+        | ID LPAREN jexp_list RPAREN 
+            {:
+            
+            :}
+        | ID LPAREN RPAREN jaccess 
+            {:
+
+            :}
+        | ID LPAREN jexp_list RPAREN jaccess 
+            {:
+
+            :}
+        | ID jarray_access jaccess 
             {:
 
             :}
         ;
 
-jmethod_use ::= THIS jaccess
-        | SUPER jaccess 
-        | ID jaccess 
-        | ID LPAREN RPAREN 
-        | ID LPAREN jexp_list RPAREN 
-        | ID LPAREN RPAREN jaccess 
-        | ID LPAREN jexp_list RPAREN jaccess 
-        | ID jarray_access jaccess 
+jconstruct_use ::= THIS:t LPAREN RPAREN
+            {:
+                RESULT = new JConstructUse(
+                    new Position(tleft, tright),
+                    false
+                );
+            :}
+        | THIS:t LPAREN jexp_list:lpe RPAREN
+            {:
+                RESULT = new JConstructUse(
+                    new Position(tleft, tright),
+                    lpe, false
+                );
+            :}
+        | SUPER:s LPAREN RPAREN 
+            {:
+                RESULT = new JConstructUse(
+                    new Position(sleft, sright),
+                    true
+                );
+            :}
+        | SUPER:s LPAREN jexp_list:lpe RPAREN 
+            {:
+                RESULT = new JConstructUse(
+                    new Position(sleft, sright),
+                    lpe, true
+                );
+            :}
         ;
 
-jconstruct_use ::= THIS LPAREN RPAREN
-        | THIS LPAREN jexp_list RPAREN
-        | SUPER LPAREN RPAREN 
-        | SUPER LPAREN jexp_list RPAREN 
+jaccess ::= DOT jcomplex_access:i jaccess:l
+            {:
+                l.add(0, i);
+                RESULT = l;
+            :}
+        | DOT jcomplex_access:i
+            {:
+                List<JInvocation> list = new LinkedList<>();
+                list.add(i);
+                RESULT = list;
+            :}
         ;
 
-jaccess ::= DOT jcomplex_access jaccess
-        | DOT jcomplex_access
-        ;
-
-jcomplex_access ::= ID
-        | ID LPAREN RPAREN 
-        | ID LPAREN RPAREN jarray_access
-        | ID LPAREN jexp_list RPAREN
-        | ID LPAREN jexp_list RPAREN jarray_access
-        | ID jarray_access
+jcomplex_access ::= ID:i
+            {:
+                RESULT = new JVarUse(
+                    new Position(ileft, iright),
+                    i, JContextRef.Local
+                );
+            :}
+        | ID:i LPAREN RPAREN 
+            {:
+                RESULT = new JMethodUse(
+                    new Position(ileft, iright),
+                    i, JContextRef.Local
+                );
+            :}
+        | ID:i LPAREN RPAREN jarray_access:ac
+            {:
+                RESULT = new JArrayFMUse(
+                    new Position(ileft, iright), 
+                    i, JContextRef.Local, ac
+                );
+            :}
+        | ID:i LPAREN jexp_list:el RPAREN
+            {:
+                RESULT = new JMethodUse(
+                    new Position(ileft, iright),
+                    i, JContextRef.Local, el
+                );
+            :}
+        | ID:i LPAREN jexp_list:el RPAREN jarray_access:ac
+            {:
+                RESULT = new JArrayFMUse(
+                    new Position(ileft, iright),
+                    i, JContextRef.Local, el, ac
+                );
+            :}
+        | ID:i jarray_access:ac
+            {:
+                RESULT = new JArrayUse(
+                    new Position(ileft, iright),
+                    i, JContextRef.Local, ac
+                );
+            :}
         ;
 
 
@@ -2077,12 +2195,16 @@ jarit_exp ::= jarit_exp:p1 PLUS:o jarit_exp:p2
         | ID:i jaccess
         | ID:i
             {:
-                RESULT = new JPassExp(astGen.genListInv(
-                    new JVarUse(new Position(ileft, iright), i)
-                ));
+                List<JInvocation> invlist = astGen.genListInv(
+                    new JVarUse(
+                        new Position(ileft, iright), 
+                        i, JContextRef.Local
+                    )
+                );
+                JPassExp passExp = new JPassExp(invlist);
             :}
-        | THIS jaccess
-        | SUPER jaccess
+        | THIS jaccess:l
+        | SUPER jaccess:l
         | NEW ID LPAREN RPAREN
         | NEW ID LPAREN jexp_list RPAREN
         %prec UMINUS

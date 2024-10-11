@@ -6,7 +6,7 @@ import compi2.multi.compilator.semantic.jclases.components.Typable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.util.JPassExp;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @Getter @Setter
 public class JField extends JDef implements Typable{
     
-    private Expression expAssign;
+    private JPassExp expAssign;
     private JType type;
     
     public JField(){

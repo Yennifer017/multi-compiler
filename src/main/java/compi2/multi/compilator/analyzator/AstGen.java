@@ -1,6 +1,5 @@
 package compi2.multi.compilator.analyzator;
 
-import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.pmodule.Argument;
 import compi2.multi.compilator.semantic.util.PassIf;
 import compi2.multi.compilator.semantic.past.IfAst;
@@ -9,11 +8,8 @@ import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.jast.JIfAst;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
-import compi2.multi.compilator.semantic.jexp.JOperation;
-import compi2.multi.compilator.semantic.util.JPassExp;
 import compi2.multi.compilator.semantic.util.JPassIf;
 import compi2.multi.compilator.semantic.util.Label;
-import compi2.multi.compilator.util.Position;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -114,5 +110,5 @@ public class AstGen {
     }
     
     
-
+    
 }

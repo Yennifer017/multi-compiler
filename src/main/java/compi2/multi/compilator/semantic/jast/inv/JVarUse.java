@@ -13,10 +13,12 @@ import lombok.Setter;
 @Getter @Setter
 public class JVarUse extends JInvocation{
     private String name;
+    private JContextRef context;
     
-    public JVarUse(Position position, String name) {
+    public JVarUse(Position position, String name, JContextRef context) {
         super(position);
         this.name = name;
+        this.context = context;
     }
     
 }
