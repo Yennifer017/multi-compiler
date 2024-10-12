@@ -3,7 +3,6 @@ package compi2.multi.compilator.semantic.jexp;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
@@ -16,18 +15,13 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JUnaryOp extends Expression{
+public class JInputExp extends Expression{
+    private JTypeInput type;
     
-    private Expression passExp;
-    
-    private DefiniteOperation operation;
-
-    public JUnaryOp(Position pos, Expression passExp, DefiniteOperation operation) {
+    public JInputExp(Position pos, JTypeInput type){
         super.pos = pos;
-        this.passExp = passExp;
-        this.operation = operation;
+        this.type = type;
     }
-    
 
     @Override
     public Label validateSimpleData(SymbolTable symbolTable, List<String> semanticErrors) {

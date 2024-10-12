@@ -218,6 +218,7 @@ OctDigit          = [0-7]
         "break"         { return coloreado(TypeTkn.RESERVED_WORD); }
         "boolean"       { return coloreado(TypeTkn.RESERVED_WORD); }
         "char"          { return coloreado(TypeTkn.RESERVED_WORD); }
+        "charinput"     { return coloreado(TypeTkn.RESERVED_WORD); }
         "case"          { return coloreado(TypeTkn.RESERVED_WORD); }
         "continue"      { return coloreado(TypeTkn.RESERVED_WORD); }
         "class"         { return coloreado(TypeTkn.RESERVED_WORD); }
@@ -226,9 +227,11 @@ OctDigit          = [0-7]
         "else"          { return coloreado(TypeTkn.RESERVED_WORD); }
         "extends"       { return coloreado(TypeTkn.RESERVED_WORD); }
         "float"         { return coloreado(TypeTkn.RESERVED_WORD); }
+        "floatinput"    { return coloreado(TypeTkn.RESERVED_WORD);}
         "for"           { return coloreado(TypeTkn.RESERVED_WORD); }
         "if"            { return coloreado(TypeTkn.RESERVED_WORD); }
         "int"           { return coloreado(TypeTkn.RESERVED_WORD); }
+        "intinput"      { return coloreado(TypeTkn.RESERVED_WORD); }
         "return"        { return coloreado(TypeTkn.RESERVED_WORD); }
         "new"           { return coloreado(TypeTkn.RESERVED_WORD); }
         "null"          { return coloreado(TypeTkn.RESERVED_WORD); }

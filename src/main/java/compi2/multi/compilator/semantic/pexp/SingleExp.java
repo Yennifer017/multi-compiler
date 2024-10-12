@@ -23,14 +23,15 @@ import lombok.Setter;
 public class SingleExp extends Expression{
     private String accessId;
     private Object object;
+    protected PrimitiveType type;
     
     public SingleExp(PrimitiveType type, Position pos){
-        super.type = type;
+        this.type = type;
         super.pos = pos;
     }
     
     public SingleExp(PrimitiveType type, Object object, Position pos){
-        super.type = type;
+        this.type = type;
         this.object = object;
         super.pos = pos;
     }

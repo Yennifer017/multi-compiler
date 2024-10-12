@@ -2,7 +2,6 @@
 package compi2.multi.compilator.semantic;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
-import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
@@ -21,7 +20,7 @@ import lombok.Setter;
 public abstract class Expression{
     
     protected Position pos;
-    protected PrimitiveType type;
+    //protected PrimitiveType type;
     
     protected ErrorsRep errorsRep;
     protected TConvertidor tConvert;

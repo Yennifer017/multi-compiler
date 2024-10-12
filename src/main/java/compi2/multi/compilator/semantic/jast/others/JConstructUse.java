@@ -1,26 +1,29 @@
 
-package compi2.multi.compilator.semantic.jast;
+package compi2.multi.compilator.semantic.jast.others;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.Statement;
-import compi2.multi.compilator.semantic.util.JPassExp;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.Position;
 import java.util.LinkedList;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author blue-dragon
  */
+@Getter @Setter
 public class JConstructUse extends Statement{
     
     private boolean isFatherConst;
-    private List<JPassExp> args;
+    private List<Expression> args;
 
-    public JConstructUse(Position initPos, List<JPassExp> args, boolean isFatherConst) {
+    public JConstructUse(Position initPos, List<Expression> args, boolean isFatherConst) {
         super(initPos);
         this.args = args;
         this.isFatherConst = isFatherConst;

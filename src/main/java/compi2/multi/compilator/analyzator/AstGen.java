@@ -109,6 +109,15 @@ public class AstGen {
         return list;
     }
     
+    public List<JInvocation> genListInv(List<JInvocation> list, JInvocation first){
+        try {
+            list.add(0, first);
+            return list;
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            return new LinkedList<>();
+        }
+    }
+    
     
     
 }

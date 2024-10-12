@@ -1,7 +1,6 @@
 
 package compi2.multi.compilator.semantic.jast.inv;
 
-import compi2.multi.compilator.semantic.jast.inv.JInvocation;
 import compi2.multi.compilator.util.Position;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +15,8 @@ public class JVarUse extends JInvocation{
     private JContextRef context;
     
     public JVarUse(Position position, String name, JContextRef context) {
-        super(position);
+        super(position, context);
         this.name = name;
-        this.context = context;
     }
     
 }

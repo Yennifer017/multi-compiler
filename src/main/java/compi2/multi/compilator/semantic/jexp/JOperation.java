@@ -5,7 +5,6 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.Expression;
-import compi2.multi.compilator.semantic.util.JPassExp;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
@@ -19,13 +18,13 @@ import lombok.Setter;
 @Getter @Setter
 public class JOperation extends Expression{
     
-    private JPassExp right;
-    private JPassExp left;
+    private Expression right;
+    private Expression left;
     
     private DefiniteOperation operation;
     
     public JOperation(Position pos, DefiniteOperation operation, 
-            JPassExp right, JPassExp left){
+            Expression right, Expression left){
         super.pos = pos;
         this.operation = operation;
         this.left = left;

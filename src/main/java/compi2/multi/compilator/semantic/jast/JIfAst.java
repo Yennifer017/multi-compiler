@@ -5,7 +5,6 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.Statement;
-import compi2.multi.compilator.semantic.util.JPassExp;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.Position;
@@ -19,17 +18,17 @@ import lombok.Setter;
  */
 @Getter @Setter
 public class JIfAst extends JControlStmt{
-    private JPassExp condition;
+    private Expression condition;
     private List<JIfAst> elifs;
     private JElseAst elseStmt;
 
-    public JIfAst(Position initPos, JPassExp condition, List<Statement> statements) {
+    public JIfAst(Position initPos, Expression condition, List<Statement> statements) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = statements;
     }
 
-    public JIfAst(Position initPos, JPassExp condition, List<Statement> statements, 
+    public JIfAst(Position initPos, Expression condition, List<Statement> statements, 
             List<JIfAst> elifs, JElseAst elseStmt) {
         super(initPos);
         this.condition = condition;

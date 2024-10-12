@@ -127,6 +127,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             BOOLEAN_TKN,
             BREAK,
             CASE,
+            CHAR_INPUT,
             CHAR_TKN,
             CLASS,
             CLEAR,
@@ -139,6 +140,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             END,
             EQUALS,
             EXTENDS,
+            FLOAT_INPUT,
             FLOAT_TKN,
             FOR,
             FUNCTION,
@@ -147,6 +149,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             IF,
             IN,
             INCLUDE,
+            INT_INPUT,
             INT_TKN,
             JAVA,
             MAIN,
@@ -307,10 +310,9 @@ non terminal JAssignAst jassign
     ;
 non terminal JLiteral jliterals
     ;
-non terminal JPassExp jarit_exp, jbool_exp, jexp
+non terminal Expression jarit_exp, jbool_exp, jexp, jinput_func
     ;
-non terminal List<JPassExp> jexp_list,
-        jarray_access
+non terminal List<Expression> jexp_list, jarray_access
     ;
 non terminal JDefiniteFunc jdefinite_funcs
     ;
@@ -387,7 +389,7 @@ precedence left ELSE;
 start with s;
 s ::=   pascal_block:pb
         java_block:jb
-        main_program
+        main_program:cb
             {:
                 analyzator.pascalSemanticAnalysis(pb);
                 analyzator.javaSemanticAnalysis(jb);
@@ -1455,28 +1457,28 @@ jbracks_list ::= jbracks_list:i jbrack
 jbrack ::= LBRACK RBRACK
         ;
 
-jarray_access ::= LBRACK jexp:pe RBRACK
+jarray_access ::= LBRACK jexp:e RBRACK
             {:
-                List<JPassExp> list = new LinkedList<>();
-                list.add(pe);
+                List<Expression> list = new LinkedList<>();
+                list.add(e);
                 RESULT = list;
             :}
-        | jarray_access:l LBRACK jexp:pe RBRACK
+        | jarray_access:l LBRACK jexp:e RBRACK
             {:
-                l.add(pe);
+                l.add(e);
                 RESULT = l;
             :}
         ;
 
-jexp_list ::= jexp_list:l COMMA jexp:pe 
+jexp_list ::= jexp_list:l COMMA jexp:e
             {:
-                l.add(pe);
+                l.add(e);
                 RESULT = l;
             :}
-        | jexp:pe
+        | jexp:e
             {:
-                List<JPassExp> list = new LinkedList<>();
-                list.add(pe);
+                List<Expression> list = new LinkedList<>();
+                list.add(e);
                 RESULT = list;
             :}
         ;
@@ -1842,43 +1844,126 @@ jassign ::= ID:id ASSIGNATION jexp:e
                 Position initPos = new Position(idleft,idright);
                 RESULT = new JAssignAst(
                     initPos,
-                    astGen.genListInv(new JVarUse(initPos, id, JContextRef.Local)),
+                    astGen.genListInv(
+                        new JVarUse(initPos, id, JContextRef.Local)
+                    ),
                     e
                 );
             :}
-        | ID:id PLUS PLUS 
+        | THIS:t jaccess:li ASSIGNATION jexp:e 
             {:
-                Position initPos =  new Position(idleft, idright);
+                Position initPos = new Position(tleft, tright);
+                RESULT = new JAssignAst(
+                    new Position(tleft, tright),
+                    li, e, JContextRef.FromObject
+                );
+            :}
+        | SUPER:s jaccess:li ASSIGNATION jexp:e
+            {:
+                RESULT = new JAssignAst(
+                    new Position(sleft, sright),
+                    li, e, JContextRef.FromFather
+                );
+            :}
+        | ID:i jaccess:li ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
                 RESULT = new JAssignAst(
                     initPos,
-                    astGen.genListInv(new JVarUse(initPos, id, JContextRef.Local)),
-                    new JPassExp( 
-                        new JOperation(
-                            initPos, 
-                            DefiniteOperation.Addition,
-                            new JPassExp(),
-                            new JPassExp()
-                        )
-                    )
-                )
+                    astGen.genListInv(
+                        li, new JVarUse(initPos, i, JContextRef.Local)
+                    ),
+                    e
+                );
             :}
-        | ID MINUS MINUS 
-        | THIS jaccess ASSIGNATION jexp 
-        | THIS jaccess PLUS PLUS
-        | THIS jaccess MINUS MINUS
-        | SUPER jaccess ASSIGNATION jexp
-        | SUPER jaccess PLUS PLUS
-        | ID jaccess ASSIGNATION jexp
-        | ID jaccess PLUS PLUS
-        | ID LPAREN RPAREN jaccess ASSIGNATION jexp
-        | ID LPAREN RPAREN jaccess PLUS PLUS 
-        | ID LPAREN RPAREN jaccess MINUS MINUS
-        | ID LPAREN jexp_list RPAREN jaccess ASSIGNATION jexp
-        | ID LPAREN jexp_list RPAREN jaccess PLUS PLUS
-        | ID LPAREN jexp_list RPAREN jaccess MINUS MINUS
-        | ID jarray_access jaccess ASSIGNATION jexp SEMICOLON
-        | ID jarray_access jaccess PLUS PLUS
-        | ID jarray_access jaccess MINUS MINUS
+        | ID:i LPAREN RPAREN jaccess:li ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        li, new JMethodUse(initPos, i, JContextRef.Local)
+                    ),
+                    e
+                );
+            :}
+        | ID:i LPAREN jexp_list:args RPAREN jaccess:li ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        li, new JMethodUse(initPos, i, JContextRef.Local, args)
+                    ),
+                    e
+                );
+            :}
+        | ID:i LPAREN RPAREN jarray_access:ac ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        new JArrayFMUse(initPos, i, JContextRef.Local, ac)
+                    ),
+                    e
+                );
+            :}
+        | ID:i LPAREN RPAREN jarray_access:ac jaccess:li ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        li, new JArrayFMUse(initPos, i, JContextRef.Local, ac)
+                    ),
+                    e
+                );
+            :}
+        | ID:i LPAREN jexp_list:args RPAREN jarray_access:ac ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        new JArrayFMUse(initPos, i, JContextRef.Local, args, ac)
+                    ),
+                    e
+                );
+            :}
+        | ID:i LPAREN jexp_list:args RPAREN jarray_access:ac jaccess:li ASSIGNATION jexp:e
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        li, new JArrayFMUse(initPos, i, JContextRef.Local, args, ac)
+                    ),
+                    e
+                );
+            :}
+        | ID:i jarray_access:ac jaccess:li ASSIGNATION jexp:e SEMICOLON
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        li, new JArrayUse(initPos, i, JContextRef.Local, ac)
+                    ),
+                    e
+                );
+            :}
+        | ID:i jarray_access:ac ASSIGNATION jexp:e SEMICOLON
+            {:
+                Position initPos = new Position(ileft, iright);
+                RESULT = new JAssignAst(
+                    initPos,
+                    astGen.genListInv(
+                        new JArrayUse(initPos, i, JContextRef.Local, ac)
+                    ),
+                    e
+                );
+            :}
         ;
 
 /****************************** OTHERS **************************/
@@ -1898,37 +1983,99 @@ jdeclaration ::= jtype:t ID:i ASSIGNATION jexp:pe
             :}
         ;
 
-jmethod_use ::= THIS jaccess:li
+jmethod_use ::= THIS:t jaccess:li
             {:
-                
+                RESULT = new JMethodUseStmt(
+                    new Position(tleft, tright),
+                    li, JContextRef.FromObject
+                );
             :}
-        | SUPER jaccess:li
+        | SUPER:s jaccess:li
             {:
-                
+                RESULT = new JMethodUseStmt(
+                    new Position(sleft, sright),
+                    li, JContextRef.FromFather
+                );
             :}
-        | ID jaccess:li
+        | ID:id jaccess:li
             {:
-
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition,
+                    astGen.genListInv(
+                        li, new JVarUse(initPosition, id, JContextRef.Local)
+                    )
+                );
             :}
-        | ID LPAREN RPAREN
+        | ID:id LPAREN RPAREN
             {:
-
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        new JMethodUse(initPosition, id, JContextRef.Local)
+                    )
+                );
             :}
-        | ID LPAREN jexp_list RPAREN 
+        | ID:id LPAREN jexp_list:el RPAREN 
             {:
-            
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        new JMethodUse(initPosition, id, JContextRef.Local, el)
+                    )
+                );
             :}
-        | ID LPAREN RPAREN jaccess 
+        | ID:id LPAREN RPAREN jaccess:li 
             {:
-
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        li, new JMethodUse(initPosition, id, JContextRef.Local)
+                    )
+                );
             :}
-        | ID LPAREN jexp_list RPAREN jaccess 
+        | ID:id LPAREN jexp_list:el RPAREN jaccess:li 
             {:
-
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        li, new JMethodUse(initPosition, id, JContextRef.Local, el)
+                    )
+                );
             :}
-        | ID jarray_access jaccess 
+        | ID:id LPAREN RPAREN jarray_access:ac jaccess:li
             {:
-
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        li, new JArrayFMUse(initPosition, id, JContextRef.Local, ac)
+                    )
+                );
+            :}
+        | ID:id LPAREN jexp_list:args RPAREN jarray_access:ac jaccess:li
+            {:
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        li, new JArrayFMUse(initPosition, id, JContextRef.Local,args, ac)
+                    )
+                );
+            :}
+        | ID:id jarray_access:ac jaccess:li
+            {:
+                Position initPosition = new Position(idleft, idright);
+                RESULT = new JMethodUseStmt(
+                    initPosition, 
+                    astGen.genListInv(
+                        li, new JArrayUse(initPosition, id, JContextRef.Local, ac)
+                    )
+                );
             :}
         ;
 
@@ -2023,31 +2170,25 @@ jcomplex_access ::= ID:i
 /*------------------------------EXPRESSIONS --------------------------------------*/
 jexp ::= jexp:p1 AND:o jexp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.And, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.And, 
+                    p1, p2
                 );
             :}
         | jexp:p1 OR:o jexp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Or, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Or, 
+                    p1, p2
                 );
             :}
         | NOT:o jexp:p
             {:
-                RESULT = new JPassExp(
-                    new JUnaryOp(
-                        new Position(oleft, oright),
-                        p, DefiniteOperation.Not
-                    )
+                RESULT = new JUnaryOp(
+                    new Position(oleft, oright),
+                    p, DefiniteOperation.Not
                 );
             :}
         | jbool_exp:e
@@ -2058,62 +2199,50 @@ jexp ::= jexp:p1 AND:o jexp:p2
 
 jbool_exp ::= jarit_exp:p1 EQUALS:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.EqualsTo, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.EqualsTo, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 DIFFERENT:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.DifferentTo, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.DifferentTo, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 GRATER:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.GraterThan, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.GraterThan, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 LESS:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.LessThan, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.LessThan, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 GRATER_EQUALS:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.GraterEq, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.GraterEq, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 LESS_EQUALS:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.LessEq, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.LessEq, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p
@@ -2124,75 +2253,112 @@ jbool_exp ::= jarit_exp:p1 EQUALS:o jarit_exp:p2
 
 jarit_exp ::= jarit_exp:p1 PLUS:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Addition, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Addition, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 MINUS:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Substraction, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Substraction, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 TIMES:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Multiplication, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Multiplication, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 DIV:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Division, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Division, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 MOD:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Module, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Module, 
+                    p1, p2
                 );
             :}
         | jarit_exp:p1 POWER:o jarit_exp:p2
             {:
-                RESULT = new JPassExp(
-                    new JOperation(
-                        new Position(oleft, oright), 
-                        DefiniteOperation.Power, 
-                        p1, p2
-                    )
+                RESULT = new JOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Power, 
+                    p1, p2
                 );
             :}
         | jliterals:l
             {:
-                RESULT = new JPassExp(astGen.genListInv(l));
+                RESULT = l;
             :}
-        | ID:i jarray_access
-        | ID:i jarray_access jaccess
-        | ID:i LPAREN jexp_list:l RPAREN
+        | ID:i jarray_access:ac
+            {:
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    new JArrayUse(
+                        new Position(ileft, iright),
+                        i, JContextRef.Local, ac
+                    )
+                ));
+                    
+            :}
+        | ID:i jarray_access:ac jaccess:li
+            {:
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    li,
+                    new JArrayUse(
+                        new Position(ileft, iright),
+                        i, JContextRef.Local, ac
+                    )
+                ));
+            :}
+        | ID:i LPAREN jexp_list:args RPAREN
+            {:
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    new JMethodUse(
+                        new Position(ileft, iright),
+                        i, JContextRef.Local, args
+                    )
+                ));
+            :}
         | ID:i LPAREN RPAREN
-        | ID:i LPAREN jexp_list:l RPAREN jaccess
-        | ID:i LPAREN RPAREN jaccess
-        | ID:i jaccess
+            {:
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    new JMethodUse(
+                        new Position(ileft, iright),
+                        i, JContextRef.Local
+                    )
+                ));
+            :}
+        | ID:i LPAREN jexp_list:l RPAREN jaccess:li
+            {:
+                
+            :}
+        | ID:i LPAREN RPAREN jaccess:li
+            {:
+                
+            :}
+        | ID:i jaccess:li
+            {:
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    li,
+                    new JVarUse(
+                        new Position(ileft, iright),
+                        i, JContextRef.Local
+                    )
+                ));
+            :}
         | ID:i
             {:
                 List<JInvocation> invlist = astGen.genListInv(
@@ -2201,35 +2367,78 @@ jarit_exp ::= jarit_exp:p1 PLUS:o jarit_exp:p2
                         i, JContextRef.Local
                     )
                 );
-                JPassExp passExp = new JPassExp(invlist);
+                RESULT = new JInvocationExp(invlist);
             :}
         | THIS jaccess:l
-        | SUPER jaccess:l
-        | NEW ID LPAREN RPAREN
-        | NEW ID LPAREN jexp_list RPAREN
-        %prec UMINUS
-        | LPAREN jexp:p RPAREN
             {:
-                RESULT = p;
+                RESULT = new JInvocationExp(
+                    l, JContextRef.FromObject
+                );
+            :}
+        | SUPER jaccess:l
+            {:
+                RESULT = new JInvocationExp(
+                    l, JContextRef.FromFather
+                );
+            :}
+        | NEW:n ID:i LPAREN RPAREN
+            {:
+                RESULT = new JCreateClassE(
+                    new Position(nleft, nright), i
+                );
+            :}
+        | NEW:n ID:i LPAREN jexp_list:el RPAREN
+            {:
+                RESULT = new JCreateClassE(
+                    new Position(nleft, nright), i, el
+                );
+            :}
+        | jinput_func:e
+            {:
+                RESULT = e;
+            :}
+        %prec UMINUS
+        | LPAREN jexp:e RPAREN
+            {:
+                RESULT = e;
             :}
         %prec UMINUS
         | PLUS:o jarit_exp:pe
             {:
-                RESULT = new JPassExp(
-                    new JUnaryOp(
-                        new Position(oleft, oright), 
-                        pe, DefiniteOperation.Addition
-                    )
+                RESULT = new JUnaryOp(
+                    new Position(oleft, oright), 
+                    pe, DefiniteOperation.Addition
                 );
             :}
         %prec UMINUS
         | MINUS:o jarit_exp:pe
             {:
-                RESULT = new JPassExp(
-                    new JUnaryOp(
-                        new Position(oleft, oright),
-                        pe, DefiniteOperation.Substraction
-                    )
+                RESULT = new JUnaryOp(
+                    new Position(oleft, oright),
+                    pe, DefiniteOperation.Substraction
+                );
+            :}
+        ;
+
+jinput_func ::= CHAR_INPUT:i LPAREN RPAREN
+            {:
+                RESULT = new JInputExp(
+                    new Position(ileft, iright),
+                    JTypeInput.Char
+                );
+            :}
+        | INT_INPUT:i LPAREN RPAREN
+            {:
+                RESULT = new JInputExp(
+                    new Position(ileft, iright),
+                    JTypeInput.Int
+                );
+            :}
+        | FLOAT_INPUT:i LPAREN RPAREN
+            {:
+                RESULT = new JInputExp(
+                    new Position(ileft, iright),
+                    JTypeInput.Float
                 );
             :}
         ;

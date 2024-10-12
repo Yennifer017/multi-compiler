@@ -237,6 +237,7 @@ OctDigit          = [0-7]
         "break"         { return symbol(sym.BREAK); }
         "boolean"       { return symbol(sym.BOOLEAN_TKN); }
         "char"          { return symbol(sym.CHAR_TKN); }
+        "charinput"     { return symbol(sym.CHAR_INPUT); }
         "case"          { return symbol(sym.CASE); }
         "continue"      { return symbol(sym.CONTINUE); }
         "class"         { return symbol(sym.CLASS); }
@@ -245,9 +246,11 @@ OctDigit          = [0-7]
         "else"          { return symbol(sym.ELSE); }
         "extends"       { return symbol(sym.EXTENDS); }
         "float"         { return symbol(sym.FLOAT_TKN); }
+        "floatinput"    { return symbol(sym.FLOAT_INPUT);}
         "for"           { return symbol(sym.FOR); }
         "if"            { return symbol(sym.IF); }
         "int"           { return symbol(sym.INT_TKN); }
+        "intinput"      { return symbol(sym.INT_INPUT); }
         "return"        { return symbol(sym.RETURN); }
         "new"           { return symbol(sym.NEW); }
         "null"          { return symbol(sym.NULL_LIT); }

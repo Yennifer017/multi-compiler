@@ -9,103 +9,106 @@ package compi2.multi.compilator.analysis;
 public class sym {
   /* terminals */
   public static final int TIMES = 4;
-  public static final int BARRA = 92;
-  public static final int SCANF = 72;
-  public static final int PACKED = 59;
-  public static final int TYPE = 81;
-  public static final int CONST = 34;
-  public static final int INTEGER_LIT = 95;
-  public static final int REAL_TKN = 68;
-  public static final int STRING_LIT = 74;
+  public static final int INT_INPUT = 53;
+  public static final int BARRA = 95;
+  public static final int SCANF = 75;
+  public static final int PACKED = 62;
+  public static final int TYPE = 84;
+  public static final int CONST = 35;
+  public static final int INTEGER_LIT = 98;
+  public static final int REAL_TKN = 71;
+  public static final int STRING_LIT = 77;
   public static final int GRATER = 18;
-  public static final int UNTIL = 82;
+  public static final int UNTIL = 85;
   public static final int LESS_EQUALS = 21;
   public static final int RBRACK = 17;
   public static final int COMMA = 10;
   public static final int RBRACE = 15;
   public static final int RPAREN = 13;
-  public static final int CLEAR = 33;
+  public static final int CHAR_INPUT = 31;
+  public static final int CLEAR = 34;
   public static final int LBRACK = 16;
-  public static final int BOOLEAN_LIT = 96;
+  public static final int BOOLEAN_LIT = 99;
   public static final int LBRACE = 14;
   public static final int LPAREN = 12;
-  public static final int PROTECTED = 66;
-  public static final int NOT = 55;
-  public static final int FLOAT_LIT = 97;
+  public static final int PROTECTED = 69;
+  public static final int NOT = 58;
+  public static final int FLOAT_LIT = 100;
   public static final int ARRAY = 26;
-  public static final int DIFFERENT = 88;
-  public static final int VAR = 83;
-  public static final int PASCAL = 60;
-  public static final int THEN = 78;
-  public static final int CHAR_TKN = 31;
-  public static final int RECORD = 69;
-  public static final int PRINTLN = 62;
+  public static final int DIFFERENT = 91;
+  public static final int VAR = 86;
+  public static final int PASCAL = 63;
+  public static final int THEN = 81;
+  public static final int CHAR_TKN = 32;
+  public static final int RECORD = 72;
+  public static final int PRINTLN = 65;
   public static final int PASCAL_SECTION = 23;
-  public static final int MOD = 90;
-  public static final int CLASS = 32;
-  public static final int INCLUDE = 50;
-  public static final int SUPER = 76;
+  public static final int MOD = 93;
+  public static final int CLASS = 33;
+  public static final int INCLUDE = 52;
+  public static final int SUPER = 79;
   public static final int PLUS = 2;
-  public static final int WHILE = 85;
-  public static final int ASSIGNATION = 87;
-  public static final int EXTENDS = 42;
+  public static final int WHILE = 88;
+  public static final int ASSIGNATION = 90;
+  public static final int EXTENDS = 43;
   public static final int MODULE = 6;
-  public static final int GETCH = 46;
-  public static final int SWITCH = 77;
-  public static final int DO = 37;
-  public static final int FOR = 44;
-  public static final int INT_TKN = 51;
-  public static final int VOID = 84;
+  public static final int GETCH = 48;
+  public static final int SWITCH = 80;
+  public static final int DO = 38;
+  public static final int FOR = 46;
+  public static final int INT_TKN = 54;
+  public static final int VOID = 87;
   public static final int DIV = 5;
-  public static final int RETURN = 71;
-  public static final int DOWNTO = 38;
-  public static final int PUBLIC = 67;
+  public static final int RETURN = 74;
+  public static final int DOWNTO = 39;
+  public static final int PUBLIC = 70;
   public static final int MAIN_SECTION = 24;
-  public static final int STRING_TKN = 75;
-  public static final int ELSE = 39;
-  public static final int NULL_LIT = 56;
+  public static final int STRING_TKN = 78;
+  public static final int ELSE = 40;
+  public static final int FLOAT_INPUT = 44;
+  public static final int NULL_LIT = 59;
   public static final int BREAK = 29;
-  public static final int JAVA = 52;
-  public static final int AMPERSAND = 89;
+  public static final int JAVA = 55;
+  public static final int AMPERSAND = 92;
   public static final int DOT = 11;
-  public static final int PROCEDURE = 64;
+  public static final int PROCEDURE = 67;
   public static final int POWER = 7;
   public static final int EOF = 0;
   public static final int SEMICOLON = 8;
-  public static final int THIS = 79;
-  public static final int DEFAULT = 36;
-  public static final int PRINT = 61;
-  public static final int FUNCTION = 45;
+  public static final int THIS = 82;
+  public static final int DEFAULT = 37;
+  public static final int PRINT = 64;
+  public static final int FUNCTION = 47;
   public static final int GRATER_EQUALS = 20;
-  public static final int REPEAT = 70;
+  public static final int REPEAT = 73;
   public static final int JAVA_SECTION = 22;
   public static final int BOOLEAN_TKN = 28;
-  public static final int MAIN = 53;
+  public static final int MAIN = 56;
   public static final int MINUS = 3;
-  public static final int IN = 49;
-  public static final int OR = 58;
-  public static final int SET = 73;
+  public static final int IN = 51;
+  public static final int OR = 61;
+  public static final int SET = 76;
   public static final int error = 1;
-  public static final int FLOAT_TKN = 43;
-  public static final int CONTINUE = 35;
-  public static final int IF = 48;
-  public static final int ID = 93;
-  public static final int OF = 57;
-  public static final int END = 40;
+  public static final int FLOAT_TKN = 45;
+  public static final int CONTINUE = 36;
+  public static final int IF = 50;
+  public static final int ID = 96;
+  public static final int OF = 60;
+  public static final int END = 41;
   public static final int COLON = 9;
   public static final int BEGIN = 27;
   public static final int CASE = 30;
-  public static final int CHAR_LIT = 94;
-  public static final int NEW = 54;
+  public static final int CHAR_LIT = 97;
+  public static final int NEW = 57;
   public static final int LESS = 19;
-  public static final int PROGRAM = 65;
+  public static final int PROGRAM = 68;
   public static final int AND = 25;
-  public static final int PRIVATE = 63;
-  public static final int UMINUS = 91;
-  public static final int TO = 80;
-  public static final int WITH = 86;
-  public static final int EQUALS = 41;
-  public static final int HASH = 47;
+  public static final int PRIVATE = 66;
+  public static final int UMINUS = 94;
+  public static final int TO = 83;
+  public static final int WITH = 89;
+  public static final int EQUALS = 42;
+  public static final int HASH = 49;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -138,6 +141,7 @@ public class sym {
   "BOOLEAN_TKN",
   "BREAK",
   "CASE",
+  "CHAR_INPUT",
   "CHAR_TKN",
   "CLASS",
   "CLEAR",
@@ -150,6 +154,7 @@ public class sym {
   "END",
   "EQUALS",
   "EXTENDS",
+  "FLOAT_INPUT",
   "FLOAT_TKN",
   "FOR",
   "FUNCTION",
@@ -158,6 +163,7 @@ public class sym {
   "IF",
   "IN",
   "INCLUDE",
+  "INT_INPUT",
   "INT_TKN",
   "JAVA",
   "MAIN",

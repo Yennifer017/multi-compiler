@@ -1,12 +1,11 @@
 
-package compi2.multi.compilator.semantic.jast;
+package compi2.multi.compilator.semantic.jast.others;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.jclases.components.JType;
-import compi2.multi.compilator.semantic.util.JPassExp;
-import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.Position;
@@ -23,7 +22,7 @@ public class JDeclaration extends Statement{
     
     private String name;
     private JType type;
-    private JPassExp value;
+    private Expression value;
 
     public JDeclaration(Position initPos, String name, JType type) {
         super(initPos);
@@ -31,7 +30,7 @@ public class JDeclaration extends Statement{
         this.type = type;
     }
     
-    public JDeclaration(Position initPos, String name, JType type, JPassExp value){
+    public JDeclaration(Position initPos, String name, JType type, Expression value){
         super(initPos);
         this.name = name;
         this.type = type;

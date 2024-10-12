@@ -3,10 +3,10 @@ package compi2.multi.compilator.semantic.jexp;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
+import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,18 +16,21 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JUnaryOp extends Expression{
+public class JCreateClassE extends Expression{
+    private List<Expression> params;
+    private String name;
     
-    private Expression passExp;
-    
-    private DefiniteOperation operation;
-
-    public JUnaryOp(Position pos, Expression passExp, DefiniteOperation operation) {
-        super.pos = pos;
-        this.passExp = passExp;
-        this.operation = operation;
+    public JCreateClassE(Position pos, String name, List<Expression> params){
+        this.pos = pos;
+        this.name = name;
+        this.params = params;
     }
     
+    public JCreateClassE(Position pos, String name){
+        this.pos = pos;
+        this.name = name;
+        this.params = new LinkedList<>();
+    }
 
     @Override
     public Label validateSimpleData(SymbolTable symbolTable, List<String> semanticErrors) {
