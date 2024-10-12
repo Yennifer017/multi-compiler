@@ -3,6 +3,7 @@ package compi2.multi.compilator.analyzator;
 
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.semantic.util.Label;
@@ -88,6 +89,18 @@ public class RefAnalyzator {
     
     public boolean canInsert(Label name, SymbolTable symbolTable, List<String> semanticErrors){
         if(symbolTable.containsKey(name.getName())){
+            semanticErrors.add(errorsRep.repeatedDeclarationError(
+                    name.getName(), 
+                    name.getPosition())
+            );
+            return false;
+        } else {
+            return true;
+        }
+    }
+    
+    public boolean canInsert(Label name, JSymbolTable jsymbolTable, List<String> semanticErrors){
+        if(jsymbolTable.containsKey(name.getName())){
             semanticErrors.add(errorsRep.repeatedDeclarationError(
                     name.getName(), 
                     name.getPosition())

@@ -1534,8 +1534,10 @@ jcontent ::= jcontent:l jclass:c
 
 jclass ::= PUBLIC CLASS ID:id jherence:h LBRACE jinternal_block:ld RBRACE
             {:
+                Position initPos = new Position(idleft, idright);
+                h = h != null ? h : new Label(JClass.FATHER_OBJECT_CLASS, initPos);
                 RESULT = new JClass(
-                    new Label(id, new Position(idleft, idright)),
+                    new Label(id, initPos),
                     h, ld
                 );
             :}

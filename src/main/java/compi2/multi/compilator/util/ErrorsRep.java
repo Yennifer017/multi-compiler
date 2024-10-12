@@ -78,6 +78,10 @@ public class ErrorsRep {
         return "La variable " + variable + " no se ha declarado " + report(pos);
     }
     
+    public String undefiniteClassError(String variable, Position pos){
+        return "La clase " + variable + " no existe " + report(pos);
+    }
+    
     public String undefiniteVarRecordError(String variable, Position pos){
         return "El acceso a " + variable + " no se pueden completar" + report(pos);
     }
@@ -104,6 +108,10 @@ public class ErrorsRep {
     
     public String missingReturnError(String functionName, String type, Position pos){
         return "La function " + functionName + " necesita el retorno de tipo " + type + report(pos);
+    }
+    
+    public String ObjectClassError(Position pos, String supername){
+        return "No se puede definir una clase con el nombre " + supername + ", esta reservada";
     }
     
     public String redeclareFunctionError(String name, List<String> args, Position pos){

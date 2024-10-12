@@ -1,31 +1,29 @@
 
 package compi2.multi.compilator.analysis.jerarquia;
 
-import java.util.HashMap;
+import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
+import compi2.multi.compilator.semantic.jclases.JClass;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author blue-dragon
  */
-@Getter
+@Getter @Setter
 public class NodeJerarTree {
-    public static final String PRINCIPAL_NODE = "$OBJECT";
     
     private NodeJerarTree father;
-    private String name;
-    private HashMap<String, NodeJerarTree> children;
+    private ClassST classST;
     
-    public NodeJerarTree(String name){
-        this.name = name;
-        children = new HashMap<>();
-    }
-    
-    public void setFather(NodeJerarTree father){
+    public NodeJerarTree(NodeJerarTree father, ClassST classST){
         this.father = father;
+        this.classST = classST;
     }
     
-    public void addChild(NodeJerarTree child){
-        children.put(child.getName(), father);
+    public NodeJerarTree(){
+        this.father = null;
+        this.classST = new ClassST(JClass.FATHER_OBJECT_CLASS, new SymbolTable(), this);
     }
 }

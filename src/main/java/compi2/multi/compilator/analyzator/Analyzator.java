@@ -3,6 +3,7 @@ package compi2.multi.compilator.analyzator;
 
 import compi2.multi.compilator.analysis.Lexer;
 import compi2.multi.compilator.analysis.Parser;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.pmodule.FunctionDec;
@@ -33,7 +34,7 @@ public class Analyzator {
     private GenSymbolTab genSymbolTab;
     
     private SymbolTable pascalSymbolTable;
-    private SymbolTable javaSymbolTable;
+    private JSymbolTable javaSymbolTable;
     private SymbolTable cSymbolTable;
     private TypeTable typeTable;
     
@@ -121,7 +122,10 @@ public class Analyzator {
     }
     
     public void javaSemanticAnalysis(List<JClass> classes){
-        javaSymbolTable = new SymbolTable();
+        javaSymbolTable = new JSymbolTable();
+        genSymbolTab.addJavaClases(javaSymbolTable, typeTable, classes, semanticErrors);
+        genSymbolTab.addJavaInternalClasses(javaSymbolTable, typeTable, classes, semanticErrors);
+        //semantic valitations
     }
     
     public void cSemanticAnalysis(){

@@ -2,8 +2,10 @@
 package compi2.multi.compilator.analyzator;
 
 
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.pmodule.ModuleDec;
 import compi2.multi.compilator.semantic.DefAst;
@@ -35,15 +37,6 @@ public class GenSymbolTab extends Generator{
         }
     }
     
-    public void addJavaClases(SymbolTable symbolTable, TypeTable typeTable,
-            List<JClass> classes, List<String> semanticErrors){
-        if(classes != null && !classes.isEmpty()){
-            for (JClass clase : classes) {
-                
-            }
-        }
-    }
-    
     public SymbolTable generateInternalTable(SymbolTable symbolTable, TypeTable typeTable,
             List<? extends DefAst> listDef, List<String> semanticErrors){
         SymbolTable internalTable = new SymbolTable();
@@ -57,5 +50,34 @@ public class GenSymbolTab extends Generator{
         return internalTable;
     }
     
+    
+    public void addJavaClases(JSymbolTable symbolTable, TypeTable typeTable,
+            List<JClass> classes, List<String> semanticErrors){
+        if(classes != null && !classes.isEmpty()){
+            for (JClass clase : classes) {
+                try {
+                    RowST rowST = clase.generateRowST(symbolTable, null, typeTable, semanticErrors);
+                    if(rowST != null){
+                        symbolTable.put(rowST.getName(), (ClassST) rowST);
+                    }
+                } catch (NullPointerException e) {
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+    
+    public void addJavaInternalClasses(JSymbolTable symbolTable, TypeTable typeTable,
+            List<JClass> classes, List<String> semanticErrors){
+        if(classes != null && !classes.isEmpty()){
+            for (JClass clase : classes) {
+                try {
+                    
+                } catch (NullPointerException e) {
+                    System.out.println(e);
+                }
+            }
+        }
+    }
     
 }

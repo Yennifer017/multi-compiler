@@ -2,10 +2,11 @@
 package compi2.multi.compilator.semantic.jclases;
 
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.DefObjsAst;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.List;
@@ -24,6 +25,8 @@ public class JClass extends DefObjsAst{
     private Label herence;
     private List<JDef> definitions;
     
+    private ClassST classST;
+    
     public JClass(Label name, Label herence, List<JDef> definitions){
         super();
         super.name = name;
@@ -35,25 +38,46 @@ public class JClass extends DefObjsAst{
     }
 
     @Override
-    public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, 
-            NodeJerarTree jerarTree, List<String> semanticErrors) {
-        //validar la herencia
-        /*boolean existSuperClass = false;
-        if(herence != null){
-            existSuperClass = super.refAnalyzator.existReference(
-                    symbolTable, semanticErrors, herence
+    public RowST generateRowST(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, List<String> semanticErrors) {
+        if( isValidName(semanticErrors)
+                && super.refAnalyzator.canInsert(name, globalST, semanticErrors)){  
+            NodeJerarTree fatherJerarNode = validateAndGetFromHerence(globalST, semanticErrors);
+            //NodeJerarTree currentJerarNode = new NodeJerarTree(fatherJerarNode, null);
+            this.classST = new ClassST(
+                    name.getName(), 
+                    new SymbolTable(), 
+                    new NodeJerarTree(fatherJerarNode, null)
             );
+            classST.getJerar().setClassST(classST);
+            return this.classST;
         }
-        
-        if(super.canInsert(symbolTable, semanticErrors)){
-            SymbolTable auxST =  null;
-            if(existSuperClass) {
-                RowST rowST = symbolTable.get(herence.getName());
-            }
-            
-        }*/
         return null;
     }
-
     
+    private boolean isValidName(List<String> semanticErrors){
+        boolean forbiden = name.getName().equals(FATHER_OBJECT_CLASS);
+        if(forbiden){
+            semanticErrors.add(super.errorsRep.
+                    ObjectClassError(herence.getPosition(), FATHER_OBJECT_CLASS)
+            );
+        }
+        return !forbiden;
+    }
+    
+    private NodeJerarTree validateAndGetFromHerence(JSymbolTable globalST, List<String> semanticErrors){
+        if(herence.getName().equals(FATHER_OBJECT_CLASS)){
+            return globalST.getInitJerarTree();
+        } else if(globalST.containsKey(herence.getName())){
+            return globalST.get(herence.getName()).getJerar();
+        } else {
+            semanticErrors.add(super.errorsRep.undefiniteClassError(
+                    herence.getName(), herence.getPosition()
+            ));
+            return globalST.getInitJerarTree();
+        }
+    }
+    
+    
+
 }

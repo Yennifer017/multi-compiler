@@ -2165,6 +2165,9 @@ class CUP$Parser$actions {
 		int jbleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).left;
 		int jbright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		List<JClass> jb = (List<JClass>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
+		int cbleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int cbright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object cb = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 analyzator.pascalSemanticAnalysis(pb);
                 analyzator.javaSemanticAnalysis(jb);
@@ -5257,8 +5260,10 @@ class CUP$Parser$actions {
 		int ldright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		List<JDef> ld = (List<JDef>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
+                Position initPos = new Position(idleft, idright);
+                h = h != null ? h : new Label(JClass.FATHER_OBJECT_CLASS, initPos);
                 RESULT = new JClass(
-                    new Label(id, new Position(idleft, idright)),
+                    new Label(id, initPos),
                     h, ld
                 );
             

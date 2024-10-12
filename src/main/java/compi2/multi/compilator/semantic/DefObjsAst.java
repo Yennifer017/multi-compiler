@@ -2,6 +2,7 @@
 package compi2.multi.compilator.semantic;
 
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -25,8 +26,8 @@ public abstract class DefObjsAst {
     }
     
     
-    public abstract RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, 
-            NodeJerarTree jerarTree, List<String> semanticErrors);
+    public abstract RowST generateRowST(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, List<String> semanticErrors);
     
     protected boolean canInsert(SymbolTable symbolTable, List<String> semanticErrors){
         return refAnalyzator.canInsert(this.name, symbolTable, semanticErrors);
