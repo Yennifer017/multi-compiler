@@ -6,6 +6,7 @@ import compi2.multi.compilator.semantic.past.IfAst;
 import compi2.multi.compilator.semantic.past.SimpleCase;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.cast.dec.CObjectDec;
 import compi2.multi.compilator.semantic.jast.JIfAst;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
 import compi2.multi.compilator.semantic.util.JPassIf;
@@ -116,6 +117,18 @@ public class AstGen {
         } catch (NullPointerException | IndexOutOfBoundsException e) {
             return new LinkedList<>();
         }
+    }
+    
+    public List<CObjectDec> setTypeCObject(List<CObjectDec> list, Label type){
+        if(list == null){
+            return new LinkedList<>();
+        }
+        if(!list.isEmpty()){
+            for (CObjectDec cObjectDec : list) {
+                cObjectDec.setObjectName(type);
+            }
+        }
+        return list;
     }
     
     

@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.semantic.cast.others;
+package compi2.multi.compilator.semantic.cast.dec;
 
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;

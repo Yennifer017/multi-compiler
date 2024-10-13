@@ -1,7 +1,8 @@
 
-package compi2.multi.compilator.semantic.cexp;
+package compi2.multi.compilator.semantic.cast.inv;
 
 import compi2.multi.compilator.semantic.c.CExp;
+import compi2.multi.compilator.semantic.c.CStatement;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
 import lombok.Getter;
@@ -12,12 +13,12 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CMethodUseExp extends CExp {
-    private String name;
+public class CMethodUseAst extends CStatement{
+    String name;
     private List<CExp> args;
     
-    public CMethodUseExp(Position pos, String name, List<CExp> args) {
-        super(pos);
+    public CMethodUseAst(Position initPos, String name, List<CExp> args) {
+        super(initPos);
         this.name = name;
         this.args = args;
     }

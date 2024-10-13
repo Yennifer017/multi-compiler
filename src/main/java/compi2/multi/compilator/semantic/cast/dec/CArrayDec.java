@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.semantic.cast.others;
+package compi2.multi.compilator.semantic.cast.dec;
 
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.semantic.c.CExp;

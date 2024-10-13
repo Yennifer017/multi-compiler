@@ -9,7 +9,8 @@ import compi2.multi.compilator.analyzator.*;
 import compi2.multi.compilator.semantic.*;
 import compi2.multi.compilator.semantic.c.*;
 import compi2.multi.compilator.semantic.cast.*;
-import compi2.multi.compilator.semantic.cast.others.*;
+import compi2.multi.compilator.semantic.cast.dec.*;
+import compi2.multi.compilator.semantic.cast.inv.*;
 import compi2.multi.compilator.semantic.cexp.*;
 import compi2.multi.compilator.semantic.util.*;
 import compi2.multi.compilator.semantic.pexp.*;
@@ -331,14 +332,9 @@ non terminal JConstructUse jconstruct_use
 
 /********************** FOR MAIN PROGRAM (C) ****************************/
 non terminal 
-c_java_construct,
-c_j_construct,
-single_stmt,
-def_functions_stmt,
-ccontrol_stmts,
+cdef_functions_stmt,
 cif_stmt,
 celif_stmt,
-c_pinvocation,
 cassign
 ;
 
@@ -366,7 +362,7 @@ non terminal List<CStatement> cstmts
     ;
 non terminal List<JInvocation> c_jinvocation
     ;
-non terminal CStatement cfor_reduced_stmt
+non terminal CStatement cfor_reduced_stmt, cstmt, ccontrol_stmts
     ;
 non terminal List<CExp> carray_dims, cparams
     ;
@@ -378,7 +374,13 @@ non terminal List<DefAst> cvars_b
     ;
 non terminal DefAst cvars_dec
     ;
-non terminal C_JObjectDec c_jclass_init
+non terminal CObjectDec c_j_construct
+    ;
+non terminal List<CObjectDec> c_java_construct, c_jclass_init
+    ;
+non terminal CSimpleStmt csingle_stmt
+    ;
+non terminal CMethodPass c_pinvocation
     ;
 
 
@@ -1685,11 +1687,9 @@ jstmts_block ::= jstmts_block:l jstmt:s
                 l.add(s);
                 RESULT = l;
             :}
-        | jstmt:s
+        | /* empty */
             {:
-                List<Statement> list = new LinkedList<>();
-                list.add(s);
-                RESULT = list;
+                RESULT = new LinkedList<>();
             :}
         ;
 
@@ -2619,11 +2619,13 @@ cvars_dec ::= ctype:pt ID:i SEMICOLON
             :}
         ;
 
-c_jclass_init ::= JAVA DOT ID c_java_construct SEMICOLON
+c_jclass_init ::= JAVA DOT ID:t c_java_construct:lc SEMICOLON
             {:
-                
+                RESULT = astGen.setTypeCObject(
+                    lc, new Label(t, new Position(tleft, tright)) 
+                );
             :}
-        | JAVA DOT ID ARRAY carray_dims SEMICOLON
+        | JAVA DOT ID ARRAY carray_dims SEMICOLON //posible modification-----------------------------------------
             {:
 
             :}
@@ -2636,40 +2638,90 @@ c_java_construct ::= c_java_construct:l COMMA c_j_construct:c
             :}
         | c_j_construct:c SEMICOLON
             {:
-
+                List<CObjectDec> list = new LinkedList<>();
+                list.add(c);
+                RESULT = list;
             :}
         ;
 
-c_j_construct ::= ID LPAREN RPAREN
-        | ID LPAREN cparams RPAREN
+c_j_construct ::= ID:i LPAREN RPAREN
+            {:
+                RESULT = new CObjectDec(
+                    new Label(i, new Position(ileft, iright))
+                );   
+            :}
+        | ID:i LPAREN cparams:le RPAREN
+            {:
+                RESULT = new CObjectDec(
+                    new Label(i, new Position(ileft, iright)), 
+                    le
+                );
+            :}
         ;
 
 /*--------------------------- STATEMENTS ---------------------------------*/
 
-cstmts ::= ccontrol_stmts
-        | single_stmt SEMICOLON
-        | def_functions_stmt SEMICOLON
-        | c_jinvocation SEMICOLON
-        | c_pinvocation SEMICOLON
-        | cassign SEMICOLON
+cstmts ::= cstmts:l cstmt:s 
+            {:
+                l.add(s);
+                RESULT = l;
+            :}
+        | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
-single_stmt ::= BREAK 
-        | CONTINUE 
+cstmt ::= ccontrol_stmts:s
+            {: RESULT = s; :}
+        | csingle_stmt:s SEMICOLON
+            {: RESULT = s; :}
+        | cdef_functions_stmt:s SEMICOLON
+            {: RESULT = s; :}
+        | c_jinvocation:li SEMICOLON
+            {: 
+                RESULT = new CObjectInv(li);
+            :}
+        | c_pinvocation:pi SEMICOLON
+            {:
+                RESULT = pi.toStmt();
+            :}
+        | cassign:s SEMICOLON
+            {: RESULT = s; :}
         ;
 
-def_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN 
+csingle_stmt ::= BREAK:b 
+            {:
+                RESULT = new CSimpleStmt(
+                    new Position(bleft, bright), true
+                );
+            :}
+        | CONTINUE:c
+            {:
+                RESULT = new CSimpleStmt(
+                    new Position(cleft, cright), false
+                );
+            :}
+        ;
+
+cdef_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN 
         | PRINT LPAREN cparams RPAREN
         | CLEAR LPAREN RPAREN 
         | GETCH LPAREN RPAREN
         ;
 
 ccontrol_stmts ::= cif_stmt
-        | celif_stmt
-        | cswitch_stmt
-        | cfor_stmt 
-        | cwhile_stmt
-        | cdo_while_stmt
+            {:
+                
+            :}
+        | cswitch_stmt:s
+            {: RESULT = s; :}
+        | cfor_stmt:s
+            {: RESULT = s; :}
+        | cwhile_stmt:s
+            {: RESULT = s; :}
+        | cdo_while_stmt:s
+            {: RESULT = s; :}
         ;
 
 cassign ::= c_jinvocation ASSIGNATION cexp
@@ -2733,8 +2785,14 @@ cfor_stmt ::= FOR:f LPAREN cfor_reduced_stmt:s1 SEMICOLON
             :}
         ;
 
-cfor_reduced_stmt ::= c_jinvocation:s
-        | c_pinvocation
+cfor_reduced_stmt ::= c_jinvocation:li
+            {:
+                RESULT = new CObjectInv(li);
+            :}
+        | c_pinvocation:pi
+            {:
+                RESULT = pi.toStmt();
+            :}
         | cassign:s
             {: RESULT = s; :}
         | /* empty */
@@ -2769,43 +2827,209 @@ c_jinvocation ::= JAVA DOT ID:i jaccess:li
                     li, new JVarUse(new Position(ileft, iright), i, JContextRef.Local)
                 );
             :}
+        | JAVA DOT ID:i carray_dims:lce jaccess:li
+            {:
+                RESULT = astGen.genListInv(
+                    li, new FromCArrUse(new Position(ileft, iright), i, lce)
+                );
+            :}
         ;
 
-c_pinvocation ::= PASCAL DOT ID LPAREN RPAREN
-        | PASCAL DOT ID LPAREN cparams RPAREN
+c_pinvocation ::= PASCAL DOT ID:i LPAREN RPAREN
+            {:
+                RESULT = new CMethodPass(
+                    new Label(i, new Position(ileft, iright))
+                );
+            :}
+        | PASCAL DOT ID:i LPAREN cparams:le RPAREN
+            {:
+                RESULT = new CMethodPass(
+                    new Label(i, new Position(ileft, iright)),
+                    le
+                );
+            :}
         ;
 
 /*---------------------------- EXPRESSIONS ------------------------------*/
 
-cexp ::= cexp AND cexp
-        | cexp OR cexp
-        | NOT jexp
-        | cbool_exp
+cexp ::= cexp:e1 AND:o cexp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.And, 
+                    e1, e2
+                );  
+            :}
+        | cexp:e1 OR:o cexp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Or, 
+                    e1, e2
+                ); 
+            :}
+        | NOT:o cexp:e
+            {:
+                RESULT = new CUnaryOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Not,
+                    e
+                );
+            :}
+        | cbool_exp:e
+            {:
+                RESULT = e;
+            :}
         ;
 
-cbool_exp ::= carit_exp:e1 EQUALS:o carit_exp:e2j
-        | carit_exp:e1 DIFFERENT:o carit_exp:e2j
-        | carit_exp:e1 GRATER:o carit_exp:e2j
-        | carit_exp:e1 LESS:o carit_exp:e2j
-        | carit_exp:e1 GRATER_EQUALS:o carit_exp:e2j
-        | carit_exp:e1 LESS_EQUALS:o carit_exp:e2j
-        | carit_exp:ej
+cbool_exp ::= carit_exp:e1 EQUALS:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.EqualsTo, 
+                    e1, e2
+                ); 
+            :}
+        | carit_exp:e1 DIFFERENT:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.DifferentTo, 
+                    e1, e2
+                ); 
+            :}
+        | carit_exp:e1 GRATER:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.GraterThan, 
+                    e1, e2
+                ); 
+            :}
+        | carit_exp:e1 LESS:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.LessThan, 
+                    e1, e2
+                ); 
+            :}
+        | carit_exp:e1 GRATER_EQUALS:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.GraterEq, 
+                    e1, e2
+                ); 
+            :}
+        | carit_exp:e1 LESS_EQUALS:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.LessEq, 
+                    e1, e2
+                ); 
+            :}
+        | carit_exp:e
+            {:
+                RESULT = e;
+            :}
         ;
 
 carit_exp ::= carit_exp:e1 PLUS:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Addition, 
+                    e1, e2
+                ); 
+            :}
         | carit_exp:e1 MINUS:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Substraction, 
+                    e1, e2
+                ); 
+            :}
         | carit_exp:e1 TIMES:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Multiplication, 
+                    e1, e2
+                ); 
+            :}
         | carit_exp:e1 DIV:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Division, 
+                    e1, e2
+                ); 
+            :}
         | carit_exp:e1 MOD:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Module, 
+                    e1, e2
+                ); 
+            :}
         | carit_exp:e1 POWER:o carit_exp:e2
+            {:
+                RESULT = new COperation(
+                    new Position(oleft, oright),
+                    DefiniteOperation.Power, 
+                    e1, e2
+                ); 
+            :}
         | cliterals:e
-        | c_jinvocation
-        | c_pinvocation
+            {:
+                RESULT = e;
+            :}
+        | c_jinvocation:li
+            {:
+                RESULT = new CObjectUseExp(li);
+            :}
+        | c_pinvocation:pi
+            {:
+                RESULT = pi.toExp();
+            :}
         | ID:i
+            {:
+                RESULT = new CVarUse(
+                    new Position(ileft, iright), i
+                );
+            :}
+        | ID:i carray_dims:ac
+            {:
+                RESULT = new CVarArrayUse(
+                    new Position(ileft, iright),
+                    i, ac
+                );
+            :}
         %prec UMINUS
         | LPAREN cexp:e RPAREN
+            {:
+                RESULT = e;
+            :}
         %prec UMINUS
         | PLUS:o carit_exp:e
+            {:
+                RESULT = new CUnaryOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Addition,
+                    e
+                );
+            :}
         %prec UMINUS
         | MINUS:o carit_exp:e
+            {:
+                RESULT = new CUnaryOperation(
+                    new Position(oleft, oright), 
+                    DefiniteOperation.Substraction,
+                    e
+                );
+            :}
         ;

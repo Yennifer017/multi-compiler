@@ -1,13 +1,13 @@
 
-package compi2.multi.compilator.semantic.cast.others;
+package compi2.multi.compilator.semantic.cast.dec;
 
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
-import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.util.Label;
+import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,20 +17,19 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CVarDec extends DefAst{
+public class CObjectDec extends DefAst {
     
-    private PrimitiveType type;
-    private CExp exp;
+    private Label objectName;
+    private List<CExp> args;
     
-    public CVarDec(Label name, PrimitiveType type, CExp exp){
+    public CObjectDec(Label name){
         super.name = name;
-        this.type = type;
-        this.exp = exp;
+        args = new LinkedList<>();
     }
     
-    public CVarDec(Label name, PrimitiveType type){
+    public CObjectDec(Label name, List<CExp> args){
         super.name = name;
-        this.type = type;
+        this.args = args;
     }
 
     @Override

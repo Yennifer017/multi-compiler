@@ -12,14 +12,14 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CMethodUseExp extends CExp {
+public class CVarArrayUse extends CExp{
     private String name;
-    private List<CExp> args;
+    private List<CExp> arrayAccess;
     
-    public CMethodUseExp(Position pos, String name, List<CExp> args) {
+    public CVarArrayUse(Position pos, String name, List<CExp> arrayAccess) {
         super(pos);
         this.name = name;
-        this.args = args;
+        this.arrayAccess = arrayAccess;
     }
     
 }
