@@ -7,6 +7,10 @@ import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.typet.*;
 import compi2.multi.compilator.analyzator.*;
 import compi2.multi.compilator.semantic.*;
+import compi2.multi.compilator.semantic.c.*;
+import compi2.multi.compilator.semantic.cast.*;
+import compi2.multi.compilator.semantic.cast.others.*;
+import compi2.multi.compilator.semantic.cexp.*;
 import compi2.multi.compilator.semantic.util.*;
 import compi2.multi.compilator.semantic.pexp.*;
 import compi2.multi.compilator.semantic.pobj.*;
@@ -173,7 +177,6 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             RETURN,
             SCANF,
             SET,
-            STRING_LIT,
             STRING_TKN,
             SUPER,
             SWITCH,
@@ -196,7 +199,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
 
             BARRA
             ;
-terminal String     ID;
+terminal String     ID, STRING_LIT;
 terminal Character  CHAR_LIT;
 terminal Integer    INTEGER_LIT;
 terminal boolean    BOOLEAN_LIT;
@@ -204,8 +207,7 @@ terminal float      FLOAT_LIT;
 
 
 /*----------------------------- Non-terminals ---------------------------------------*/
-non terminal        s, main_program
-                    ;
+non terminal        s;
 
 /******************************* FOR PASCAL ****************************/
 non terminal List<DefAst> pascal_block, pcontent, 
@@ -329,36 +331,55 @@ non terminal JConstructUse jconstruct_use
 
 /********************** FOR MAIN PROGRAM (C) ****************************/
 non terminal 
-ctype,
-carray_dims,
-carray_access,
-caccess,
-cparams,
-cexp_list,
-cimports,
-cconst_b,
-cvars_b,
-cvars_dec,
 c_java_construct,
 c_j_construct,
-cstmts,
 single_stmt,
 def_functions_stmt,
 ccontrol_stmts,
 cif_stmt,
 celif_stmt,
-cswitch_stmt,
-ccases,
-ccase,
-cfor_stmt,
-cwhile_stmt,
-cdo_while_stmt,
-cinvocation_stmt,
-cexp,
-cbool_exp,
-carit_exp,
-casign
+c_pinvocation,
+cassign
 ;
+
+non terminal CMain main_program
+    ;
+non terminal PrimitiveType ctype
+    ;
+non terminal List<Label> cimports
+    ;
+non terminal CExp cexp, cbool_exp, carit_exp
+    ;
+non terminal CForAst cfor_stmt
+    ;
+non terminal CWhileAst cwhile_stmt
+    ;
+non terminal CDoWhile cdo_while_stmt
+    ;
+non terminal CSwitchAst cswitch_stmt
+    ;
+non terminal List<CCase> ccases
+    ;
+non terminal CCase ccase
+    ;
+non terminal List<CStatement> cstmts
+    ;
+non terminal List<JInvocation> c_jinvocation
+    ;
+non terminal CStatement cfor_reduced_stmt
+    ;
+non terminal List<CExp> carray_dims, cparams
+    ;
+non terminal CLiteral cliterals
+    ;
+non terminal List<CConstDec> cconst_b
+    ;
+non terminal List<DefAst> cvars_b
+    ;
+non terminal DefAst cvars_dec
+    ;
+non terminal C_JObjectDec c_jclass_init
+    ;
 
 
 /*------------------------------------------------------------------------------
@@ -393,6 +414,7 @@ s ::=   pascal_block:pb
             {:
                 analyzator.pascalSemanticAnalysis(pb);
                 analyzator.javaSemanticAnalysis(jb);
+                analyzator.mainCSemanticAnalysis(cb);
             :}
     ;
 
@@ -2450,56 +2472,172 @@ jinput_func ::= CHAR_INPUT:i LPAREN RPAREN
 -----------------------------------------------------------------------------------------------------*/
 main_program ::=  
         MAIN_SECTION
-        cimports 
-        cconst_b
-        cvars_b
-        VOID MAIN LPAREN RPAREN LBRACE cstmts RBRACE
+        cimports:i    
+        cconst_b:c
+        cvars_b:v
+        VOID MAIN LPAREN RPAREN LBRACE cstmts:ls RBRACE
+            {:
+                RESULT = new CMain(new CImports(i), c, v, ls);
+            :}
         ;
 
 /*--------------------------------- UTIL ---------------------------------*/
 
-ctype ::= INT_TKN   
+ctype ::= INT_TKN
+            {: RESULT = PrimitiveType.IntegerPT; :}
         | CHAR_TKN
+            {: RESULT = PrimitiveType.CharPT; :}
         | FLOAT_TKN
+            {: RESULT = PrimitiveType.RealPT; :}
         | STRING_TKN
+            {: RESULT = PrimitiveType.StringPT; :}
         | BOOLEAN_TKN
+            {: RESULT = PrimitiveType.BooleanPT; :}
         ;
 
-carray_dims ::= carray_dims LBRACK cexp RBRACK
-        | LBRACK cexp RBRACK
+carray_dims ::= carray_dims:l LBRACK cexp:e RBRACK
+            {:
+                l.add(e);
+                RESULT = l;
+            :}
+        | LBRACK cexp:e RBRACK
+            {:
+                List<CExp> list = new LinkedList<>();
+                list.add(e);
+                RESULT = list;
+            :}
         ;
 
-cparams ::= cexp COMMA cparams
-        | cexp
+cparams ::= cparams:l COMMA cexp:e
+            {:
+                l.add(e);
+                RESULT = l;
+            :}
+        | cexp:e
+            {:
+                List<CExp> list = new LinkedList<>();
+                list.add(e);
+                RESULT = list;
+            :}
         ;
 
-cexp_list ::= cexp_list COMMA cexp
-        | cexp
+cliterals ::= STRING_LIT:l
+            {:
+                RESULT = new CLiteral(
+                    new Position(lleft, lright), l
+                );
+            :}
+        | FLOAT_LIT:l
+            {:
+                RESULT = new CLiteral(
+                    new Position(lleft, lright), l
+                );
+            :}
+        | INTEGER_LIT:l
+            {:
+                RESULT = new CLiteral(
+                    new Position(lleft, lright), l
+                );
+            :}
+        | BOOLEAN_LIT:l
+            {:
+                RESULT = new CLiteral(
+                    new Position(lleft, lright), l
+                );
+            :}
+        | CHAR_LIT:l
+            {:
+                RESULT = new CLiteral(
+                    new Position(lleft, lright), l
+                );
+            :}
         ;
 
 /*----------------------------- INIT SECTION ----------------------------*/
 
-cimports ::= cimports HASH INCLUDE STRING_LIT
+cimports ::= cimports:l HASH INCLUDE:i STRING_LIT:s
+            {:
+                Label current = new Label(s, new Position(ileft, iright));
+                l.add(current);
+                RESULT = l;
+            :}
         | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
-cconst_b ::= cconst_b CONST ctype ID ASSIGNATION literals SEMICOLON
+cconst_b ::= cconst_b:l CONST ctype:pt ID:i ASSIGNATION cexp:e SEMICOLON
+            {:
+                l.add(new CConstDec(
+                    new Label(i, new Position(ileft, iright)),
+                    pt, e
+                ));
+                RESULT = l;
+            :}
         | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
-cvars_b ::= cvars_b cvars_dec
+cvars_b ::= cvars_b:l cvars_dec:d
+            {:
+                l.add(d);
+                RESULT = l;
+            :}
         | /* empty */
+            {:
+                RESULT = new LinkedList<>();
+            :}
         ;
 
-cvars_dec ::= ctype ID SEMICOLON
-        | ctype ID ASSIGNATION cexp SEMICOLON
-        | ctype ARRAY carray_dims SEMICOLON
-        | JAVA DOT ID c_java_construct SEMICOLON
+cvars_dec ::= ctype:pt ID:i SEMICOLON
+            {:
+                RESULT = new CVarDec(
+                    new Label(i, new Position(ileft, iright)),
+                    pt
+                );
+            :}
+        | ctype:pt ID:i ASSIGNATION cexp:e SEMICOLON
+            {:
+                RESULT = new CVarDec(
+                    new Label(i, new Position(ileft, iright)),
+                    pt, e
+                );
+            :}
+        | ctype:pt ID:i carray_dims:d SEMICOLON
+            {:
+                RESULT = new CArrayDec(
+                    new Label(i, new Position(ileft, iright)),
+                    pt, d
+                );
+            :}
+        | c_jclass_init:ci
+            {:
+                RESULT = ci;
+            :}
+        ;
+
+c_jclass_init ::= JAVA DOT ID c_java_construct SEMICOLON
+            {:
+                
+            :}
         | JAVA DOT ID ARRAY carray_dims SEMICOLON
+            {:
+
+            :}
         ;
 
-c_java_construct ::= c_j_construct COMMA c_java_construct
-        | c_j_construct
+c_java_construct ::= c_java_construct:l COMMA c_j_construct:c
+            {:
+                l.add(c);
+                RESULT = l;
+            :}
+        | c_j_construct:c SEMICOLON
+            {:
+
+            :}
         ;
 
 c_j_construct ::= ID LPAREN RPAREN
@@ -2509,19 +2647,21 @@ c_j_construct ::= ID LPAREN RPAREN
 /*--------------------------- STATEMENTS ---------------------------------*/
 
 cstmts ::= ccontrol_stmts
-        | single_stmt
-        | def_functions_stmt
+        | single_stmt SEMICOLON
+        | def_functions_stmt SEMICOLON
+        | c_jinvocation SEMICOLON
+        | c_pinvocation SEMICOLON
+        | cassign SEMICOLON
         ;
 
-
-single_stmt ::= BREAK SEMICOLON
-        | CONTINUE SEMICOLON
+single_stmt ::= BREAK 
+        | CONTINUE 
         ;
 
-def_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN SEMICOLON
-        | PRINT LPAREN cexp_list RPAREN
-        | CLEAR LPAREN RPAREN SEMICOLON
-        | GETCH LPAREN RPAREN SEMICOLON
+def_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN 
+        | PRINT LPAREN cparams RPAREN
+        | CLEAR LPAREN RPAREN 
+        | GETCH LPAREN RPAREN
         ;
 
 ccontrol_stmts ::= cif_stmt
@@ -2530,6 +2670,11 @@ ccontrol_stmts ::= cif_stmt
         | cfor_stmt 
         | cwhile_stmt
         | cdo_while_stmt
+        ;
+
+cassign ::= c_jinvocation ASSIGNATION cexp
+        | c_pinvocation ASSIGNATION cexp
+        | ID ASSIGNATION cexp
         ;
 
 /************************conditional *************************/
@@ -2544,33 +2689,91 @@ celif_stmt ::= ELSE cif_stmt
 
 /************************ switch ********************************/
 
-cswitch_stmt ::= SWITCH LPAREN cexp RPAREN LBRACE ccases RBRACE
+cswitch_stmt ::= SWITCH:s LPAREN cexp:e RPAREN LBRACE ccases:lc RBRACE
+            {:
+                RESULT = new CSwitchAst(
+                    new Position(sleft, sright),
+                    e, lc
+                );
+            :}
         ;
 
-ccases ::= ccases ccase
-        | ccase
+ccases ::= ccases:l ccase:c
+            {:
+                l.add(c);
+                RESULT = l;
+            :}
+        | ccase:c
+            {:
+                List<CCase> list = new LinkedList<>();
+                list.add(c);
+                RESULT = list;
+            :}
         ;
 
-ccase ::= CASE cexp COLON cstmts BREAK SEMICOLON
-        | DEFAULT COLON cstmts BREAK SEMICOLON
+ccase ::= CASE cexp:e COLON cstmts:ls BREAK SEMICOLON
+            {:
+                RESULT = new CCase(e, ls);
+            :}
+        | DEFAULT COLON cstmts:ls BREAK SEMICOLON
+            {:
+                RESULT = new CCase(ls);
+            :}
         ;
 
 /********************** ciclos ************************************/
 
-cfor_stmt ::= FOR LPAREN casign SEMICOLON cexp SEMICOLON cexp RPAREN LBRACE cstmts RBRACE
-        ;
-cwhile_stmt ::= WHILE LPAREN cexp RPAREN LBRACE cstmts RBRACE
-        ;
-
-cdo_while_stmt ::= DO LBRACE cstmts RBRACE 
-        WHILE LPAREN cexp RPAREN SEMICOLON
-        ;
-
-/************* functions / procedure / methods use******************/
-cinvocation_stmt ::= 
+cfor_stmt ::= FOR:f LPAREN cfor_reduced_stmt:s1 SEMICOLON 
+            cexp:c SEMICOLON cfor_reduced_stmt:s2 RPAREN LBRACE cstmts:ls RBRACE
+            {:
+                RESULT = new CForAst(
+                    new Position(fleft, fright),
+                    ls, s1, s2, c
+                );
+            :}
         ;
 
+cfor_reduced_stmt ::= c_jinvocation:s
+        | c_pinvocation
+        | cassign:s
+            {: RESULT = s; :}
+        | /* empty */
+            {: RESULT = null; :}
+        ;
 
+
+cwhile_stmt ::= WHILE:w LPAREN cexp:c RPAREN LBRACE cstmts:ls RBRACE
+            {:
+                RESULT = new CWhileAst(
+                    new Position(wleft, wright),
+                    ls, c
+                );
+            :}
+        ;
+
+cdo_while_stmt ::= DO:d LBRACE cstmts:ls RBRACE 
+        WHILE LPAREN cexp:c RPAREN SEMICOLON
+            {:
+                RESULT = new CDoWhile(
+                    new Position(dleft, dright),
+                    ls, c
+                );
+            :}
+        ;
+
+/************************* invocations *****************************/
+
+c_jinvocation ::= JAVA DOT ID:i jaccess:li
+            {:
+                RESULT = astGen.genListInv(
+                    li, new JVarUse(new Position(ileft, iright), i, JContextRef.Local)
+                );
+            :}
+        ;
+
+c_pinvocation ::= PASCAL DOT ID LPAREN RPAREN
+        | PASCAL DOT ID LPAREN cparams RPAREN
+        ;
 
 /*---------------------------- EXPRESSIONS ------------------------------*/
 
@@ -2595,17 +2798,10 @@ carit_exp ::= carit_exp:e1 PLUS:o carit_exp:e2
         | carit_exp:e1 DIV:o carit_exp:e2
         | carit_exp:e1 MOD:o carit_exp:e2
         | carit_exp:e1 POWER:o carit_exp:e2
-        | literals:e
-        | ID:i carray_access
-        | ID:i carray_access caccess
-        | ID:i LPAREN cexp_list:l RPAREN
-        | ID:i LPAREN RPAREN
-        | ID:i LPAREN cexp_list:l RPAREN caccess
-        | ID:i LPAREN RPAREN caccess
-        | ID:i caccess
+        | cliterals:e
+        | c_jinvocation
+        | c_pinvocation
         | ID:i
-        | THIS caccess
-        | SUPER caccess
         %prec UMINUS
         | LPAREN cexp:e RPAREN
         %prec UMINUS

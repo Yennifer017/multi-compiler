@@ -13,13 +13,13 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CIfAst extends CControlStmt{
+public class CDoWhile extends CControlStmt{
+    
     private CExp condition;
     
-    public CIfAst(Position initPos, List<CStatement> internalStmt, CExp condition) {
+    public CDoWhile(Position initPos, List<CStatement> internalStmt, CExp condition) {
         super(initPos, internalStmt);
         this.condition = condition;
     }
-
     
 }

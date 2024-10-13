@@ -8,9 +8,9 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.pmodule.FunctionDec;
 import compi2.multi.compilator.semantic.pmodule.ProcedureDec;
-import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.c.CMain;
 import compi2.multi.compilator.semantic.jclases.JClass;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -128,7 +128,7 @@ public class Analyzator {
         //semantic valitations
     }
     
-    public void cSemanticAnalysis(){
+    public void mainCSemanticAnalysis(CMain cmain){
         cSymbolTable = new SymbolTable();
     }
     

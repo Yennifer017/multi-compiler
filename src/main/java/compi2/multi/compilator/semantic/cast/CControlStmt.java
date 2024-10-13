@@ -1,7 +1,6 @@
 
 package compi2.multi.compilator.semantic.cast;
 
-import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CStatement;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
@@ -13,13 +12,13 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CIfAst extends CControlStmt{
-    private CExp condition;
+public abstract class CControlStmt extends CStatement{
     
-    public CIfAst(Position initPos, List<CStatement> internalStmt, CExp condition) {
-        super(initPos, internalStmt);
-        this.condition = condition;
+    private List<CStatement> internalStmts;
+    
+    public CControlStmt(Position initPos, List<CStatement> internalStmt) {
+        super(initPos);
+        this.internalStmts = internalStmt;
     }
-
     
 }
