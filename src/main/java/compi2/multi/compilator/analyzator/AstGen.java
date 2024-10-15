@@ -1,14 +1,17 @@
 package compi2.multi.compilator.analyzator;
 
+import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.pmodule.Argument;
 import compi2.multi.compilator.semantic.util.PassIf;
 import compi2.multi.compilator.semantic.past.IfAst;
 import compi2.multi.compilator.semantic.past.SimpleCase;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.cast.CIfAst;
 import compi2.multi.compilator.semantic.cast.dec.CObjectDec;
 import compi2.multi.compilator.semantic.jast.JIfAst;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
+import compi2.multi.compilator.semantic.util.CPassIf;
 import compi2.multi.compilator.semantic.util.JPassIf;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.LinkedList;
@@ -91,8 +94,36 @@ public class AstGen {
             return null;
         }
     }
+    
+    public CIfAst transformPassCIf(CPassIf pass) {
+        try {
+            CIfAst first = pass.getIfs().get(0);
+            pass.getIfs().remove(0);
+            return new CIfAst(
+                    first.getInitPos(),
+                    first.getCondition(),
+                    first.getInternalStmts(),
+                    pass.getIfs(),
+                    pass.getElseAst()
+            );
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public JPassIf generateJPassIf(JPassIf pass, JIfAst ifAst) {
+        try {
+            if (pass.getIfs() == null) {
+                pass.setIfs(new LinkedList<>());
+            }
+            pass.getIfs().add(0, ifAst);
+        } catch (NullPointerException e) {
+
+        }
+        return pass;
+    }
+    
+    public CPassIf generateCPassIf(CPassIf pass, CIfAst ifAst){
         try {
             if (pass.getIfs() == null) {
                 pass.setIfs(new LinkedList<>());
@@ -130,7 +161,6 @@ public class AstGen {
         }
         return list;
     }
-    
     
     
 }

@@ -23,7 +23,8 @@ public enum Category {
     JConstruct("Constructor"),
     JField("atributo de clase"), 
     JHeapDir("direccion dentro del heap"),
-    JMethod("metodo de una clase")
+    JMethod("metodo de una clase"), 
+    JDirInstance("direccion de instancia de una clase");
     ;
     
     private String name;

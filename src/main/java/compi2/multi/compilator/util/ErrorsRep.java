@@ -151,4 +151,9 @@ public class ErrorsRep {
         return builder.toString();
     }
     
+    public String noConstructorError(String className, String construcName, Position pos){
+        return "El constructor" + construcName 
+                + " no tiene el mismo nombre de la clase " + className + report(pos);
+    }
+    
 }

@@ -16,7 +16,7 @@ public class ConstructorST extends ModuleRowST{
     
     private AccessMod access;
 
-    public ConstructorST(String name, SymbolTable internalST, List<String> typesParams) {
+    public ConstructorST(String name, SymbolTable internalST, List<String> typesParams, AccessMod access) {
         super(name, Category.JConstruct, Analyzator.VOID_METHOD, internalST, typesParams);
     }
     

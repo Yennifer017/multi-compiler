@@ -15,10 +15,20 @@ import lombok.Setter;
 @Getter @Setter
 public class CIfAst extends CControlStmt{
     private CExp condition;
+    private List<CIfAst> elifs;
+    private CElseAst elseStmt;
     
-    public CIfAst(Position initPos, List<CStatement> internalStmt, CExp condition) {
+    public CIfAst(Position initPos, CExp condition, List<CStatement> internalStmt) {
         super(initPos, internalStmt);
         this.condition = condition;
+    }
+    
+    public CIfAst(Position initPos, CExp condition, List<CStatement> statements, 
+            List<CIfAst> elifs, CElseAst elseStmt) {
+        super(initPos, statements);
+        this.condition = condition;
+        this.elifs = elifs;
+        this.elseStmt = elseStmt;
     }
 
     

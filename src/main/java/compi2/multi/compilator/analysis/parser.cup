@@ -9,7 +9,9 @@ import compi2.multi.compilator.analyzator.*;
 import compi2.multi.compilator.semantic.*;
 import compi2.multi.compilator.semantic.c.*;
 import compi2.multi.compilator.semantic.cast.*;
+import compi2.multi.compilator.semantic.cast.assign.*;
 import compi2.multi.compilator.semantic.cast.dec.*;
+import compi2.multi.compilator.semantic.cast.defaultfuncs.*;
 import compi2.multi.compilator.semantic.cast.inv.*;
 import compi2.multi.compilator.semantic.cexp.*;
 import compi2.multi.compilator.semantic.util.*;
@@ -167,6 +169,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             PASCAL,
             PRINT,
             PRINTLN,
+            PRINTF,
             PRIVATE,
             PROCEDURE,
             PROGRAM,
@@ -331,12 +334,8 @@ non terminal JConstructUse jconstruct_use
     ;
 
 /********************** FOR MAIN PROGRAM (C) ****************************/
-non terminal 
-cdef_functions_stmt,
-cif_stmt,
-celif_stmt,
-cassign
-;
+non terminal c_java_object_array
+    ;
 
 non terminal CMain main_program
     ;
@@ -362,7 +361,8 @@ non terminal List<CStatement> cstmts
     ;
 non terminal List<JInvocation> c_jinvocation
     ;
-non terminal CStatement cfor_reduced_stmt, cstmt, ccontrol_stmts
+non terminal CStatement cfor_reduced_stmt, cstmt, cdef_functions_stmt, 
+    ccontrol_stmts
     ;
 non terminal List<CExp> carray_dims, cparams
     ;
@@ -381,6 +381,10 @@ non terminal List<CObjectDec> c_java_construct, c_jclass_init
 non terminal CSimpleStmt csingle_stmt
     ;
 non terminal CMethodPass c_pinvocation
+    ;
+non terminal CPassIf cif_stmt, celif_stmt
+    ;
+non terminal CAssign cassign
     ;
 
 
@@ -2613,9 +2617,11 @@ cvars_dec ::= ctype:pt ID:i SEMICOLON
                     pt, d
                 );
             :}
-        | c_jclass_init:ci
+        | c_jclass_init:cis
             {:
-                RESULT = ci;
+                RESULT = new CObjectsDec(
+                    cis
+                );
             :}
         ;
 
@@ -2625,15 +2631,15 @@ c_jclass_init ::= JAVA DOT ID:t c_java_construct:lc SEMICOLON
                     lc, new Label(t, new Position(tleft, tright)) 
                 );
             :}
-        | JAVA DOT ID ARRAY carray_dims SEMICOLON //posible modification-----------------------------------------
+        | JAVA DOT ID c_java_object_array
             {:
 
             :}
         ;
 
-c_java_construct ::= c_java_construct:l COMMA c_j_construct:c
+c_java_construct ::= c_j_construct:c COMMA c_java_construct:l
             {:
-                l.add(c);
+                l.add(0, c);
                 RESULT = l;
             :}
         | c_j_construct:c SEMICOLON
@@ -2657,6 +2663,10 @@ c_j_construct ::= ID:i LPAREN RPAREN
                     le
                 );
             :}
+        ;
+
+c_java_object_array ::= ID carray_dims COMMA c_java_object_array
+        | ID carray_dims SEMICOLON
         ;
 
 /*--------------------------- STATEMENTS ---------------------------------*/
@@ -2704,15 +2714,48 @@ csingle_stmt ::= BREAK:b
             :}
         ;
 
-cdef_functions_stmt ::=  SCANF LPAREN STRING_LIT COMMA AMPERSAND ID RPAREN 
-        | PRINT LPAREN cparams RPAREN
-        | CLEAR LPAREN RPAREN 
-        | GETCH LPAREN RPAREN
+cdef_functions_stmt ::=  SCANF:s LPAREN STRING_LIT:m COMMA AMPERSAND ID:v RPAREN 
+            {:
+                RESULT = new CScanf(
+                    new Position(sleft, sright),
+                    new Label(m, new Position(mleft, mright)),
+                    new Label(v, new Position(vleft, vright))
+                );
+            :}
+        | PRINT:p LPAREN cparams:le RPAREN
+            {:
+                RESULT = new CPrint(
+                    new Position(pleft, pright),
+                    le
+                );
+            :}
+        | CLEAR:c LPAREN RPAREN 
+            {:
+                RESULT = new CDefaultSimpleFun(
+                    new Position(cleft, cright),
+                    CDefaultSimpleFun.CLEAR_FUN
+                );
+            :}
+        | GETCH:g LPAREN RPAREN
+            {:
+                RESULT = new CDefaultSimpleFun(
+                    new Position(gleft, gright),
+                    CDefaultSimpleFun.GETCH_FUN
+                );
+            :}
+        | PRINTF:p LPAREN STRING_LIT:m COMMA AMPERSAND ID:i RPAREN
+            {:
+                RESULT = new CPrintF(
+                    new Position(pleft, pright),
+                    new Label(m, new Position(mleft, mright)),
+                    new Label(i, new Position(ileft, iright))
+                );
+            :}
         ;
 
-ccontrol_stmts ::= cif_stmt
+ccontrol_stmts ::= cif_stmt:pi
             {:
-                
+                RESULT = astGen.transformPassCIf(pi);
             :}
         | cswitch_stmt:s
             {: RESULT = s; :}
@@ -2724,18 +2767,52 @@ ccontrol_stmts ::= cif_stmt
             {: RESULT = s; :}
         ;
 
-cassign ::= c_jinvocation ASSIGNATION cexp
-        | c_pinvocation ASSIGNATION cexp
-        | ID ASSIGNATION cexp
+cassign ::= c_jinvocation:li ASSIGNATION cexp:e
+            {:
+                RESULT = new CObjectAssign(
+                    new Position(lileft, liright),
+                    e, li
+                );
+            :}
+        | ID:i ASSIGNATION cexp:e
+            {:
+                RESULT = new CVarAssign(
+                    new Position(ileft, iright),
+                    i, e
+                );
+            :}
         ;
 
 /************************conditional *************************/
 
-cif_stmt ::= IF LPAREN cexp RPAREN LBRACE cstmts RBRACE celif_stmt
+cif_stmt ::= IF:i LPAREN cexp:e RPAREN LBRACE cstmts:ls RBRACE celif_stmt:pi
+            {:
+                RESULT = astGen.generateCPassIf(
+                    pi,
+                    new CIfAst(
+                        new Position(ileft, iright),
+                        e, ls
+                    )
+                );
+            :}
         ;
 
-celif_stmt ::= ELSE cif_stmt
-        | ELSE LBRACE cstmts RBRACE
+celif_stmt ::= ELSE cif_stmt:pi
+            {:
+                RESULT = pi;
+            :}
+        | ELSE:e LBRACE cstmts:ls RBRACE
+            {:
+                CElseAst elseStmt = new CElseAst(
+                    new Position(eleft, eright),
+                    ls
+                );
+                RESULT = new CPassIf(elseStmt);
+            :}
+        | /* empty */
+            {:
+                RESULT = new CPassIf();
+            :}
         ;
 
 

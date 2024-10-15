@@ -72,7 +72,7 @@ public class GenSymbolTab extends Generator{
         if(classes != null && !classes.isEmpty()){
             for (JClass clase : classes) {
                 try {
-                    
+                    clase.completeFieldsAndMethods(symbolTable, typeTable, semanticErrors);
                 } catch (NullPointerException e) {
                     System.out.println(e);
                 }

@@ -1,7 +1,6 @@
 
 package compi2.multi.compilator.semantic;
 
-import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;

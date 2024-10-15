@@ -7,7 +7,8 @@ package compi2.multi.compilator.analysis.symbolt;
  */
 public enum AdditionalInfoST {
     DIR_RETORNO_ROW("#return"),
-    DIR_HEAP_ROW("#dirHeap");
+    DIR_HEAP_ROW("#dirHeap"),
+    DIR_INSTANCE_ROW("#instance");
 
     private String nameRow;
     private AdditionalInfoST(String name){

@@ -4,16 +4,20 @@ package compi2.multi.compilator.analysis.symbolt.clases;
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.RowST;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
  * @author blue-dragon
  */
-public class HeapDirecST extends RowST{
+@Getter @Setter
+public class DirInstanceST extends RowST{
     
     private int dirMemory;
-    public HeapDirecST(int dirMemory) {
-        super(AdditionalInfoST.DIR_HEAP_ROW.getNameRow(), Category.JHeapDir, null);
+
+    public DirInstanceST(int dirMemory) {
+        super(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow(), Category.JDirInstance, null);
         this.dirMemory = dirMemory;
     }
 
