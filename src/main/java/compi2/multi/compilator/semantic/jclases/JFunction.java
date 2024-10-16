@@ -8,8 +8,10 @@ import compi2.multi.compilator.analysis.symbolt.ReturnRow;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
 import compi2.multi.compilator.analysis.symbolt.clases.HeapDirecST;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
+import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +26,10 @@ import lombok.Setter;
 public abstract class JFunction extends JDef{
     protected Label nameClass;
     protected List<JArg> args;
-    protected List<Statement> internalStmts;
+    protected List<JStatement> internalStmts;
     protected RefAnalyzator refAnalyzator;
 
-    public JFunction(AccessMod access, List<JArg> args, List<Statement> internalStmts) {
+    public JFunction(AccessMod access, List<JArg> args, List<JStatement> internalStmts) {
         super(access);
         this.args = args;
         this.internalStmts = internalStmts;
@@ -66,4 +68,24 @@ public abstract class JFunction extends JDef{
     
     protected abstract String getNameFunctionForST(SymbolTable symbolTable, List<String> argsStringList);
     
+    protected void validateArgs(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, List<String> semanticErrors){
+        if(this.args != null && !this.args.isEmpty()){
+            for (JArg arg : this.args) {
+                arg.validateSemantic(
+                        globalST, 
+                        symbolTable,
+                        typeTable, 
+                        semanticErrors
+                );
+            }
+        }
+    }
+    
+    protected void validateInternalStmts(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, List<String> semanticErrors){
+        if(this.internalStmts != null && !this.internalStmts.isEmpty()){
+            
+        }
+    }
 }

@@ -6,8 +6,9 @@ import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ConstructorST;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class JConstructor extends JFunction{
     
     private ConstructorST constructorST;
     
-    public JConstructor(Label name, AccessMod access, List<JArg> args, List<Statement> internalStmts) {
+    public JConstructor(Label name, AccessMod access, List<JArg> args, List<JStatement> internalStmts) {
         super(access, args, internalStmts);
         super.name = name;
     }
@@ -45,6 +46,15 @@ public class JConstructor extends JFunction{
             );
         }
         return null;
+    }
+    
+    @Override
+    public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
+        if(globalST.getInitJerarTree().getFather().getFather() != null){
+            //validar el uso de constructores
+        }
+        super.validateArgs(globalST, constructorST.getInternalST(), typeTable, semanticErrors);
+        super.validateInternalStmts(globalST, constructorST.getInternalST(), typeTable, semanticErrors);
     }
     
     @Override

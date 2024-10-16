@@ -14,8 +14,12 @@ public class JArrayType extends JType{
     private int dims;
     
     public JArrayType(Label name, JReferType refType, int dims){
-        super.name = name;
-        super.refType = refType;
+        super(refType, name);
         this.dims = dims;
+    }
+    
+    @Override
+    public int getArrayDimensions(){
+        return this.dims;
     }
 }

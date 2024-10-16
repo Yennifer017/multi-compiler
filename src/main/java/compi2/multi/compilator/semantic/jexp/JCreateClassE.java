@@ -3,7 +3,7 @@ package compi2.multi.compilator.semantic.jexp;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
 import java.util.LinkedList;
@@ -16,30 +16,20 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JCreateClassE extends Expression{
-    private List<Expression> params;
+public class JCreateClassE extends JExpression{
+    private List<JExpression> params;
     private String name;
     
-    public JCreateClassE(Position pos, String name, List<Expression> params){
-        this.pos = pos;
+    public JCreateClassE(Position pos, String name, List<JExpression> params){
+        super(pos);
         this.name = name;
         this.params = params;
     }
     
     public JCreateClassE(Position pos, String name){
-        this.pos = pos;
+        super(pos);
         this.name = name;
         this.params = new LinkedList<>();
-    }
-
-    @Override
-    public Label validateSimpleData(SymbolTable symbolTable, List<String> semanticErrors) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Label validateComplexData(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

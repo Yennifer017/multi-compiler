@@ -4,7 +4,7 @@ package compi2.multi.compilator.semantic.jexp;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.DefiniteOperation;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
@@ -16,27 +16,17 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JUnaryOp extends Expression{
+public class JUnaryOp extends JExpression{
     
-    private Expression passExp;
+    private JExpression passExp;
     
     private DefiniteOperation operation;
 
-    public JUnaryOp(Position pos, Expression passExp, DefiniteOperation operation) {
-        super.pos = pos;
+    public JUnaryOp(Position pos, JExpression passExp, DefiniteOperation operation) {
+        super(pos);
         this.passExp = passExp;
         this.operation = operation;
     }
     
-
-    @Override
-    public Label validateSimpleData(SymbolTable symbolTable, List<String> semanticErrors) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Label validateComplexData(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
 }

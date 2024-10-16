@@ -18,14 +18,20 @@ import lombok.Setter;
 public class MethodST extends ModuleRowST{
     
     private AccessMod access;
+    private int arrayDims;
 
-    public MethodST(String name, String type, SymbolTable internalST, List<String> typesParams) {
+    public MethodST(String name, String type, SymbolTable internalST, 
+            List<String> typesParams, AccessMod access, int arrayDims) {
         super(name, Category.JMethod, type, internalST, typesParams);
-        super.addReturRow();
+        this.access = access;
+        this.arrayDims = arrayDims;
     }
     
-    public MethodST(String name, SymbolTable internalST, List<String> typesParams) {
+    public MethodST(String name, SymbolTable internalST, List<String> typesParams, 
+            AccessMod access, int arrayDims) {
         super(name, Category.JMethod, Analyzator.VOID_METHOD, internalST, typesParams);
+        this.access = access;
+        this.arrayDims = arrayDims;
     }
 
     @Override

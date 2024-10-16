@@ -80,4 +80,17 @@ public class GenSymbolTab extends Generator{
         }
     }
     
+    public void internajJavaSemanticValitations(JSymbolTable symbolTable, TypeTable typeTable,
+            List<JClass> classes, List<String> semanticErrors){
+        if(classes != null && !classes.isEmpty()){
+            for (JClass clase : classes) {
+                try {
+                    clase.validateInternal(symbolTable, typeTable, semanticErrors);
+                } catch (NullPointerException e) {
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+    
 }

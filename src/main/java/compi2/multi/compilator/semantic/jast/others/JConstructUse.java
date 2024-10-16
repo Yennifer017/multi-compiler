@@ -1,12 +1,9 @@
 
 package compi2.multi.compilator.semantic.jast.others;
 
-import compi2.multi.compilator.analysis.symbolt.SymbolTable;
-import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Expression;
-import compi2.multi.compilator.semantic.Statement;
-import compi2.multi.compilator.semantic.util.ReturnCase;
-import compi2.multi.compilator.semantic.util.SemanticRestrictions;
+
+import compi2.multi.compilator.semantic.j.JExpression;
+import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.util.Position;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,12 +15,12 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JConstructUse extends Statement{
+public class JConstructUse extends JStatement{
     
     private boolean isFatherConst;
-    private List<Expression> args;
+    private List<JExpression> args;
 
-    public JConstructUse(Position initPos, List<Expression> args, boolean isFatherConst) {
+    public JConstructUse(Position initPos, List<JExpression> args, boolean isFatherConst) {
         super(initPos);
         this.args = args;
         this.isFatherConst = isFatherConst;
@@ -33,11 +30,6 @@ public class JConstructUse extends Statement{
         super(initPos);
         this.args = new LinkedList<>();
         this.isFatherConst = isFatherConst;
-    }
-
-    @Override
-    public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

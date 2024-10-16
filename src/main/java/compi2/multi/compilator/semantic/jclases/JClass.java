@@ -87,6 +87,15 @@ public class JClass extends DefObjsAst {
             }
         }
     }
+    
+    public void validateInternal(JSymbolTable globalST,
+            TypeTable typeTable, List<String> semanticErrors){
+        if(this.definitions != null && !this.definitions.isEmpty()){
+            for (JDef definition : this.definitions) {
+                definition.validateInternal(globalST, typeTable, semanticErrors);
+            }
+        }
+    }
 
     private boolean isValidName(List<String> semanticErrors) {
         boolean forbiden = name.getName().equals(FATHER_OBJECT_CLASS);

@@ -1,8 +1,8 @@
 
 package compi2.multi.compilator.semantic.jast;
 
-import compi2.multi.compilator.semantic.Expression;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.j.JExpression;
+import compi2.multi.compilator.semantic.j.JStatement;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,15 +13,15 @@ import lombok.Setter;
  */
 @Getter @Setter
 public class JCase {
-    private Expression passExp;
-    private List<Statement> stmts;
+    private JExpression passExp;
+    private List<JStatement> stmts;
 
-    public JCase(Expression passExp, List<Statement> stmts) {
+    public JCase(JExpression passExp, List<JStatement> stmts) {
         this.passExp = passExp;
         this.stmts = stmts;
     }
 
-    public JCase(List<Statement> stmts) {
+    public JCase(List<JStatement> stmts) {
         this.stmts = stmts;
     }
     

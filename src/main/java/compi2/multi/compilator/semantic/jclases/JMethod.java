@@ -7,9 +7,11 @@ import compi2.multi.compilator.semantic.jclases.components.JArg;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.MethodST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jclases.components.JReferType;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.List;
@@ -25,7 +27,7 @@ public class JMethod extends JFunction implements Typable{
     private JType type;
     private MethodST methodSt;
 
-    public JMethod(Label name, AccessMod access, List<JArg> args, List<Statement> internalStmts) {
+    public JMethod(Label name, AccessMod access, List<JArg> args, List<JStatement> internalStmts) {
         super(access, args, internalStmts);
         super.name = name;
     }
@@ -37,14 +39,20 @@ public class JMethod extends JFunction implements Typable{
         if(nameForST != null){
             if(type.getRefType() == JReferType.Void){
                 this.methodSt = new MethodST(
-                        nameForST, super.generateInternalST(false), params
+                        nameForST,
+                        super.generateInternalST(false), 
+                        params, 
+                        access,
+                        type.getArrayDimensions()
                 );
             } else {
                 this.methodSt = new MethodST(
                         nameForST, 
                         type.getName().getName(), 
                         super.generateInternalST(true), 
-                        params
+                        params, 
+                        access, 
+                        type.getArrayDimensions()
                 );
             }
             return this.methodSt;
@@ -100,5 +108,12 @@ public class JMethod extends JFunction implements Typable{
             index++;
         }
         return refFun.getSTName(this.name.getName(), index);
+    }
+
+    @Override
+    public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
+        this.type.validateSemantic(globalST, typeTable, semanticErrors, true);
+        super.validateArgs(globalST, methodSt.getInternalST(), typeTable, semanticErrors);
+        super.validateInternalStmts(globalST, methodSt.getInternalST(), typeTable, semanticErrors);
     }
 }

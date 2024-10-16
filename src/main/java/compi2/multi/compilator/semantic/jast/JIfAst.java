@@ -1,12 +1,10 @@
 
 package compi2.multi.compilator.semantic.jast;
 
-import compi2.multi.compilator.analysis.symbolt.SymbolTable;
-import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.j.JControlStmt;
 import compi2.multi.compilator.semantic.Statement;
-import compi2.multi.compilator.semantic.util.ReturnCase;
-import compi2.multi.compilator.semantic.util.SemanticRestrictions;
+import compi2.multi.compilator.semantic.j.JExpression;
+import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
 import lombok.Getter;
@@ -18,17 +16,17 @@ import lombok.Setter;
  */
 @Getter @Setter
 public class JIfAst extends JControlStmt{
-    private Expression condition;
+    private JExpression condition;
     private List<JIfAst> elifs;
     private JElseAst elseStmt;
 
-    public JIfAst(Position initPos, Expression condition, List<Statement> statements) {
+    public JIfAst(Position initPos, JExpression condition, List<JStatement> statements) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = statements;
     }
 
-    public JIfAst(Position initPos, Expression condition, List<Statement> statements, 
+    public JIfAst(Position initPos, JExpression condition, List<JStatement> statements, 
             List<JIfAst> elifs, JElseAst elseStmt) {
         super(initPos);
         this.condition = condition;
@@ -37,10 +35,10 @@ public class JIfAst extends JControlStmt{
         super.internalStmts = statements;
     }
 
-    @Override
+    /*@Override
     public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, 
             List<String> semanticErrors, SemanticRestrictions restrictions) {
-        /*super.validateCondition(condition, symbolTable, typeTable, semanticErrors);
+        super.validateCondition(condition, symbolTable, typeTable, semanticErrors);
         
         ReturnCase internalRC = super.validateInternalStmts(symbolTable, typeTable, semanticErrors, 
                 restrictions
@@ -62,8 +60,8 @@ public class JIfAst extends JControlStmt{
             }
         } else {
             internalRC.setAllScenaries(false);
-        }*/
+        }
         return null;
     }
-    
+    */
 }

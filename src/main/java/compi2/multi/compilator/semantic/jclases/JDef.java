@@ -4,6 +4,7 @@ package compi2.multi.compilator.semantic.jclases;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
@@ -33,6 +34,9 @@ public abstract class JDef{
     }
     
     public abstract RowST generateRowST(SymbolTable symbolTable, 
+            TypeTable typeTable, List<String> semanticErrors);
+    
+    public abstract void validateInternal(JSymbolTable globalST,
             TypeTable typeTable, List<String> semanticErrors);
     
 }

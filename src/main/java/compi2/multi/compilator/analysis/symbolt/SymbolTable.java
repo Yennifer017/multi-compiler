@@ -2,7 +2,6 @@
 package compi2.multi.compilator.analysis.symbolt;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import lombok.Getter;
 import lombok.Setter;
 

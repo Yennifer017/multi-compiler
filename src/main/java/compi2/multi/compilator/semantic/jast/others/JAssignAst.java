@@ -1,14 +1,10 @@
 
 package compi2.multi.compilator.semantic.jast.others;
 
-import compi2.multi.compilator.analysis.symbolt.SymbolTable;
-import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Expression;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.j.JExpression;
+import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jast.inv.JContextRef;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
-import compi2.multi.compilator.semantic.util.ReturnCase;
-import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.Position;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,19 +16,19 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class JAssignAst extends Statement{
+public class JAssignAst extends JStatement{
     
     private List<JInvocation> variable;
-    private Expression value;
+    private JExpression value;
     
-    public JAssignAst(Position initPos, List<JInvocation> variable, Expression value) {
+    public JAssignAst(Position initPos, List<JInvocation> variable, JExpression value) {
         super(initPos);
         this.variable = variable;
         this.value = value;
     }
     
     public JAssignAst(Position initPos, List<JInvocation> variable, 
-            Expression value, JContextRef first) {
+            JExpression value, JContextRef first) {
         super(initPos);
         try {
             variable.get(0).setContext(first);
@@ -43,10 +39,6 @@ public class JAssignAst extends Statement{
         this.value = value;
     }
     
-    @Override
-    public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     
 }

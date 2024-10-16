@@ -20,6 +20,7 @@ import compi2.multi.compilator.semantic.pobj.*;
 import compi2.multi.compilator.semantic.past.*;
 import compi2.multi.compilator.semantic.pmodule.*;
 import compi2.multi.compilator.semantic.jexp.*;
+import compi2.multi.compilator.semantic.j.*;
 import compi2.multi.compilator.semantic.jclases.*;
 import compi2.multi.compilator.semantic.jclases.components.*;
 import compi2.multi.compilator.semantic.jast.*;
@@ -284,9 +285,9 @@ non terminal Typable joptions_dec
     ;
 non terminal List<JArg> jargs, jlist_args
     ;
-non terminal List<Statement> jstmts_block
+non terminal List<JStatement> jstmts_block
     ;
-non terminal Statement jstmt, jfor_reduced_stmt,
+non terminal JStatement jstmt, jfor_reduced_stmt,
         jcontrol_stmts,
         jsimple_stmts
     ;
@@ -316,9 +317,9 @@ non terminal JAssignAst jassign
     ;
 non terminal JLiteral jliterals
     ;
-non terminal Expression jarit_exp, jbool_exp, jexp, jinput_func
+non terminal JExpression jarit_exp, jbool_exp, jexp, jinput_func
     ;
-non terminal List<Expression> jexp_list, jarray_access
+non terminal List<JExpression> jexp_list, jarray_access
     ;
 non terminal JDefiniteFunc jdefinite_funcs
     ;
@@ -334,9 +335,6 @@ non terminal JConstructUse jconstruct_use
     ;
 
 /********************** FOR MAIN PROGRAM (C) ****************************/
-non terminal c_java_object_array
-    ;
-
 non terminal CMain main_program
     ;
 non terminal PrimitiveType ctype
@@ -376,7 +374,11 @@ non terminal DefAst cvars_dec
     ;
 non terminal CObjectDec c_j_construct
     ;
-non terminal List<CObjectDec> c_java_construct, c_jclass_init
+non terminal List<CObjectDec> c_java_construct
+    ;
+non terminal List<? extends CDef> c_jclass_init
+    ;
+non terminal List<CArrayObjDec> c_java_object_array
     ;
 non terminal CSimpleStmt csingle_stmt
     ;
@@ -1487,7 +1489,7 @@ jbrack ::= LBRACK RBRACK
 
 jarray_access ::= LBRACK jexp:e RBRACK
             {:
-                List<Expression> list = new LinkedList<>();
+                List<JExpression> list = new LinkedList<>();
                 list.add(e);
                 RESULT = list;
             :}
@@ -1505,7 +1507,7 @@ jexp_list ::= jexp_list:l COMMA jexp:e
             :}
         | jexp:e
             {:
-                List<Expression> list = new LinkedList<>();
+                List<JExpression> list = new LinkedList<>();
                 list.add(e);
                 RESULT = list;
             :}
@@ -1607,11 +1609,13 @@ jinternal ::=
                 RESULT = jdef;
             :}
         /* void method */
-        | jmodificator:a VOID ID:id jmethod_dec:m
+        | jmodificator:a VOID:v ID:id jmethod_dec:m
             {:
                 m.setAccess(a);
                 m.setName(new Label(id, new Position(idleft, idright)));
-                m.setType(new JType());
+                m.setType(
+                    new JType(new Position(vleft, vright))
+                );
                 RESULT = m;
             :}
         /* constructor */
@@ -2631,9 +2635,11 @@ c_jclass_init ::= JAVA DOT ID:t c_java_construct:lc SEMICOLON
                     lc, new Label(t, new Position(tleft, tright)) 
                 );
             :}
-        | JAVA DOT ID c_java_object_array
+        | JAVA DOT ID:t c_java_object_array:lao
             {:
-
+                RESULT = astGen.setTypeArrayObject(
+                    lao, new Label(t, new Position(tleft, tright))
+                );
             :}
         ;
 
@@ -2665,8 +2671,23 @@ c_j_construct ::= ID:i LPAREN RPAREN
             :}
         ;
 
-c_java_object_array ::= ID carray_dims COMMA c_java_object_array
-        | ID carray_dims SEMICOLON
+c_java_object_array ::= ID:i carray_dims:ld COMMA c_java_object_array:l
+            {:
+                l.add(new CArrayObjDec(
+                    new Label(i, new Position(ileft, iright),
+                    ld
+                ));
+                RESULT = l;
+            :}
+        | ID:i carray_dims:ld SEMICOLON
+            {:
+                List<CArrayObjDec> list = new LinkedList<>;
+                list.add(new CArrayObjDec(
+                    new Label(i, new Position(ileft, iright),
+                    ld
+                ));
+                RESULT = list;
+            :}
         ;
 
 /*--------------------------- STATEMENTS ---------------------------------*/

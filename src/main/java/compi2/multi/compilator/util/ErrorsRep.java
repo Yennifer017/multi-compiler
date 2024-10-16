@@ -156,4 +156,8 @@ public class ErrorsRep {
                 + " no tiene el mismo nombre de la clase " + className + report(pos);
     }
     
+    public String inesperateVoid(Position pos){
+        return "No se esperaba un void como tipo: " + report(pos);
+    }
+    
 }

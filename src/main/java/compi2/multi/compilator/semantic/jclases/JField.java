@@ -6,8 +6,9 @@ import compi2.multi.compilator.semantic.jclases.components.Typable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.j.JExpression;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ import lombok.Setter;
 @Getter @Setter
 public class JField extends JDef implements Typable{
     
-    private Expression expAssign;
+    private JExpression expAssign;
     private JType type;
     
     public JField(){
@@ -68,6 +69,12 @@ public class JField extends JDef implements Typable{
             index++;
         }
         return refFun.getSTName(this.name.getName(), index);
+    }
+
+    @Override
+    public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
+        this.type.validateSemantic(globalST, typeTable, semanticErrors, false);
+        //validate expression
     }
     
 }
