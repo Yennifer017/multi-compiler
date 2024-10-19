@@ -1517,35 +1517,35 @@ jliterals ::= INTEGER_LIT:o
             {:
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.IntegerPT
                 );
             :}
         | STRING_LIT:o
             {:
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.StringPT
                 );
             :}
         | BOOLEAN_LIT:o
             {:
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.BooleanPT
                 );
             :}
         | CHAR_LIT:o
             {:
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.CharPT
                 );
             :}
         | FLOAT_LIT:o
             {:
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.RealPT
                 );
             :}
         ;
@@ -2624,7 +2624,7 @@ cvars_dec ::= ctype:pt ID:i SEMICOLON
         | c_jclass_init:cis
             {:
                 RESULT = new CObjectsDec(
-                    cis
+                     cis /////////////////////////////////////////////////////////////////////////////////////////
                 );
             :}
         ;
@@ -2674,16 +2674,16 @@ c_j_construct ::= ID:i LPAREN RPAREN
 c_java_object_array ::= ID:i carray_dims:ld COMMA c_java_object_array:l
             {:
                 l.add(new CArrayObjDec(
-                    new Label(i, new Position(ileft, iright),
+                    new Label(i, new Position(ileft, iright)),
                     ld
                 ));
                 RESULT = l;
             :}
         | ID:i carray_dims:ld SEMICOLON
             {:
-                List<CArrayObjDec> list = new LinkedList<>;
+                List<CArrayObjDec> list = new LinkedList<>();
                 list.add(new CArrayObjDec(
-                    new Label(i, new Position(ileft, iright),
+                    new Label(i, new Position(ileft, iright)),
                     ld
                 ));
                 RESULT = list;

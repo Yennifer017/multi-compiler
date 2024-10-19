@@ -22,6 +22,12 @@ public class SemanticRestrictions {
         this.nameFunction = nameFunction;
     }
 
+    public SemanticRestrictions(boolean allowContinue, boolean allowBreak, String returnType) {
+        this.allowContinue = allowContinue;
+        this.allowBreak = allowBreak;
+        this.returnType = returnType;
+    }
+
     public boolean allowContinue() {
         return allowContinue;
     }

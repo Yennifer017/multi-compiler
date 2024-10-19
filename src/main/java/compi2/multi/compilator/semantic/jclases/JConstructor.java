@@ -50,7 +50,7 @@ public class JConstructor extends JFunction{
     
     @Override
     public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
-        if(globalST.getInitJerarTree().getFather().getFather() != null){
+        if(!globalST.getInitJerarTree().getFather().isObject()){
             //validar el uso de constructores
         }
         super.validateArgs(globalST, constructorST.getInternalST(), typeTable, semanticErrors);

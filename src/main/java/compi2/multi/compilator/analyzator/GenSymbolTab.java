@@ -62,6 +62,7 @@ public class GenSymbolTab extends Generator{
                     }
                 } catch (NullPointerException e) {
                     System.out.println(e);
+                    e.printStackTrace();
                 }
             }
         }
@@ -75,6 +76,7 @@ public class GenSymbolTab extends Generator{
                     clase.completeFieldsAndMethods(symbolTable, typeTable, semanticErrors);
                 } catch (NullPointerException e) {
                     System.out.println(e);
+                    e.printStackTrace();
                 }
             }
         }
@@ -88,6 +90,7 @@ public class GenSymbolTab extends Generator{
                     clase.validateInternal(symbolTable, typeTable, semanticErrors);
                 } catch (NullPointerException e) {
                     System.out.println(e);
+                    e.printStackTrace();
                 }
             }
         }

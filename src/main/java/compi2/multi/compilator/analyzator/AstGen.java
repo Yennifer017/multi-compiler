@@ -1,5 +1,6 @@
 package compi2.multi.compilator.analyzator;
 
+import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.pmodule.Argument;
 import compi2.multi.compilator.semantic.util.PassIf;
 import compi2.multi.compilator.semantic.past.IfAst;
@@ -163,7 +164,7 @@ public class AstGen {
         return list;
     }
     
-    public List<? extends CDef> setTypeArrayObject(List<CArrayObjDec> list, Label type){
+    public List<? extends DefAst> setTypeArrayObject(List<CArrayObjDec> list, Label type){
         if(list == null){
             return new LinkedList<>();
         }

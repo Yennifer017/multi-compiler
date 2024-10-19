@@ -1,9 +1,15 @@
 
 package compi2.multi.compilator.semantic.jast;
 
+import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
+import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.j.JControlStmt;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
+import compi2.multi.compilator.semantic.util.ReturnCase;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
 
@@ -21,20 +27,14 @@ public class JWhileAst extends JControlStmt{
         super.internalStmts = internalStmts;
     }
 
-    /*@Override
-    public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, 
-            List<String> semanticErrors, SemanticRestrictions restrictions) {
-        super.validateCondition(condition, symbolTable, typeTable, semanticErrors);
-        return super.validateInternalStmts(symbolTable, typeTable, semanticErrors, 
-                new SemanticRestrictions(
-                        true, 
-                        true, 
-                        restrictions.getReturnType(), 
-                        restrictions.getReturnType())
-        );
-        return null;
-        
+    @Override
+    public ReturnCase validate(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, 
+            SemanticRestrictions restrictions) {
+        super.validateCondition(globalST, symbolTable, typeTable, jerar, 
+                semanticErrors, restrictions, condition);
+        return super.validateInternalStmts(globalST, symbolTable, typeTable, 
+                jerar, semanticErrors, restrictions);
     }
-    */
     
 }

@@ -52,11 +52,10 @@ public class JClass extends DefObjsAst {
             TypeTable typeTable, List<String> semanticErrors) {
         if (isValidName(semanticErrors)
                 && super.refAnalyzator.canInsert(name, globalST, semanticErrors)) {
-            NodeJerarTree fatherJerarNode = this.validateAndGetFromHerence(globalST, semanticErrors);
             this.classST = new ClassST(
                     name.getName(),
                     new SymbolTable(),
-                    new NodeJerarTree(fatherJerarNode, null)
+                    new NodeJerarTree(null, null)
             );
             classST.getJerar().setClassST(classST);
             return this.classST;
@@ -66,6 +65,8 @@ public class JClass extends DefObjsAst {
 
     public void completeFieldsAndMethods(JSymbolTable globalST,
             TypeTable typeTable, List<String> semanticErrors) {
+        NodeJerarTree fatherJerarNode = this.validateAndGetFromHerence(globalST, semanticErrors);
+        this.classST.getJerar().setFather(fatherJerarNode);
         if (this.definitions != null && !this.definitions.isEmpty()) {
             for (JDef definition : definitions) {
                 try {

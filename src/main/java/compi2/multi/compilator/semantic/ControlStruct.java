@@ -2,7 +2,6 @@
 package compi2.multi.compilator.semantic;
 
 
-import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;

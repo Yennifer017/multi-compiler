@@ -5258,7 +5258,7 @@ class CUP$Parser$actions {
 		
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.IntegerPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jliterals",73, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -5275,7 +5275,7 @@ class CUP$Parser$actions {
 		
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.StringPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jliterals",73, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -5292,7 +5292,7 @@ class CUP$Parser$actions {
 		
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.BooleanPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jliterals",73, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -5309,7 +5309,7 @@ class CUP$Parser$actions {
 		
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.CharPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jliterals",73, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -5326,7 +5326,7 @@ class CUP$Parser$actions {
 		
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
-                    o
+                    o, PrimitiveType.RealPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jliterals",73, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -8216,7 +8216,7 @@ class CUP$Parser$actions {
 		List< ? extends CDef> cis = (List< ? extends CDef>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CObjectsDec(
-                    cis
+                     cis /////////////////////////////////////////////////////////////////////////////////////////
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cvars_dec",109, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -8346,7 +8346,7 @@ class CUP$Parser$actions {
 		List<CArrayObjDec> l = (List<CArrayObjDec>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 l.add(new CArrayObjDec(
-                    new Label(i, new Position(ileft, iright),
+                    new Label(i, new Position(ileft, iright)),
                     ld
                 ));
                 RESULT = l;
@@ -8366,9 +8366,9 @@ class CUP$Parser$actions {
 		int ldright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)).right;
 		List<CExp> ld = (List<CExp>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
-                List<CArrayObjDec> list = new LinkedList<>;
+                List<CArrayObjDec> list = new LinkedList<>();
                 list.add(new CArrayObjDec(
-                    new Label(i, new Position(ileft, iright),
+                    new Label(i, new Position(ileft, iright)),
                     ld
                 ));
                 RESULT = list;
