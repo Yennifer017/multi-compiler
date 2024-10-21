@@ -5,6 +5,8 @@ import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.exceptions.ConvPrimitiveException;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
@@ -48,6 +50,19 @@ public class JOperation extends JExpression{
                 super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors), 
                 pos
         );
+    }
+
+    @Override
+    public Label validateSimpleData(List<String> semanticErrors) {
+        Label leftType = left.validateSimpleData(semanticErrors);
+        Label rightType = right.validateSimpleData(semanticErrors);
+        try {
+            return new Label(
+                    super.tConvert.simpleConvert(operation, leftType, rightType, semanticErrors),
+                    pos);
+        } catch (ConvPrimitiveException ex) {
+            return new Label(Analyzator.ERROR_TYPE, pos);
+        }
     }
     
 }

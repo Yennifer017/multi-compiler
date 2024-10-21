@@ -124,7 +124,9 @@ public class Analyzator {
     public void javaSemanticAnalysis(List<JClass> classes){
         javaSymbolTable = new JSymbolTable();
         genSymbolTab.addJavaClases(javaSymbolTable, typeTable, classes, semanticErrors);
-        genSymbolTab.addJavaInternalClasses(javaSymbolTable, typeTable, classes, semanticErrors);
+        genSymbolTab.addJavaInternalClasses(
+                javaSymbolTable, typeTable, classes, semanticErrors
+        );
         genSymbolTab.internajJavaSemanticValitations(
                 javaSymbolTable, typeTable, classes, semanticErrors
         );

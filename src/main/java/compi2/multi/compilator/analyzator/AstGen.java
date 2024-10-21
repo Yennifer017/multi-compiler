@@ -154,7 +154,7 @@ public class AstGen {
     
     public List<? extends CDef> setTypeCObject(List<CObjectDec> list, Label type){
         if(list == null){
-            return new LinkedList<>();
+            return new LinkedList<CObjectDec>();
         }
         if(!list.isEmpty()){
             for (CObjectDec cObjectDec : list) {
@@ -164,9 +164,9 @@ public class AstGen {
         return list;
     }
     
-    public List<? extends DefAst> setTypeArrayObject(List<CArrayObjDec> list, Label type){
+    public List<? extends CDef> setTypeArrayObject(List<CArrayObjDec> list, Label type){
         if(list == null){
-            return new LinkedList<>();
+            return new LinkedList<CArrayObjDec>();
         }
         if(!list.isEmpty()){
             for (CArrayObjDec cObjectDec : list) {

@@ -16,7 +16,7 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CArrayObjDec extends DefAst{
+public class CArrayObjDec extends CDef{
     private Label objectName;
     private List<CExp> dims;
     
@@ -25,9 +25,5 @@ public class CArrayObjDec extends DefAst{
         this.dims = dims;
     }
 
-    @Override
-    public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
 }

@@ -50,7 +50,6 @@ public class JArg {
                     this.name.getName(), this.name.getPosition())
             );
         }
-        
     }
     
 }

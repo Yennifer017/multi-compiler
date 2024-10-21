@@ -43,4 +43,6 @@ public abstract class JExpression {
     public abstract Label validateData(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, 
             NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions);
     
+    public abstract Label validateSimpleData(List<String> semanticErrors);
+    
 }

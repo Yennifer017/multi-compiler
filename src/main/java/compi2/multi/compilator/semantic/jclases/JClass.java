@@ -50,14 +50,15 @@ public class JClass extends DefObjsAst {
     @Override
     public RowST generateRowST(JSymbolTable globalST, SymbolTable symbolTable,
             TypeTable typeTable, List<String> semanticErrors) {
+        this.classST = new ClassST(
+                name.getName(),
+                new SymbolTable(),
+                new NodeJerarTree(null, null)
+        );
+        classST.getJerar().setClassST(classST);
+
         if (isValidName(semanticErrors)
                 && super.refAnalyzator.canInsert(name, globalST, semanticErrors)) {
-            this.classST = new ClassST(
-                    name.getName(),
-                    new SymbolTable(),
-                    new NodeJerarTree(null, null)
-            );
-            classST.getJerar().setClassST(classST);
             return this.classST;
         }
         return null;
@@ -70,16 +71,16 @@ public class JClass extends DefObjsAst {
         if (this.definitions != null && !this.definitions.isEmpty()) {
             for (JDef definition : definitions) {
                 try {
-                    if(definition instanceof JFunction){
+                    if (definition instanceof JFunction) {
                         JFunction constructor = (JFunction) definition;
                         constructor.setNameClass(name);
                     }
                     RowST rowST = definition.generateRowST(
-                            classST.getInternalST(), 
-                            typeTable, 
+                            classST.getInternalST(),
+                            typeTable,
                             semanticErrors
                     );
-                    if(rowST != null){
+                    if (rowST != null) {
                         classST.getInternalST().put(rowST.getName(), rowST);
                     }
                 } catch (NullPointerException e) {
@@ -88,11 +89,16 @@ public class JClass extends DefObjsAst {
             }
         }
     }
-    
+
     public void validateInternal(JSymbolTable globalST,
-            TypeTable typeTable, List<String> semanticErrors){
-        if(this.definitions != null && !this.definitions.isEmpty()){
+            TypeTable typeTable, List<String> semanticErrors) {
+        if (this.definitions != null && !this.definitions.isEmpty()) {
             for (JDef definition : this.definitions) {
+                if (definition instanceof JField) {
+                    JField field = (JField) definition;
+                    field.setSymbolTable(classST.getInternalST());
+                }
+                definition.setJerar(classST.getJerar());
                 definition.validateInternal(globalST, typeTable, semanticErrors);
             }
         }

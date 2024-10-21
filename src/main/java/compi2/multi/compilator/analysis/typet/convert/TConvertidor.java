@@ -115,8 +115,11 @@ public class TConvertidor {
     
     /**
      * Convierte en un dato primitivo un tipo, si no es posible lanza una excepcion
+     * @param type
+     * @return 
+     * @throws compi2.multi.compilator.exceptions.ConvPrimitiveException
     */
-    private PrimitiveType convertPrimitive(String type) throws ConvPrimitiveException{
+    public PrimitiveType convertPrimitive(String type) throws ConvPrimitiveException{
         if (type.equals(PrimitiveType.IntegerPT.getName())) {
             return PrimitiveType.IntegerPT;
         } else if (type.equals(PrimitiveType.RealPT.getName())) {

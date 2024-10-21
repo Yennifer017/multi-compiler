@@ -62,7 +62,7 @@ public class ErrorsRep {
     }
     
     public String ilegalUseError(String variable, Position pos){
-        return "Expresion invalida, variable/funcion/record/arreglo no permitido <" 
+        return "Expresion invalida, variable/funcion/record/arreglo/objeto no permitido <" 
                 + variable + ">" + report(pos);
     }
     
@@ -130,6 +130,10 @@ public class ErrorsRep {
         builder.append("]");
         builder.append(report(pos));
         return builder.toString();
+    }
+    
+    public String undefiniteConstructorError(Position pos){
+        return "El contructor no se encontro " + report(pos);
     }
     
     public String noSuitableFunctionError(String name, List<String> args, Position pos){

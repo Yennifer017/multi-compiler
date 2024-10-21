@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.semantic.jclases;
 
+import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.semantic.jclases.components.JType;
 import compi2.multi.compilator.semantic.jclases.components.Typable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
@@ -9,6 +10,8 @@ import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.j.JExpression;
+import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +25,8 @@ public class JField extends JDef implements Typable{
     
     private JExpression expAssign;
     private JType type;
+    
+    private SymbolTable symbolTable;
     
     public JField(){
         super(null);
@@ -51,14 +56,14 @@ public class JField extends JDef implements Typable{
             if(rowST instanceof FieldST){
                 return null;
             } else {
-                return verificateOthersConstructs(symbolTable);
+                return verificateOthersFields(symbolTable);
             }
         } else {
             return this.name.getName();
         }
     }
     
-    private String verificateOthersConstructs(SymbolTable symbolTable){
+    private String verificateOthersFields(SymbolTable symbolTable){
         int index = 1;
         while (symbolTable.containsKey(
                 refFun.getSTName(this.name.getName(), index))) {
@@ -74,7 +79,21 @@ public class JField extends JDef implements Typable{
     @Override
     public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
         this.type.validateSemantic(globalST, typeTable, semanticErrors, false);
-        //validate expression
+        if(expAssign != null){
+            Label typeAssign = expAssign.validateData(globalST, symbolTable, 
+                    typeTable, 
+                    jerar, 
+                    semanticErrors, 
+                    new SemanticRestrictions(false, false, "")
+            );
+            if(!typeAssign.getName().equals(this.type.getCompleateName())){
+                semanticErrors.add(errorsRep.incorrectTypeError(
+                        typeAssign.getName(), 
+                        this.type.getCompleateName(), 
+                        typeAssign.getPosition())
+                );
+            }
+        }
     }
     
 }

@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.semantic.jclases;
 
+import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -22,6 +23,8 @@ import lombok.Setter;
 public abstract class JDef{
     protected Label name;
     protected AccessMod access;
+    protected NodeJerarTree jerar;
+    
     protected ErrorsRep errorsRep;
     protected RefAnalyzator refAnalyzator;
     protected FunctionRefAnalyzator refFun;

@@ -79,4 +79,16 @@ public class JType {
         return 0;
     }
     
+    public String getCompleateName(){
+        return this.name + this.getArrayName(this.getArrayDimensions());
+    }
+    
+    private String getArrayName(int times){
+        String arrayRep = "";
+        for (int i = 0; i < times; i++) {
+            arrayRep += "[]";
+        }
+        return arrayRep;
+    }
+    
 }

@@ -30,10 +30,15 @@ public class JLiteral extends JExpression{
     }
 
     @Override
-    public Label validateData(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        
+    public Label validateData(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, 
+            SemanticRestrictions restrictions) {
+        return new Label(this.type.getName(), pos);
     }
-    
-    
+
+    @Override
+    public Label validateSimpleData(List<String> semanticErrors) {
+        return new Label(this.type.getName(), pos);
+    }
     
 }

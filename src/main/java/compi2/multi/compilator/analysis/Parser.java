@@ -6181,6 +6181,9 @@ class CUP$Parser$actions {
           case 232: // jcase ::= CASE jexp COLON jstmts_block 
             {
               JCase RESULT =null;
+		int cleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int cright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object c = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		JExpression e = (JExpression)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
@@ -6188,7 +6191,10 @@ class CUP$Parser$actions {
 		int lsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		List<JStatement> ls = (List<JStatement>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-                RESULT = new JCase(e, ls);
+                RESULT = new JCase(
+                    new Position(cleft, cright),
+                    e, ls
+                );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcase",69, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -6198,11 +6204,17 @@ class CUP$Parser$actions {
           case 233: // jcase ::= DEFAULT COLON jstmts_block 
             {
               JCase RESULT =null;
+		int dleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).left;
+		int dright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
+		Object d = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		int lsleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int lsright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		List<JStatement> ls = (List<JStatement>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-                RESULT = new JCase(ls);
+                RESULT = new JCase(
+                    new Position(dleft, dright),
+                    ls
+                );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcase",69, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -8216,8 +8228,7 @@ class CUP$Parser$actions {
 		List< ? extends CDef> cis = (List< ? extends CDef>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CObjectsDec(
-                     cis /////////////////////////////////////////////////////////////////////////////////////////
-                );
+                     (List<CObjectDec>) cis);
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cvars_dec",109, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }

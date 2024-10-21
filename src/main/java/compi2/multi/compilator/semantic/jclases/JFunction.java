@@ -27,7 +27,6 @@ public abstract class JFunction extends JDef{
     protected Label nameClass;
     protected List<JArg> args;
     protected List<JStatement> internalStmts;
-    protected RefAnalyzator refAnalyzator;
 
     public JFunction(AccessMod access, List<JArg> args, List<JStatement> internalStmts) {
         super(access);
@@ -40,7 +39,7 @@ public abstract class JFunction extends JDef{
         List<String> list = new ArrayList<>();
         if(args != null && !args.isEmpty()){
             for (JArg arg : args) {
-                list.add(arg.getType().getName().getName());
+                list.add(arg.getType().getCompleateName());
             }
         }
         return list;

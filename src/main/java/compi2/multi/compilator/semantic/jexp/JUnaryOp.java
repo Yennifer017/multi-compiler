@@ -50,6 +50,18 @@ public class JUnaryOp extends JExpression{
             return new Label(Analyzator.ERROR_TYPE, pos);
         }
     }
+
+    @Override
+    public Label validateSimpleData(List<String> semanticErrors) {
+        Label typeLabel = passExp.validateSimpleData(semanticErrors);
+        try {
+            return new Label(
+                    super.tConvert.simpleConvert(operation, typeLabel, semanticErrors),
+                    pos);
+        } catch (ConvPrimitiveException ex) {
+            return new Label(Analyzator.ERROR_TYPE, pos);
+        }
+    }
     
     
 }

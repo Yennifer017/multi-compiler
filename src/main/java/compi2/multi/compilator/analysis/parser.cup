@@ -1858,13 +1858,19 @@ jswitch_cases ::= jswitch_cases:l jcase:c
             :}
         ;
 
-jcase ::= CASE jexp:e COLON jstmts_block:ls
+jcase ::= CASE:c jexp:e COLON jstmts_block:ls
             {:
-                RESULT = new JCase(e, ls);
+                RESULT = new JCase(
+                    new Position(cleft, cright),
+                    e, ls
+                );
             :}
-        | DEFAULT COLON jstmts_block:ls
+        | DEFAULT:d COLON jstmts_block:ls
             {:
-                RESULT = new JCase(ls);
+                RESULT = new JCase(
+                    new Position(dleft, dright),
+                    ls
+                );
             :}
         ;
 
@@ -2624,7 +2630,7 @@ cvars_dec ::= ctype:pt ID:i SEMICOLON
         | c_jclass_init:cis
             {:
                 RESULT = new CObjectsDec(
-                     cis /////////////////////////////////////////////////////////////////////////////////////////
+                     (List<CObjectDec>) cis //////////////////////////////////////
                 );
             :}
         ;
