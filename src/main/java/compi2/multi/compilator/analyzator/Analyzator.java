@@ -6,6 +6,7 @@ import compi2.multi.compilator.analysis.Parser;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.semantic.pmodule.FunctionDec;
 import compi2.multi.compilator.semantic.pmodule.ProcedureDec;
 import compi2.multi.compilator.semantic.Statement;
@@ -32,15 +33,15 @@ public class Analyzator {
     private List<String> semanticErrors;   
     private GenTypeTab genTypeTab;
     private GenSymbolTab genSymbolTab;
+    private GeneratorC3D generatorC3D;
     
     private SymbolTable pascalSymbolTable;
     private JSymbolTable javaSymbolTable;
     private SymbolTable cSymbolTable;
     private TypeTable typeTable;
     
-    private List<FunctionDec> functionsGlobal; 
-    private List<ProcedureDec> proceduresGlobal;
-    private List<Statement> statementsGlobal;
+    private List<FunctionDec> pascalFunctions; 
+    private List<JClass> javaClases;
     
     
     public Analyzator(){
@@ -48,6 +49,7 @@ public class Analyzator {
         genTypeTab = new GenTypeTab();
         genSymbolTab = new GenSymbolTab();
         typeTable = new TypeTable(true);
+        generatorC3D = new GeneratorC3D();
     }
     
     /**
@@ -70,10 +72,9 @@ public class Analyzator {
             if(lexer.getErrors().isEmpty() 
                     && parser.getSyntaxErrors().isEmpty() 
                     && semanticErrors.isEmpty()){
+                AdmiMemory admiMemory = new AdmiMemory();
+                generatorC3D.generateC3D(javaClases, admiMemory);
                 
-                
-            } else {
-                resetGlobalDec();
             }
         } catch (Exception e) {
             builder.append("Error inesperado:\n");
@@ -108,11 +109,6 @@ public class Analyzator {
         return builder.toString();
     }
     
-    private void resetGlobalDec(){
-        this.functionsGlobal = null;
-        this.proceduresGlobal = null;
-        this.statementsGlobal = null;
-    }
     
     public void pascalSemanticAnalysis(List<DefAst> definitions){
         this.pascalSymbolTable =  new SymbolTable();
@@ -130,6 +126,7 @@ public class Analyzator {
         genSymbolTab.internajJavaSemanticValitations(
                 javaSymbolTable, typeTable, classes, semanticErrors
         );
+        this.javaClases = classes;
         System.out.println("fin");
     }
     
