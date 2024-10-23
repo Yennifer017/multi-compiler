@@ -15,12 +15,15 @@ import lombok.Setter;
 @Getter @Setter
 public class ClassST extends RowST{
     
-    private SymbolTable internalST;
+    private SymbolTable methodsST;
+    private SymbolTable fieldsST;
+    
     private NodeJerarTree jerar;
 
-    public ClassST(String name, SymbolTable internalST, NodeJerarTree jerar) {
+    public ClassST(String name, SymbolTable methodsST, SymbolTable fieldsST, NodeJerarTree jerar) {
         super(name, Category.JClass, null);
-        this.internalST = internalST;
+        this.methodsST = methodsST;
+        this.fieldsST = fieldsST;
         this.jerar = jerar;
     }
     

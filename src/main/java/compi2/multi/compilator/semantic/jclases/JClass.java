@@ -6,6 +6,7 @@ import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.semantic.DefObjsAst;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.List;
@@ -53,6 +54,7 @@ public class JClass extends DefObjsAst {
         this.classST = new ClassST(
                 name.getName(),
                 new SymbolTable(),
+                new SymbolTable(),
                 new NodeJerarTree(null, null)
         );
         classST.getJerar().setClassST(classST);
@@ -71,17 +73,23 @@ public class JClass extends DefObjsAst {
         if (this.definitions != null && !this.definitions.isEmpty()) {
             for (JDef definition : definitions) {
                 try {
+                    SymbolTable st = null;
                     if (definition instanceof JFunction) {
                         JFunction constructor = (JFunction) definition;
                         constructor.setNameClass(name);
+                        
+                        st = classST.getMethodsST();
+                    } else {
+                        st = classST.getFieldsST();
                     }
+                    
                     RowST rowST = definition.generateRowST(
-                            classST.getInternalST(),
+                            st,
                             typeTable,
                             semanticErrors
                     );
                     if (rowST != null) {
-                        classST.getInternalST().put(rowST.getName(), rowST);
+                        st.put(rowST.getName(), rowST);
                     }
                 } catch (NullPointerException e) {
                     System.out.println(e);
@@ -96,7 +104,7 @@ public class JClass extends DefObjsAst {
             for (JDef definition : this.definitions) {
                 if (definition instanceof JField) {
                     JField field = (JField) definition;
-                    field.setSymbolTable(classST.getInternalST());
+                    field.setSymbolTable(classST.getFieldsST());
                 }
                 definition.setJerar(classST.getJerar());
                 definition.validateInternal(globalST, typeTable, semanticErrors);
@@ -124,6 +132,15 @@ public class JClass extends DefObjsAst {
                     herence.getName(), herence.getPosition()
             ));
             return globalST.getInitJerarTree();
+        }
+    }
+    
+    public void generateCuartetas(AdmiMemory admiMemory){
+        for (JDef definition : definitions) {
+            if(definition instanceof JFunction){
+                JFunction function = (JFunction) definition;
+                function.generateCuartetas(admiMemory, classST.getFieldsST());
+            }
         }
     }
 

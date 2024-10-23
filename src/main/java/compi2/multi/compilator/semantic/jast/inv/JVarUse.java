@@ -49,7 +49,7 @@ public class JVarUse extends JInvocation {
                     currentST = symbolTable.getFather();
                 }
             case JContextRef.FromObject:
-                currentST = jerar.getClassST().getInternalST();
+                currentST = jerar.getClassST().getFieldsST();
                 if (currentST.containsKey(name)) {
                     RowST rowST = currentST.get(name);
                     if (rowST instanceof FieldST) {
@@ -62,7 +62,7 @@ public class JVarUse extends JInvocation {
             default: //from father
                 NodeJerarTree currentNode = jerar.getFather();
                 while (currentNode != null) {
-                    currentST = currentNode.getClassST().getInternalST();
+                    currentST = currentNode.getClassST().getFieldsST();
                     if (currentST.containsKey(name)) {
                         RowST rowST = currentST.get(name);
                         if (rowST instanceof FieldST) {

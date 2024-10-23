@@ -63,7 +63,7 @@ public class JCreateClassE extends JExpression{
             SemanticRestrictions restrictions){
         if(globalST.containsKey(name)){
             ClassST classST = globalST.get(name);
-            SymbolTable st = classST.getInternalST();
+            SymbolTable st = classST.getMethodsST();
             List<String> paramsList = getTypeParams(
                     globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
             );

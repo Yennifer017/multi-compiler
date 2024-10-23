@@ -10,9 +10,16 @@ import lombok.Setter;
  */
 @Getter @Setter
 public class Memory {
-    int stringCount;
-    int integerCount;
-    int floatCount;
-    int charCount;
-    int booleanCount;
+    private int stringCount;
+    private int integerCount;
+    private int floatCount;
+    private int charCount;
+    private int booleanCount;
+    
+    private String name;
+    
+    public Memory(String name){
+        this.name = name;
+    }
+    
 }

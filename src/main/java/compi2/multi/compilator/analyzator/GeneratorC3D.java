@@ -11,6 +11,10 @@ import java.util.List;
  */
 public class GeneratorC3D {
     public void generateC3D(List<JClass> clases, AdmiMemory admiMemory){
-    
+        if(!clases.isEmpty()){
+            for (JClass clase : clases) {
+                clase.generateCuartetas(admiMemory);
+            }
+        }
     }
 }

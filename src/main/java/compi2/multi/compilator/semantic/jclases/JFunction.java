@@ -11,6 +11,9 @@ import compi2.multi.compilator.analysis.symbolt.clases.HeapDirecST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.ArrayList;
@@ -86,5 +89,12 @@ public abstract class JFunction extends JDef{
         if(this.internalStmts != null && !this.internalStmts.isEmpty()){
             
         }
+    }
+    
+    public abstract void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields);
+    
+    protected void generateInternalCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals){
+        
     }
 }

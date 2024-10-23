@@ -26,7 +26,8 @@ public class NodeJerarTree {
     
     public NodeJerarTree(){
         this.father = null;
-        this.classST = new ClassST(JClass.FATHER_OBJECT_CLASS, new SymbolTable(), this);
+        this.classST = new ClassST(JClass.FATHER_OBJECT_CLASS, 
+                new SymbolTable(), new SymbolTable(), this);
         this.isObject = true;
     }
 }

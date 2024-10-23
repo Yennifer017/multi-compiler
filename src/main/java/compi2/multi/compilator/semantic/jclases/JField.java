@@ -1,7 +1,6 @@
 
 package compi2.multi.compilator.semantic.jclases;
 
-import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.semantic.jclases.components.JType;
 import compi2.multi.compilator.semantic.jclases.components.Typable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
@@ -36,7 +35,7 @@ public class JField extends JDef implements Typable{
     public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
         String nameForST = getNameFunctionForST(symbolTable);
         if(nameForST != null){
-            return new FieldST(name.getName(), type.getName().getName(), access);
+            return new FieldST(name.getName(), type.getName().getName(), access, this);
         } else {
             semanticErrors.add(
                 super.errorsRep.repeatedDeclarationError(name.getName(), name.getPosition())
