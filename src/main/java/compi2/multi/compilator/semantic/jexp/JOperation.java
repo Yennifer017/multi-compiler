@@ -6,6 +6,11 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JExpression;
@@ -62,6 +67,25 @@ public class JOperation extends JExpression{
                     pos);
         } catch (ConvPrimitiveException ex) {
             return new Label(Analyzator.ERROR_TYPE, pos);
+        }
+    }
+
+    @Override
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        switch (operation) {
+            case DefiniteOperation.Addition, 
+                    DefiniteOperation.Substraction, 
+                    DefiniteOperation.Multiplication, 
+                    DefiniteOperation.Division, 
+                    DefiniteOperation.Module:
+                
+                break;
+            case DefiniteOperation.And, 
+                    DefiniteOperation.Or:
+                
+                break;
+            default:
+                throw new AssertionError();
         }
     }
     

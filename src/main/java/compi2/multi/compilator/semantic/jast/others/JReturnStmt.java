@@ -1,9 +1,15 @@
 package compi2.multi.compilator.semantic.jast.others;
 
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
+import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
@@ -19,6 +25,8 @@ import java.util.List;
 public class JReturnStmt extends JStatement {
 
     private JExpression passExp;
+    
+    private RowST rowST;
 
     public JReturnStmt(Position initPos, JExpression passExp) {
         super(initPos);
@@ -38,6 +46,12 @@ public class JReturnStmt extends JStatement {
                     restrictions.getReturnType(),
                     type.getPosition())
             );
+        } else {
+            SymbolTable currentST = symbolTable;
+            while (currentST != null) {                
+                currentST = currentST.getFather();
+            }
+            rowST = currentST.get(AdditionalInfoST.DIR_RETORNO_ROW.getNameRow());
         }
         return new ReturnCase(true);
     }

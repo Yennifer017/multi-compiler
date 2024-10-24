@@ -368,9 +368,9 @@ non terminal CLiteral cliterals
     ;
 non terminal List<CConstDec> cconst_b
     ;
-non terminal List<DefAst> cvars_b
+non terminal List<CDef> cvars_b
     ;
-non terminal DefAst cvars_dec
+non terminal CDef cvars_dec
     ;
 non terminal CObjectDec c_j_construct
     ;
@@ -2595,9 +2595,9 @@ cconst_b ::= cconst_b:l CONST ctype:pt ID:i ASSIGNATION cexp:e SEMICOLON
             :}
         ;
 
-cvars_b ::= cvars_b:l cvars_dec:d
+cvars_b ::= cvars_dec:d cvars_b:l
             {:
-                l.add(d);
+                l.add(0,d);
                 RESULT = l;
             :}
         | /* empty */
@@ -2635,7 +2635,7 @@ cvars_dec ::= ctype:pt ID:i SEMICOLON
             :}
         ;
 
-c_jclass_init ::= JAVA DOT ID:t c_java_construct:lc SEMICOLON
+c_jclass_init ::= JAVA DOT ID:t c_java_construct:lc
             {:
                 RESULT = astGen.setTypeCObject(
                     lc, new Label(t, new Position(tleft, tright)) 

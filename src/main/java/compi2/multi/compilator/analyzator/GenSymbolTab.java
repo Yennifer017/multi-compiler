@@ -37,6 +37,14 @@ public class GenSymbolTab extends Generator{
         }
     }
     
+    public void addCData(SymbolTable symbolTable, TypeTable typeTable){
+    
+    }
+    
+    public void validateMainStmts(){
+        
+    }
+    
     public SymbolTable generateInternalTable(SymbolTable symbolTable, TypeTable typeTable,
             List<? extends DefAst> listDef, List<String> semanticErrors){
         SymbolTable internalTable = new SymbolTable();

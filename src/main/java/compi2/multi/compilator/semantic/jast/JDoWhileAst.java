@@ -5,6 +5,12 @@ import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
+import compi2.multi.compilator.c3d.cuartetas.LabelC3D;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JControlStmt;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
@@ -38,6 +44,64 @@ public class JDoWhileAst extends JControlStmt{
                         true, 
                         restrictions.getReturnType(), 
                         restrictions.getReturnType())
+        );
+    }
+
+    @Override
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass) {
+        int firstLabel = admiMemory.getCountLabels();
+        int finalLabel = firstLabel + 1;
+        admiMemory.setCountLabels(admiMemory.getCountLabels() + 2);
+        
+        internalCuartetas.add(
+                new LabelC3D(firstLabel)
+        );
+        
+        C3Dpass passInternal = new C3Dpass(finalLabel, firstLabel);
+        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, passInternal);
+        
+        /*RetParamsC3D retCondition = condition.generateCuartetas(
+                admiMemory, internalCuartetas, temporals, passInternal
+        );
+        
+        if(retCondition.getTemporalUse() != null){
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new RegisterUse(RegisterUse.AX_INT), 
+                            new TemporalUse(PrimitiveType.IntegerPT, 
+                                    retCondition.getTemporalUse().getCountTemp())
+                    )
+            );
+            temporals.setIntegerCount(temporals.getIntegerCount() + 1);
+            internalCuartetas.add(
+                    new IfC3D(
+                            new RegisterUse(RegisterUse.AX_INT), 
+                            new AtomicValue(1), 
+                            DefiniteOperation.GraterEq, 
+                            new GotoC3D(firstLabel)
+                    )
+            );
+        } else {
+            internalCuartetas.add(
+                    new IfC3D(
+                            new AtomicValue(retCondition.getAtomicValue()), 
+                            new AtomicValue(1), 
+                            DefiniteOperation.GraterEq, 
+                            new GotoC3D(firstLabel)
+                    )
+            );
+        }*/
+        
+        super.generateConditionCuartetas(
+                admiMemory, internalCuartetas, temporals, pass, passInternal, condition, firstLabel
+        );
+        
+        internalCuartetas.add(
+                new GotoC3D(finalLabel)
+        );
+        internalCuartetas.add(
+                new LabelC3D(finalLabel)
         );
     }
 }

@@ -8,8 +8,6 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.semantic.pmodule.FunctionDec;
-import compi2.multi.compilator.semantic.pmodule.ProcedureDec;
-import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.c.CMain;
 import compi2.multi.compilator.semantic.jclases.JClass;
@@ -127,45 +125,12 @@ public class Analyzator {
                 javaSymbolTable, typeTable, classes, semanticErrors
         );
         this.javaClases = classes;
-        System.out.println("fin");
     }
     
     public void mainCSemanticAnalysis(CMain cmain){
         cSymbolTable = new SymbolTable();
-    }
-    
-    /**
-     *  Valida el codigo generado, a partir de los ast
-     * @param types
-     * @param consts
-     * @param variables
-     * @param functions
-     * @param procedures
-     * @param statements
-     */
-    public void semanticAnalysis(List<DefAst> types, List<DefAst> consts, List<DefAst> variables, 
-            List<FunctionDec> functions, List<ProcedureDec> procedures, List<Statement> statements){
-        /*genSymbolTab.addData(symbolTable, typeTable, consts, semanticErrors);
-        genSymbolTab.addData(symbolTable, typeTable, variables, semanticErrors);
-        genSymbolTab.addData(symbolTable, typeTable, functions, semanticErrors);
-        genSymbolTab.addData(symbolTable, typeTable, procedures, semanticErrors);
-        StmtsAnalizator stmtsAnalizator = new StmtsAnalizator();
-        stmtsAnalizator.validateInternalStmts(
-                symbolTable, 
-                typeTable, 
-                semanticErrors, 
-                new SemanticRestrictions(
-                        false, 
-                        false, 
-                        null, 
-                        null
-                ),
-                statements
-        );
-        this.functionsGlobal = functions;
-        this.proceduresGlobal = procedures;
-        this.statementsGlobal = statements;
-        System.out.println("Realizar el analisis semantico");*/
+        genSymbolTab.addCData(cSymbolTable, typeTable);
+        genSymbolTab.validateMainStmts();
     }
     
     

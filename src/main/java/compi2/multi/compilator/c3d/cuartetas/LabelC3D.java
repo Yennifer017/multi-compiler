@@ -10,11 +10,12 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class GotoC3D extends Cuarteta{
-    private int numberLabel;
+public class LabelC3D extends Cuarteta{
+    private int number;
 
-    public GotoC3D(int numberLabel) {
-        this.numberLabel = numberLabel;
+    public LabelC3D(int number) {
+        this.number = number;
     }
+    
     
 }

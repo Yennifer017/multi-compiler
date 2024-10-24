@@ -14,6 +14,7 @@ import compi2.multi.compilator.analyzator.RefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.ArrayList;
@@ -95,6 +96,10 @@ public abstract class JFunction extends JDef{
     
     protected void generateInternalCuartetas(AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, Memory temporals){
-        
+        for (JStatement internalStmt : internalStmts) {
+            internalStmt.generateCuartetas(
+                    admiMemory, internalCuartetas, temporals, new C3Dpass(-1)
+            );
+        }
     }
 }
