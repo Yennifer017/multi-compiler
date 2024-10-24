@@ -81,8 +81,11 @@ public abstract class JControlStmt extends JStatement{
             internalCuartetas.add(
                     new AssignationC3D(
                             new RegisterUse(RegisterUse.AX_INT), 
-                            new TemporalUse(PrimitiveType.IntegerPT, 
-                                    retCondition.getTemporalUse().getCountTemp())
+                            new TemporalUse(
+                                    PrimitiveType.IntegerPT, 
+                                    retCondition.getTemporalUse().getCountTemp(),
+                                    temporals
+                            )
                     )
             );
             temporals.setIntegerCount(temporals.getIntegerCount() + 1);

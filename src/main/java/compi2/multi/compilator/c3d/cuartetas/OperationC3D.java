@@ -22,5 +22,15 @@ public class OperationC3D extends Cuarteta{
         this.second = second;
         this.operation = operation;
     }
+
+    @Override
+    public StringBuilder generateCcode(StringBuilder builder) {
+        variable.generateCcode(builder);
+        builder.append(" = ");
+        first.generateCcode(builder);
+        builder.append(operation.getSign());
+        second.generateCcode(builder);
+        return builder;
+    }
     
 }

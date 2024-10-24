@@ -32,6 +32,10 @@ public enum PrimitiveType {
         return this.name;
     }
     
+    public String getCName(){
+        return "";
+    }
+    
     public Type getType(){
         return this.type;
     }

@@ -15,4 +15,10 @@ public class RegisterUse extends MemoryAccess{
     public RegisterUse(String register) {
         this.register = register;
     }
+
+    @Override
+    public StringBuilder generateCcode(StringBuilder builder) {
+        builder.append(register);
+        return builder;
+    }
 }

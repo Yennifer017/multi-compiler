@@ -24,6 +24,18 @@ public class IfC3D extends Cuarteta{
         this.operation = operation;
         this.gotoTrue = gotoTrue;
     }
+
+    @Override
+    public StringBuilder generateCcode(StringBuilder builder) {
+        builder.append("if(");
+        first.generateCcode(builder);
+        builder.append(operation.getSign());
+        second.generateCcode(builder);
+        builder.append("){");
+        gotoTrue.generateCcode(builder);
+        builder.append("}\n");
+        return builder;
+    }
     
     
 }

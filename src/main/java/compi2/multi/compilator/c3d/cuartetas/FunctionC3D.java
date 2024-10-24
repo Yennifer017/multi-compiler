@@ -22,5 +22,20 @@ public class FunctionC3D extends Cuarteta{
         this.internalMemory = internalMemory;
         this.cuartetas = cuartetas;
     }
+
+    @Override
+    public StringBuilder generateCcode(StringBuilder builder) {
+        builder.append("void ");
+        builder.append(name);
+        builder.append("(){");
+        internalMemory.generateCcode(builder);
+        if(!cuartetas.isEmpty()){
+            for (Cuarteta cuarteta : cuartetas) {
+                cuarteta.generateCcode(builder);
+            }
+        }
+        builder.append("}");
+        return builder;
+    }
     
 }
