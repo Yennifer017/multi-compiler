@@ -17,8 +17,7 @@ public class RegisterUse extends MemoryAccess{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append(register);
-        return builder;
     }
 }

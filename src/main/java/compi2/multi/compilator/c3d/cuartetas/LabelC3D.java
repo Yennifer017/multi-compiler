@@ -19,11 +19,10 @@ public class LabelC3D extends Cuarteta{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append(AdmiMemory.LABEL_C3D_NAME);
         builder.append(number);
         builder.append("\n");
-        return builder;
     }
     
     

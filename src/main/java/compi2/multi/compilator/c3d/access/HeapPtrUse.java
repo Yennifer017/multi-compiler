@@ -10,9 +10,8 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 public class HeapPtrUse extends MemoryAccess{
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append(AdmiMemory.HEAP_PTR);
-        return builder;
     }
     
 }

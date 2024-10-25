@@ -26,7 +26,7 @@ public class IfC3D extends Cuarteta{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append("if(");
         first.generateCcode(builder);
         builder.append(operation.getSign());
@@ -34,7 +34,6 @@ public class IfC3D extends Cuarteta{
         builder.append("){");
         gotoTrue.generateCcode(builder);
         builder.append("}\n");
-        return builder;
     }
     
     

@@ -21,7 +21,7 @@ public class HeapAccess extends MemoryAccess{
     }
     
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         if(memoryAccess != null){
             builder.append(AdmiMemory.HEAP_PTR + "[");
             memoryAccess.generateCcode(builder);
@@ -31,7 +31,6 @@ public class HeapAccess extends MemoryAccess{
                     .append(position)
                     .append("]");
         }
-        return builder;
     }
     
 }

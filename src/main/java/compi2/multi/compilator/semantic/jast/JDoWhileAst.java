@@ -36,7 +36,8 @@ public class JDoWhileAst extends JControlStmt{
     public ReturnCase validate(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, 
             NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
         super.validateCondition(globalST, symbolTable, typeTable, jerar, 
-                semanticErrors, restrictions, condition);
+                semanticErrors, restrictions, condition
+        );
         return super.validateInternalStmts(
                 globalST, symbolTable, typeTable, jerar, semanticErrors, 
                 new SemanticRestrictions(

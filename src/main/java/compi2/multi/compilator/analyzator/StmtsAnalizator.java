@@ -8,6 +8,8 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.c.CImports;
+import compi2.multi.compilator.semantic.c.CStatement;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;
@@ -64,6 +66,40 @@ public class StmtsAnalizator {
                             symbolTable, 
                             typeTable, 
                             jerar, 
+                            semanticErrors, 
+                            restrictions
+                    );
+                    if(allCovered){
+                        semanticErrors.add(errorsRep.unrachableCodeError(stmt.getInitPos()));
+                    }
+                    if(retCase.isAllScenaries() && i != internalStmts.size() && !allCovered){
+                        allCovered = true;
+                    } else if(retCase.isAllScenaries() && i == internalStmts.size()){
+                        return new ReturnCase(true);
+                    }
+                } catch (NullPointerException e) {
+                    semanticErrors.add("Ocurrio un error inesperado al intentar recuperar una j-instruccion");
+                }
+            }
+        }
+        return new ReturnCase(allCovered);
+    }
+    
+    public ReturnCase validateInternalStmts(CImports imports, JSymbolTable clasesST, 
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+            List<String> semanticErrors, SemanticRestrictions restrictions,
+            List<CStatement> internalStmts){
+        boolean allCovered = false;
+        if(internalStmts !=  null){
+            for (int i = 0; i < internalStmts.size(); i++) {
+                try {
+                    CStatement stmt = internalStmts.get(i);
+                    ReturnCase retCase = stmt.validate(
+                            imports, 
+                            clasesST, 
+                            symbolTable, 
+                            pascalST, 
+                            typeTable, 
                             semanticErrors, 
                             restrictions
                     );

@@ -129,7 +129,24 @@ public class Analyzator {
     
     public void mainCSemanticAnalysis(CMain cmain){
         cSymbolTable = new SymbolTable();
-        genSymbolTab.addCData(cSymbolTable, typeTable);
+        genSymbolTab.addCData(
+                cmain.getImports(), 
+                javaSymbolTable, 
+                cSymbolTable, 
+                pascalSymbolTable,
+                typeTable, 
+                cmain.getConsts(), 
+                semanticErrors
+        );
+        genSymbolTab.addCData(
+                cmain.getImports(), 
+                javaSymbolTable, 
+                cSymbolTable, 
+                pascalSymbolTable,
+                typeTable,
+                cmain.getVars(),
+                semanticErrors
+        );
         genSymbolTab.validateMainStmts();
     }
     

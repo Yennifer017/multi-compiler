@@ -17,7 +17,7 @@ public class AtomicValue<T> extends MemoryAccess{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         if(value instanceof String){
             builder.append("\"");
             builder.append(value);
@@ -29,7 +29,6 @@ public class AtomicValue<T> extends MemoryAccess{
         } else {
             builder.append(value);
         }
-        return builder;
     }
     
 }

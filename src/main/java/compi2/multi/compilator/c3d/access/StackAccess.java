@@ -24,7 +24,7 @@ public class StackAccess extends MemoryAccess{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         if(memoryAccess != null){
             builder.append(AdmiMemory.STACK_PTR + "[");
             memoryAccess.generateCcode(builder);
@@ -34,7 +34,6 @@ public class StackAccess extends MemoryAccess{
                     .append(position)
                     .append("]");
         }
-        return builder;
     }
     
 }

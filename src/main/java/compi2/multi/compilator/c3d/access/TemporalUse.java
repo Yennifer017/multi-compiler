@@ -23,12 +23,11 @@ public class TemporalUse extends MemoryAccess{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append(memory.getMemoryName(type));
         builder.append("[");
         builder.append(countTemp);
         builder.append("]");
-        return builder;
     }
     
 }

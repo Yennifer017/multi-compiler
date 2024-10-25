@@ -21,12 +21,11 @@ public class AssignationC3D extends Cuarteta{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         variable.generateCcode(builder);
         builder.append(" = ");
         first.generateCcode(builder);
         builder.append(";\n");
-        return builder;
     }
     
 }

@@ -9,6 +9,8 @@ import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.pmodule.ModuleDec;
 import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.c.CDef;
+import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.jclases.JClass;
 import java.util.List;
 
@@ -37,8 +39,24 @@ public class GenSymbolTab extends Generator{
         }
     }
     
-    public void addCData(SymbolTable symbolTable, TypeTable typeTable){
-    
+    public void addCData(CImports imports, JSymbolTable clasesST, 
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+            List<? extends CDef> definitions, List<String> semanticErrors){
+        if(definitions != null && !definitions.isEmpty()){
+            for (CDef definition : definitions) {
+                try {
+                    RowST rowST = definition.generateRowST(
+                            imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
+                    );
+                    if(rowST != null){
+                        symbolTable.put(rowST.getName(), rowST);
+                    }
+                } catch (NullPointerException e){
+                    System.out.println(e);
+                    e.printStackTrace();
+                }
+            }
+        }
     }
     
     public void validateMainStmts(){

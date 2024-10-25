@@ -24,7 +24,7 @@ public class FunctionC3D extends Cuarteta{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append("void ");
         builder.append(name);
         builder.append("(){");
@@ -35,7 +35,6 @@ public class FunctionC3D extends Cuarteta{
             }
         }
         builder.append("}");
-        return builder;
     }
     
 }

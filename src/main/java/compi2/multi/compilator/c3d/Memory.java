@@ -24,13 +24,12 @@ public class Memory implements CodeTransformable{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         definite(builder, PrimitiveType.IntegerPT, integerCount);
         definite(builder, PrimitiveType.StringPT, stringCount);
         definite(builder, PrimitiveType.RealPT, floatCount);
         definite(builder, PrimitiveType.CharPT, charCount);
         definite(builder, PrimitiveType.BooleanPT, booleanCount);
-        return builder;
     }
     
     private StringBuilder definite(StringBuilder builder, PrimitiveType type, int count){

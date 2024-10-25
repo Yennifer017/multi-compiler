@@ -7983,7 +7983,8 @@ class CUP$Parser$actions {
 		String l = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.StringPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cliterals",106, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7999,7 +8000,8 @@ class CUP$Parser$actions {
 		float l = (float)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright), 
+                    l, PrimitiveType.RealPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cliterals",106, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -8015,7 +8017,8 @@ class CUP$Parser$actions {
 		Integer l = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.IntegerPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cliterals",106, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -8031,7 +8034,8 @@ class CUP$Parser$actions {
 		boolean l = (boolean)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.BooleanPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cliterals",106, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -8047,7 +8051,8 @@ class CUP$Parser$actions {
 		Character l = (Character)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.CharPT
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cliterals",106, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

@@ -32,7 +32,7 @@ public class AdmiMemory implements CodeTransformable{
     
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append("int " + HEAP_PTR + " = 0;\n");
         builder.append("int " + STACK_PTR + " = 0;\n");
         stack.generateCcode(builder);
@@ -47,6 +47,5 @@ public class AdmiMemory implements CodeTransformable{
                 cuarteta.generateCcode(builder);
             }
         }
-        return builder;
     }
 }

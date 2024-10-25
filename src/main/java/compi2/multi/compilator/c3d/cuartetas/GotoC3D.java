@@ -19,12 +19,11 @@ public class GotoC3D extends Cuarteta{
     }
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append("goto ");
         builder.append(AdmiMemory.LABEL_C3D_NAME);
         builder.append(numberLabel);
         builder.append(";\n");
-        return builder;
     }
     
 }

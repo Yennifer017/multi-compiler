@@ -10,9 +10,8 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 public class StackPtrUse extends MemoryAccess{
 
     @Override
-    public StringBuilder generateCcode(StringBuilder builder) {
+    public void generateCcode(StringBuilder builder) {
         builder.append(AdmiMemory.STACK_PTR);
-        return builder;
     }
     
 }

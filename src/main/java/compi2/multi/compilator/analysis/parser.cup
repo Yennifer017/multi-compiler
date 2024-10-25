@@ -2538,31 +2538,36 @@ cparams ::= cparams:l COMMA cexp:e
 cliterals ::= STRING_LIT:l
             {:
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.StringPT
                 );
             :}
         | FLOAT_LIT:l
             {:
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright), 
+                    l, PrimitiveType.RealPT
                 );
             :}
         | INTEGER_LIT:l
             {:
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.IntegerPT
                 );
             :}
         | BOOLEAN_LIT:l
             {:
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.BooleanPT
                 );
             :}
         | CHAR_LIT:l
             {:
                 RESULT = new CLiteral(
-                    new Position(lleft, lright), l
+                    new Position(lleft, lright),
+                    l, PrimitiveType.CharPT
                 );
             :}
         ;
