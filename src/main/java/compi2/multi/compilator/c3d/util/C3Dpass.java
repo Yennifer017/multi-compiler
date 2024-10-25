@@ -2,13 +2,14 @@
 package compi2.multi.compilator.c3d.util;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  *
  * @author blue-dragon
  */
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class C3Dpass {
     private int endLabel;
     private int startBucleLabel;

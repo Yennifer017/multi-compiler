@@ -7,6 +7,16 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.RegisterUse;
+import compi2.multi.compilator.c3d.access.StackAccess;
+import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
+import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.Register;
+import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
@@ -26,6 +36,8 @@ public class CVarDec extends CDef {
     private PrimitiveType type;
     private CExp exp;
 
+    private SingleData singleData;
+    
     public CVarDec(Label name, PrimitiveType type, CExp exp) {
         super.name = name;
         this.type = type;
@@ -63,6 +75,36 @@ public class CVarDec extends CDef {
             );
         }
         return null;
+    }
+
+    @Override
+    public void generateCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals) {
+        RetParamsC3D returnExp = exp.generateCuartetas(
+                admiMemory, internalCuartetas, temporals, new C3Dpass()
+        );
+        if(returnExp.getTemporalUse() !=  null){
+            Register register = admiRegisters.findRegister(type, 1);
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new RegisterUse(register), 
+                            returnExp.getTemporalUse()
+                    )
+            );
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new StackAccess(type, singleData.getRelativeDir()), 
+                            new RegisterUse(register)
+                    )
+            );
+        } else {
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new StackAccess(type, singleData.getRelativeDir()), 
+                            new AtomicValue(returnExp.getAtomicValue())
+                    )
+            );
+        }
     }
 
 }

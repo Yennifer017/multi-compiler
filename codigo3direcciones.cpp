@@ -36,8 +36,8 @@ internalinteger[0] = h;
 h = h+1;
 AX_INT = ptr+2;
 internalinteger[1] = AX_INT;
-BX_INT = stack[0];
-stack[AX_INT] = BX_INT;
+BX_INT = stackinteger[0];
+stackinteger[AX_INT] = BX_INT;
 }
 void imprimir(){
 int internalinteger[0];
@@ -45,4 +45,20 @@ std::string internalstring[0];
 float internalreal[0];
 char internalchar[0];
 int internalboolean[0];
+}
+int main(){
+int internalinteger[0];
+std::string internalstring[0];
+float internalreal[0];
+char internalchar[0];
+int internalboolean[0];
+stackreal[0] = 3.141592;
+if(5>=1){goto et0;
+}
+goto et1;
+et0:
+goto et2;
+et1:
+et2:
+return 0;
 }

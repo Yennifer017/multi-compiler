@@ -98,7 +98,7 @@ public abstract class JFunction extends JDef{
             List<Cuarteta> internalCuartetas, Memory temporals){
         for (JStatement internalStmt : internalStmts) {
             internalStmt.generateCuartetas(
-                    admiMemory, internalCuartetas, temporals, new C3Dpass(-1)
+                    admiMemory, internalCuartetas, temporals, new C3Dpass()
             );
         }
     }

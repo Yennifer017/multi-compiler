@@ -30,11 +30,15 @@ public class StackAccess extends MemoryAccess{
     @Override
     public void generateCcode(StringBuilder builder) {
         if(memoryAccess != null){
-            builder.append(AdmiMemory.STACK_ACCESS + "[");
+            builder.append(AdmiMemory.STACK_ACCESS)
+                    .append(type.getName())
+                    .append("[");
             memoryAccess.generateCcode(builder);
             builder.append("]");
         } else {
-            builder.append(AdmiMemory.STACK_ACCESS + "[")
+            builder.append(AdmiMemory.STACK_ACCESS)
+                    .append(type.getName())
+                    .append("[")
                     .append(position)
                     .append("]");
         }

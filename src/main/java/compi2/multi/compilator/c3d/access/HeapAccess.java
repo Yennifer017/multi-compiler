@@ -27,11 +27,15 @@ public class HeapAccess extends MemoryAccess{
     @Override
     public void generateCcode(StringBuilder builder) {
         if(memoryAccess != null){
-            builder.append(AdmiMemory.HEAP_ACCESS + "[");
+            builder.append(AdmiMemory.HEAP_ACCESS)
+                    .append(type.getName())
+                    .append("[");
             memoryAccess.generateCcode(builder);
             builder.append("]");
         } else {
-            builder.append(AdmiMemory.HEAP_ACCESS + "[")
+            builder.append(AdmiMemory.HEAP_ACCESS)
+                    .append(type.getName())
+                    .append("[")
                     .append(position)
                     .append("]");
         }

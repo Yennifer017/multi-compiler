@@ -22,7 +22,7 @@ public class LabelC3D extends Cuarteta{
     public void generateCcode(StringBuilder builder) {
         builder.append(AdmiMemory.LABEL_C3D_NAME);
         builder.append(number);
-        builder.append("\n");
+        builder.append(":\n");
     }
     
     
