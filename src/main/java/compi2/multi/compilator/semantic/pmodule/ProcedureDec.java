@@ -6,6 +6,9 @@ import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.DefAst;
@@ -73,6 +76,11 @@ public class ProcedureDec extends ModuleDec {
                 ),
                 statements
         );
+    }
+
+    @Override
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

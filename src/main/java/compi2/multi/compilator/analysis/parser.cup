@@ -206,8 +206,7 @@ terminal    PLUS, MINUS, TIMES, DIV, MODULE, POWER,
             ;
 terminal String     ID, STRING_LIT;
 terminal Character  CHAR_LIT;
-terminal Integer    INTEGER_LIT;
-terminal boolean    BOOLEAN_LIT;
+terminal Integer    INTEGER_LIT, BOOLEAN_LIT;
 terminal float      FLOAT_LIT;
 
 
@@ -2763,16 +2762,14 @@ cdef_functions_stmt ::=  SCANF:s LPAREN STRING_LIT:m COMMA AMPERSAND ID:v RPAREN
             :}
         | CLEAR:c LPAREN RPAREN 
             {:
-                RESULT = new CDefaultSimpleFun(
-                    new Position(cleft, cright),
-                    CDefaultSimpleFun.CLEAR_FUN
+                RESULT = new CClear(
+                    new Position(cleft, cright)
                 );
             :}
         | GETCH:g LPAREN RPAREN
             {:
-                RESULT = new CDefaultSimpleFun(
-                    new Position(gleft, gright),
-                    CDefaultSimpleFun.GETCH_FUN
+                RESULT = new CGetchStmt(
+                    new Position(gleft, gright)
                 );
             :}
         | PRINTF:p LPAREN STRING_LIT:m COMMA AMPERSAND ID:i RPAREN

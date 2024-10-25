@@ -126,12 +126,13 @@ public class JMethod extends JFunction implements Typable{
         List<Cuarteta> internalCuartetas = new LinkedList<>();
         Memory temporals = new Memory("internal");
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);
+        String finalName = super.getFinalName(methodSt.getName());
         admiMemory.getCuartetas().add(
                 new FunctionC3D(
-                    methodSt.getName(), 
+                    finalName, 
                     temporals, 
                     internalCuartetas)
         );
-        admiMemory.getDefinitions().add(methodSt.getName());
+        admiMemory.getDefinitions().add(finalName);
     }
 }

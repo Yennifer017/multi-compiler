@@ -3394,7 +3394,7 @@ class CUP$Parser$actions {
               Expression RESULT =null;
 		int lleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int lright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		boolean l = (boolean)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		Integer l = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                         RESULT = new SingleExp(
                             PrimitiveType.BooleanPT, 
@@ -5289,7 +5289,7 @@ class CUP$Parser$actions {
               JLiteral RESULT =null;
 		int oleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int oright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		boolean o = (boolean)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		Integer o = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JLiteral(
                     new Position(oleft, oright),
@@ -8031,7 +8031,7 @@ class CUP$Parser$actions {
               CLiteral RESULT =null;
 		int lleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int lright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
-		boolean l = (boolean)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		Integer l = (Integer)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new CLiteral(
                     new Position(lleft, lright),
@@ -8584,9 +8584,8 @@ class CUP$Parser$actions {
 		int cright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		Object c = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
-                RESULT = new CDefaultSimpleFun(
-                    new Position(cleft, cright),
-                    CDefaultSimpleFun.CLEAR_FUN
+                RESULT = new CClear(
+                    new Position(cleft, cright)
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cdef_functions_stmt",102, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -8601,9 +8600,8 @@ class CUP$Parser$actions {
 		int gright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)).right;
 		Object g = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
-                RESULT = new CDefaultSimpleFun(
-                    new Position(gleft, gright),
-                    CDefaultSimpleFun.GETCH_FUN
+                RESULT = new CGetchStmt(
+                    new Position(gleft, gright)
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("cdef_functions_stmt",102, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

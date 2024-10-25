@@ -7,6 +7,9 @@ import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;
@@ -49,5 +52,7 @@ public abstract class DefAst {
                     type.getPosition()));
         } 
     }
+    public abstract void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals);
 
 }

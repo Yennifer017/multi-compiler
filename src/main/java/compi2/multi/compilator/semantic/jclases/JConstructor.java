@@ -161,13 +161,14 @@ public class JConstructor extends JFunction{
                 )
         );
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);
+        String finalName = super.getFinalName(constructorST.getName());
         admiMemory.getCuartetas().add(
                 new FunctionC3D(
-                    constructorST.getName(), 
+                    finalName, 
                     temporals, 
                     internalCuartetas)
         );
-        admiMemory.getDefinitions().add(constructorST.getName());
+        admiMemory.getDefinitions().add(finalName);
     }
     
 }

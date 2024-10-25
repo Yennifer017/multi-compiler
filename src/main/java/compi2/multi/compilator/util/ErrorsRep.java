@@ -164,4 +164,7 @@ public class ErrorsRep {
         return "No se esperaba un void como tipo: " + report(pos);
     }
     
+    public String mascaraError(Position pos){
+        return "La mascara es invalida, se esperaba %d, %c, %f o %s " + report(pos);
+    }
 }

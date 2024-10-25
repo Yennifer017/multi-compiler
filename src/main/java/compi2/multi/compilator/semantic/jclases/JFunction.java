@@ -102,4 +102,8 @@ public abstract class JFunction extends JDef{
             );
         }
     }
+    
+    protected String getFinalName(String parcialName){
+        return "JAVA_" + nameClass.getName() + "_" + parcialName;
+    }
 }

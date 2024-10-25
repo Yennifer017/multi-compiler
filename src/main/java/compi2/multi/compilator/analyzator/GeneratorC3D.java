@@ -68,7 +68,9 @@ public class GeneratorC3D {
     
     public void generatePascalC3D(List<DefAst> pascalFunctions, AdmiMemory admiMemory){
         if(pascalFunctions != null && !pascalFunctions.isEmpty()){
-            
+            for (DefAst pascalFunction : pascalFunctions) {
+                pascalFunction.generateCuartetas(admiMemory, null, null);
+            }
         }
     }
     

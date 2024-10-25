@@ -171,7 +171,12 @@ OctDigit          = [0-7]
 
         /* literals */
         {Identifier}    { return symbol( sym.ID, yytext() ); }
-        {SimpleBoolean} { return symbol(sym.BOOLEAN_LIT, Boolean.valueOf(yytext())); }
+        {SimpleBoolean} { 
+                            return symbol(
+                                sym.BOOLEAN_LIT, 
+                                yytext().equals("1") ? 1 : 0
+                            ); 
+                        }
         {DecIntegerLiteral}            { return symbol(sym.INTEGER_LIT, Integer.valueOf(yytext())); }
         {DecFloatLiteral}              { return symbol(sym.FLOAT_LIT, Float.parseFloat(yytext()));}
 
@@ -277,8 +282,8 @@ OctDigit          = [0-7]
         "println"       { return symbol(sym.PRINTLN); }
 
         /* literals */
-        "true"          { return symbol(sym.BOOLEAN_LIT, true); }
-        "false"         { return symbol(sym.BOOLEAN_LIT, false); }
+        "true"          { return symbol(sym.BOOLEAN_LIT, 1); }
+        "false"         { return symbol(sym.BOOLEAN_LIT, 0); }
         {Identifier}    { return symbol( sym.ID, yytext() ); }
         {DecIntegerLiteral}            { return symbol(sym.INTEGER_LIT, Integer.valueOf(yytext())); }
         {DecFloatLiteral}              { return symbol(sym.FLOAT_LIT, Float.parseFloat(yytext()));}
@@ -396,7 +401,12 @@ OctDigit          = [0-7]
 
         /* literals */
         {Identifier}    { return symbol(sym.ID, yytext().toLowerCase()); }
-        {SimpleBoolean} { return symbol(sym.BOOLEAN_LIT, Boolean.valueOf(yytext())); }
+        {SimpleBoolean} { 
+                            return symbol(
+                                sym.BOOLEAN_LIT,
+                                yytext().equals("1") ? 1 : 0
+                            ); 
+                        }
         {DecIntegerLiteral}            { return symbol(sym.INTEGER_LIT, Integer.valueOf(yytext())); }
         {DecFloatLiteral}              { return symbol(sym.FLOAT_LIT, Float.parseFloat(yytext()));}
 

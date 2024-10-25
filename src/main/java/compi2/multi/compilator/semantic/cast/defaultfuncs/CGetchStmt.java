@@ -7,8 +7,8 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.cuartetas.funcs.ClearC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
-import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.c.CStatement;
 import compi2.multi.compilator.semantic.util.ReturnCase;
@@ -23,26 +23,22 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CDefaultSimpleFun extends CStatement{
-    public final static String CLEAR_FUN = "clear";
-    public final static String GETCH_FUN = "getch";
-    
-    private String functionName;
+public class CGetchStmt extends CStatement{
 
-    public CDefaultSimpleFun(Position initPos, String functionName) {
+    public CGetchStmt(Position initPos) {
         super(initPos);
-        this.functionName = functionName;
     }
 
     @Override
-    public ReturnCase validate(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ReturnCase validate(CImports imports, JSymbolTable clasesST, 
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+            List<String> semanticErrors, SemanticRestrictions restrictions) {
+        return new ReturnCase(false);
     }
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
-
     
 }

@@ -56,7 +56,7 @@ public class CVarDec extends CDef {
                     imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
             );
             if (!typeExp.getName().equals(this.type.getName())
-                    && !super.tConvert.canUpgradeType(this.type.getCName(), typeExp.getName())) {
+                    && !super.tConvert.canUpgradeType(this.type.getName(), typeExp.getName())) {
                 semanticErrors.add(super.errorsRep.incorrectTypeError(
                         typeExp.getName(),
                         this.type.getName(),
@@ -67,12 +67,13 @@ public class CVarDec extends CDef {
         if (super.refAnalyzator.canInsert(name, symbolTable, semanticErrors)) {
             int lastDir = symbolTable.getLastDir();
             symbolTable.incrementLastDir(1);
-            return new SingleData(
+            this.singleData = new SingleData(
                     name.getName(),
                     Category.Variable,
-                    this.type.getCName(),
+                    this.type.getName(),
                     lastDir
             );
+            return singleData;
         }
         return null;
     }
