@@ -7,6 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
+import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;
@@ -30,4 +31,7 @@ public abstract class CDef {
     public abstract RowST generateRowST(CImports imports, JSymbolTable clasesST, 
             SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
             List<String> semanticErrors);
+    
+    public abstract void generateCuartetas(AdmiMemory admiMemory);
+    
 }

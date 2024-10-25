@@ -23,6 +23,7 @@ import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.FunctionC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
@@ -118,7 +119,7 @@ public class JConstructor extends JFunction{
         temporals.setIntegerCount(temporals.getIntegerCount() + 1);
         internalCuartetas.add( //t1 = h
                 new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, espacioHeap), 
+                        new TemporalUse(PrimitiveType.IntegerPT, espacioHeap, temporals), 
                         new HeapPtrUse())
         );
         internalCuartetas.add( // h = h + nfields
@@ -134,7 +135,7 @@ public class JConstructor extends JFunction{
                 constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
         internalCuartetas.add( //AX = ptr + 0
                 new OperationC3D(
-                        new RegisterUse(RegisterUse.AX_INT), 
+                        new RegisterUse(Register.AX_INT), 
                         new StackPtrUse(),
                         new AtomicValue<>(dirInstanceST.getDirMemory()), 
                         DefiniteOperation.Addition
@@ -142,21 +143,21 @@ public class JConstructor extends JFunction{
         );
         internalCuartetas.add( //internal[n] = AX
                 new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, temporals.getIntegerCount()), 
-                        new RegisterUse(RegisterUse.AX_INT)
+                        new TemporalUse(PrimitiveType.IntegerPT, temporals.getIntegerCount(), temporals), 
+                        new RegisterUse(Register.AX_INT)
                 )
         );
         temporals.setIntegerCount(temporals.getIntegerCount() + 1);
         internalCuartetas.add(
                 new AssignationC3D( //BX = stack[0]
-                        new RegisterUse(RegisterUse.BX_INT), 
-                        new StackAccess(espacioHeap)
+                        new RegisterUse(Register.BX_INT), 
+                        new StackAccess(PrimitiveType.IntegerPT, espacioHeap)
                 )
         );
         internalCuartetas.add(
                 new AssignationC3D( //stack[AX] = BX
-                        new StackAccess(new RegisterUse(RegisterUse.AX_INT)),
-                        new RegisterUse(RegisterUse.BX_INT)
+                        new StackAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT)),
+                        new RegisterUse(Register.BX_INT)
                 )
         );
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);

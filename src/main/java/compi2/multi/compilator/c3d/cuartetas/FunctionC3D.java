@@ -27,14 +27,14 @@ public class FunctionC3D extends Cuarteta{
     public void generateCcode(StringBuilder builder) {
         builder.append("void ");
         builder.append(name);
-        builder.append("(){");
+        builder.append("(){\n");
         internalMemory.generateCcode(builder);
         if(!cuartetas.isEmpty()){
             for (Cuarteta cuarteta : cuartetas) {
                 cuarteta.generateCcode(builder);
             }
         }
-        builder.append("}");
+        builder.append("}\n");
     }
     
 }

@@ -38,8 +38,9 @@ public class Analyzator {
     private SymbolTable cSymbolTable;
     private TypeTable typeTable;
     
-    private List<FunctionDec> pascalFunctions; 
+    private List<DefAst> pascalFunctions; 
     private List<JClass> javaClases;
+    private CMain cmain;
     
     
     public Analyzator(){
@@ -71,7 +72,10 @@ public class Analyzator {
                     && parser.getSyntaxErrors().isEmpty() 
                     && semanticErrors.isEmpty()){
                 AdmiMemory admiMemory = new AdmiMemory();
-                generatorC3D.generateC3D(javaClases, admiMemory);
+                generatorC3D.generatePascalC3D(pascalFunctions, admiMemory);
+                generatorC3D.generateJavaC3D(javaClases, admiMemory);
+                generatorC3D.generateMainC3D(cmain, admiMemory);
+                generatorC3D.compilate(admiMemory);
                 
             }
         } catch (Exception e) {
@@ -113,6 +117,7 @@ public class Analyzator {
         genSymbolTab.addPascalData(
                 pascalSymbolTable, typeTable, definitions, semanticErrors
         );
+        this.pascalFunctions = definitions;
     }
     
     public void javaSemanticAnalysis(List<JClass> classes){
@@ -147,7 +152,17 @@ public class Analyzator {
                 cmain.getVars(),
                 semanticErrors
         );
-        genSymbolTab.validateMainStmts();
+        genSymbolTab.validateMainStmts(
+                cmain.getStmts(),
+                cmain.getImports(), 
+                javaSymbolTable, 
+                cSymbolTable, 
+                pascalSymbolTable,
+                typeTable,
+                cmain.getVars(),
+                semanticErrors
+        );
+        this.cmain = cmain;
     }
     
     

@@ -17,6 +17,7 @@ import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
 import compi2.multi.compilator.c3d.cuartetas.IfC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.util.Label;
@@ -80,7 +81,7 @@ public abstract class JControlStmt extends JStatement{
         if(retCondition.getTemporalUse() != null){
             internalCuartetas.add(
                     new AssignationC3D(
-                            new RegisterUse(RegisterUse.AX_INT), 
+                            new RegisterUse(Register.AX_INT), 
                             new TemporalUse(
                                     PrimitiveType.IntegerPT, 
                                     retCondition.getTemporalUse().getCountTemp(),
@@ -91,7 +92,7 @@ public abstract class JControlStmt extends JStatement{
             temporals.setIntegerCount(temporals.getIntegerCount() + 1);
             internalCuartetas.add(
                     new IfC3D(
-                            new RegisterUse(RegisterUse.AX_INT), 
+                            new RegisterUse(Register.AX_INT), 
                             new AtomicValue(1), 
                             DefiniteOperation.GraterEq, 
                             new GotoC3D(trueLabel)

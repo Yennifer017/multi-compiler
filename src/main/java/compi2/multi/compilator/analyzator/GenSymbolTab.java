@@ -11,7 +11,9 @@ import compi2.multi.compilator.semantic.pmodule.ModuleDec;
 import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.c.CImports;
+import compi2.multi.compilator.semantic.c.CStatement;
 import compi2.multi.compilator.semantic.jclases.JClass;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import java.util.List;
 
 /**
@@ -59,8 +61,27 @@ public class GenSymbolTab extends Generator{
         }
     }
     
-    public void validateMainStmts(){
-        
+    public void validateMainStmts(List<CStatement> stmts, 
+            CImports imports, JSymbolTable clasesST, 
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+            List<? extends CDef> definitions, List<String> semanticErrors){
+        if(stmts != null && !stmts.isEmpty()){
+            for (CStatement stmt : stmts) {
+                stmt.validate(
+                        imports, 
+                        clasesST, 
+                        symbolTable, 
+                        pascalST, 
+                        typeTable, 
+                        semanticErrors, 
+                        new SemanticRestrictions(
+                                false,
+                                false, 
+                                Analyzator.VOID_METHOD
+                        )
+                );
+            }
+        }
     }
     
     public SymbolTable generateInternalTable(SymbolTable symbolTable, TypeTable typeTable,

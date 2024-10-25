@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.c3d;
 
+import compi2.multi.compilator.c3d.util.Register;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
@@ -15,6 +16,8 @@ public class AdmiMemory implements CodeTransformable{
     public final static String HEAP_PTR = "h";
     public final static String STACK_PTR = "ptr";
     public final static String LABEL_C3D_NAME = "et";
+    public final static String HEAP_ACCESS = "heap";
+    public final static String STACK_ACCESS = "stack";
     
     private Memory stack;
     private Memory heap;
@@ -24,8 +27,8 @@ public class AdmiMemory implements CodeTransformable{
     private List<Cuarteta> cuartetas;
     
     public AdmiMemory(){
-        stack = new Memory("stack");
-        heap = new Memory("heap");
+        stack = new Memory(STACK_ACCESS);
+        heap = new Memory(HEAP_ACCESS);
         definitions = new LinkedList<>();
         cuartetas = new LinkedList<>();
     }
@@ -33,13 +36,25 @@ public class AdmiMemory implements CodeTransformable{
 
     @Override
     public void generateCcode(StringBuilder builder) {
+        builder.append("#include <string>\n");
+        builder.append("#include <iostream>\n");
+        
         builder.append("int " + HEAP_PTR + " = 0;\n");
         builder.append("int " + STACK_PTR + " = 0;\n");
+        
+        stack.incrementMemory(5000);
         stack.generateCcode(builder);
+        heap.incrementMemory(5000);
         heap.generateCcode(builder);
+        
+        for (Register reg : Register.values()) {
+            reg.generateCcode(builder);
+        }
+
         if(!definitions.isEmpty()){
             for (String definition : definitions) {
-                builder.append(definition).append("();");
+                builder.append("void ");
+                builder.append(definition).append("();\n");
             }
         }
         if(cuartetas != null){

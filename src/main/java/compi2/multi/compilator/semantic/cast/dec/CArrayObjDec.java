@@ -5,6 +5,7 @@ import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
@@ -30,6 +31,11 @@ public class CArrayObjDec extends CDef{
     public RowST generateRowST(CImports imports, JSymbolTable clasesST, 
             SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
             List<String> semanticErrors) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void generateCuartetas(AdmiMemory admiMemory) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 

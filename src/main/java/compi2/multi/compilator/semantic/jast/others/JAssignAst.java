@@ -5,6 +5,10 @@ import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jast.inv.JContextRef;
@@ -83,6 +87,11 @@ public class JAssignAst extends JStatement{
             }
         }
         return currentType;
+    }
+
+    @Override
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     

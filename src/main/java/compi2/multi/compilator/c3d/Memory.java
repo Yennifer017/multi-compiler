@@ -22,6 +22,14 @@ public class Memory implements CodeTransformable{
     public Memory(String name){
         this.name = name;
     }
+    
+    public void incrementMemory(int generalCount){
+        stringCount = generalCount;
+        integerCount = generalCount;
+        floatCount = generalCount;
+        charCount = generalCount;
+        booleanCount = generalCount;
+    }
 
     @Override
     public void generateCcode(StringBuilder builder) {
@@ -32,13 +40,12 @@ public class Memory implements CodeTransformable{
         definite(builder, PrimitiveType.BooleanPT, booleanCount);
     }
     
-    private StringBuilder definite(StringBuilder builder, PrimitiveType type, int count){
+    private void definite(StringBuilder builder, PrimitiveType type, int count){
         builder.append(type.getCName()).append(" ");
         builder.append(this.name).append(type.getName());
         builder.append("[");
         builder.append(count);
         builder.append("];\n");
-        return builder;
     }
     
     public String getMemoryName(PrimitiveType type){

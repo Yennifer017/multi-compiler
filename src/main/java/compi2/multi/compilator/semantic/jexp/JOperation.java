@@ -87,6 +87,7 @@ public class JOperation extends JExpression{
             default:
                 throw new AssertionError();
         }
+        throw new RuntimeException();
     }
     
 }

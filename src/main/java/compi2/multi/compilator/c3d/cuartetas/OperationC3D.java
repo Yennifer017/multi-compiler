@@ -30,6 +30,7 @@ public class OperationC3D extends Cuarteta{
         first.generateCcode(builder);
         builder.append(operation.getSign());
         second.generateCcode(builder);
+        builder.append(";\n");
     }
     
 }
