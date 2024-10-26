@@ -88,7 +88,7 @@ public class JIfAst extends JControlStmt{
         int endLabel = trueLabel + 2;
         admiMemory.setCountLabels(admiMemory.getCountLabels() + 3);
         
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, pass, condition, trueLabel
         );
         internalCuartetas.add(
@@ -128,7 +128,7 @@ public class JIfAst extends JControlStmt{
         int falseLabel = trueLabel + 1;
         admiMemory.setCountLabels(admiMemory.getCountLabels() + 2);
         
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, pass, condition, trueLabel
         );
         internalCuartetas.add(

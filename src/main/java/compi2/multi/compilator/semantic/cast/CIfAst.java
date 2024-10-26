@@ -83,7 +83,7 @@ public class CIfAst extends CControlStmt{
         int endLabel = trueLabel + 2;
         admiMemory.setCountLabels(admiMemory.getCountLabels() + 3);
         
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, pass, condition, trueLabel
         );
         internalCuartetas.add(
@@ -123,7 +123,7 @@ public class CIfAst extends CControlStmt{
         int falseLabel = trueLabel + 1;
         admiMemory.setCountLabels(admiMemory.getCountLabels() + 2);
         
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, pass, condition, trueLabel
         );
         internalCuartetas.add(

@@ -64,7 +64,7 @@ public class CDoWhile extends CControlStmt{
         
         C3Dpass passInternal = new C3Dpass(finalLabel, firstLabel);
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, passInternal);
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, passInternal, condition, firstLabel
         );
         

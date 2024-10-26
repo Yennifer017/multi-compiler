@@ -81,7 +81,7 @@ public class CForAst extends CControlStmt{
         
         //validate condition
         C3Dpass passInternal = new C3Dpass(etFalse, etInicio);
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, passInternal, condition, etTrue
         );
         

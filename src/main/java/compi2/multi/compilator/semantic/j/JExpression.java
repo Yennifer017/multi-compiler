@@ -17,12 +17,13 @@ import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.ErrorsRep;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
+import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
 
 /**
  *
  * @author blue-dragon
  */
-public abstract class JExpression {
+public abstract class JExpression implements ExpressionGenerateC3D{
     protected Position pos;
     protected ErrorsRep errorsRep;
     protected TConvertidor tConvert;
@@ -50,6 +51,7 @@ public abstract class JExpression {
     
     public abstract Label validateSimpleData(List<String> semanticErrors);
     
+    @Override
     public abstract RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass);
     

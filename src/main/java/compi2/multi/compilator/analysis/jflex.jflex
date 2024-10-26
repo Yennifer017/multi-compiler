@@ -120,8 +120,8 @@ OctDigit          = [0-7]
     /* comparators */
         ">"             { return symbol(sym.GRATER); }
         "<"             { return symbol(sym.LESS); }
-        "<="            { return symbol(sym.GRATER_EQUALS); }
-        ">="            { return symbol(sym.LESS_EQUALS); }
+        ">="            { return symbol(sym.GRATER_EQUALS); }
+        "<="            { return symbol(sym.LESS_EQUALS); }
 
 
     /*-------------------------------------------------------------

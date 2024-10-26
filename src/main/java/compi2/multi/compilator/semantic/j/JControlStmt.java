@@ -6,6 +6,7 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.analyzator.StmtsAnalizator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
@@ -36,9 +37,11 @@ import lombok.Setter;
 public abstract class JControlStmt extends JStatement{
     protected StmtsAnalizator stmtsAnalizator;
     protected List<JStatement> internalStmts;
+    protected ExpGenC3D expGenC3D;
 
     public JControlStmt(Position initPos) {
         super(initPos);
+        this.expGenC3D = new ExpGenC3D();
     }
     
     protected ReturnCase validateInternalStmts(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, 
@@ -69,44 +72,6 @@ public abstract class JControlStmt extends JStatement{
             for (JStatement internalStmt : internalStmts) {
                 internalStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
             }
-        }
-    }
-    
-    protected void generateConditionCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
-            Memory temporals, C3Dpass pass, C3Dpass passInternal, JExpression condition, int trueLabel){
-        RetParamsC3D retCondition = condition.generateCuartetas(
-                admiMemory, internalCuartetas, temporals, passInternal
-        );
-        
-        if(retCondition.getTemporalUse() != null){
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(Register.AX_INT), 
-                            new TemporalUse(
-                                    PrimitiveType.IntegerPT, 
-                                    retCondition.getTemporalUse().getCountTemp(),
-                                    temporals
-                            )
-                    )
-            );
-            temporals.setIntegerCount(temporals.getIntegerCount() + 1);
-            internalCuartetas.add(
-                    new IfC3D(
-                            new RegisterUse(Register.AX_INT), 
-                            new AtomicValue(1), 
-                            DefiniteOperation.GraterEq, 
-                            new GotoC3D(trueLabel)
-                    )
-            );
-        } else {
-            internalCuartetas.add(
-                    new IfC3D(
-                            new AtomicValue(retCondition.getAtomicValue()), 
-                            new AtomicValue(1), 
-                            DefiniteOperation.GraterEq, 
-                            new GotoC3D(trueLabel)
-                    )
-            );
         }
     }
     

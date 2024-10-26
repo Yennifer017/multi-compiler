@@ -53,7 +53,7 @@ public class CWhileAst extends CControlStmt{
         internalCuartetas.add(
                 new LabelC3D(firstLabel)
         );
-        super.generateConditionCuartetas(
+        super.expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, internalPass, condition, trueLabel
         );
         internalCuartetas.add(

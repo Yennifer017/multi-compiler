@@ -29,7 +29,7 @@ public class TConvertidor {
      * @param rightType
      * @param semanticErrors
      * @return 
-     * @throws compi2.pascal.valitations.exceptions.ConvPrimitiveException 
+     * @throws compi2.multi.compilator.exceptions.ConvPrimitiveException 
      */
     public String simpleConvert(DefiniteOperation operation, Label leftType, 
             Label rightType, List<String> semanticErrors) throws ConvPrimitiveException{
@@ -134,6 +134,14 @@ public class TConvertidor {
             return PrimitiveType.LongintPT;
         } else {
             throw new ConvPrimitiveException();
+        }
+    }
+    
+    public PrimitiveType convertAllPrimitive(String type){
+        try {
+            return convertPrimitive(type);
+        } catch (ConvPrimitiveException e) {
+            return PrimitiveType.IntegerPT;
         }
     }
     

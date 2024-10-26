@@ -3,11 +3,14 @@ package compi2.multi.compilator.semantic.cexp;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
@@ -31,12 +34,18 @@ public class COperation extends CExp {
     private CExp leftExp;
     private CExp rightExp;
     
+    private PrimitiveType type;
+    private AdmiRegisters admiRegisters;
+    private ExpGenC3D expGenC3D;
+    
     public COperation(Position pos, DefiniteOperation operation, 
             CExp leftExp, CExp rightExp) {
         super(pos);
         this.operation = operation;
         this.leftExp = leftExp;
         this.rightExp = rightExp;
+        this.admiRegisters = new AdmiRegisters();
+        this.expGenC3D = new ExpGenC3D();
     }
 
     @Override
@@ -47,10 +56,9 @@ public class COperation extends CExp {
         Label rightType = rightExp.validateComplexData(
                 imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
         );
-        return new Label(
-                super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors), 
-                pos
-        );
+        String typeString = super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors);
+        this.type = super.tConvert.convertAllPrimitive(typeString);
+        return new Label(typeString, pos);
     }
 
     @Override
@@ -58,17 +66,43 @@ public class COperation extends CExp {
         Label leftType = leftExp.validateSimpleData(symbolTable, semanticErrors);
         Label rightType = rightExp.validateSimpleData(symbolTable, semanticErrors);
         try {
-            return new Label(
-                    super.tConvert.simpleConvert(operation, leftType, rightType, semanticErrors),
-                    pos);
+            String typeString = super.tConvert.simpleConvert(operation, leftType, rightType, semanticErrors);
+            this.type = super.tConvert.convertAllPrimitive(typeString);
+            return new Label(typeString,pos);
         } catch (ConvPrimitiveException ex) {
             return new Label(Analyzator.ERROR_TYPE, pos);
         }
     }
 
     @Override
-    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        switch (operation) {
+            case DefiniteOperation.Addition, 
+                    DefiniteOperation.Division,
+                    DefiniteOperation.Module,
+                    DefiniteOperation.Multiplication,
+                    DefiniteOperation.Power,
+                    DefiniteOperation.Substraction,
+                    
+                    DefiniteOperation.EqualsTo,
+                    DefiniteOperation.GraterEq,
+                    DefiniteOperation.GraterThan,
+                    DefiniteOperation.LessEq,
+                    DefiniteOperation.LessThan
+                    :
+                return expGenC3D.generateAritCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, leftExp, rightExp, type, operation
+                );
+            case DefiniteOperation.Or:
+                throw new RuntimeException();
+            case DefiniteOperation.And:
+                return expGenC3D.generateAndCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, leftExp, rightExp, type, operation
+                );
+            default:
+                throw new RuntimeException("Cuarteas en una c operation no definida");
+        }
     }
     
 }

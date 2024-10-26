@@ -15,12 +15,13 @@ import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
+import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
 
 /**
  *
  * @author blue-dragon
  */
-public abstract class CExp {
+public abstract class CExp implements ExpressionGenerateC3D{
     protected Position pos;
     protected TConvertidor tConvert;
     protected ErrorsRep errorsRep;
@@ -40,6 +41,7 @@ public abstract class CExp {
     public abstract Label validateSimpleData(SymbolTable symbolTable, 
             List<String> semanticErrors);
     
+    @Override
     public abstract RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass);

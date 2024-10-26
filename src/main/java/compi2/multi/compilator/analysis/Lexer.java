@@ -1921,12 +1921,12 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 198: break;
           case 44:
-            { return symbol(sym.GRATER_EQUALS);
+            { return symbol(sym.LESS_EQUALS);
             }
           // fall through
           case 199: break;
           case 45:
-            { return symbol(sym.LESS_EQUALS);
+            { return symbol(sym.GRATER_EQUALS);
             }
           // fall through
           case 200: break;
