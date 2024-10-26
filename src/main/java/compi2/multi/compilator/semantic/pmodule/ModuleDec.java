@@ -9,6 +9,10 @@ import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.analyzator.GenSymbolTab;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
 import compi2.multi.compilator.analyzator.StmtsAnalizator;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.DefAst;
 import java.util.ArrayList;
@@ -89,5 +93,21 @@ public abstract class ModuleDec extends DefAst{
     
     public abstract void validate(TypeTable typeTable, 
             List<String> semanticErrors);
+    
+    protected void generateInternalCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals){
+        if(!varDef.isEmpty()){
+            for (DefAst defAst : varDef) {
+                defAst.generateCuartetas(admiMemory, internalCuartetas, temporals);
+            }
+        }
+        if(!statements.isEmpty()){
+            for (Statement internalStmt : statements) {
+                internalStmt.generateCuartetas(
+                        admiMemory, internalCuartetas, temporals, new C3Dpass()
+                );
+            }
+        }
+    }
     
 }

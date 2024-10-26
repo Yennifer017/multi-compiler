@@ -5,6 +5,10 @@ import compi2.multi.compilator.semantic.ControlStruct;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Expression;
@@ -39,6 +43,11 @@ public class WhileAst extends ControlStruct{
                         restrictions.getReturnType())
         );
         
+    }
+
+    @Override
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     

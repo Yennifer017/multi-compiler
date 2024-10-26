@@ -13,6 +13,7 @@ import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.util.Label;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -80,6 +81,11 @@ public class ProcedureDec extends ModuleDec {
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals) {
+        List<Cuarteta> procedureInternal = new LinkedList<>();
+        Memory temporalsInternal = new Memory("internal");
+        super.generateInternalCuartetas(
+                admiMemory, procedureInternal, temporalsInternal
+        );
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
