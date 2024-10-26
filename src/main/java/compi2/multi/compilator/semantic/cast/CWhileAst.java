@@ -39,7 +39,8 @@ public class CWhileAst extends CControlStmt{
                 typeTable, semanticErrors, restrictions, condition
         );
         return super.validateInternal(
-                imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors, restrictions
+                imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors, 
+                new SemanticRestrictions(true, true, restrictions.getReturnType())
         );
     }
 

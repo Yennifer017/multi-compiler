@@ -35,7 +35,7 @@ public class CSimpleStmt extends CStatement{
             List<String> semanticErrors, SemanticRestrictions restrictions) {
         if (isBreak && !restrictions.allowBreak()) {
             semanticErrors.add(super.errorsRep.ilegalStmt("BREAK", initPos));
-        } else if (!isBreak && !restrictions.allowBreak()) {
+        } else if (!isBreak && !restrictions.allowContinue()) {
             semanticErrors.add(super.errorsRep.ilegalStmt("CONTINUE", initPos));
         }
         return new ReturnCase(false);

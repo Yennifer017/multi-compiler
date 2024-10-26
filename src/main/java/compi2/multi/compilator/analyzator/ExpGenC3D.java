@@ -224,7 +224,7 @@ public class ExpGenC3D {
         );
     }
     
-    private MemoryAccess getAccess(ExpressionGenerateC3D expression, AdmiMemory admiMemory, 
+    public MemoryAccess getAccess(ExpressionGenerateC3D expression, AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass){
         RetParamsC3D retParamC3D = expression.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
         if(retParamC3D.getTemporalUse() != null){

@@ -112,7 +112,8 @@ public class StmtsAnalizator {
                         return new ReturnCase(true);
                     }
                 } catch (NullPointerException e) {
-                    semanticErrors.add("Ocurrio un error inesperado al intentar recuperar una j-instruccion");
+                    e.printStackTrace();
+                    semanticErrors.add("Ocurrio un error inesperado al intentar recuperar una c instruction");
                 }
             }
         }

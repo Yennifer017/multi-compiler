@@ -12,7 +12,7 @@ public enum DefiniteOperation {
     Multiplication("Multiplicacion", "*"),
     Division("Division", "/"),
     Module("Modulo", "%"),
-    EqualsTo("Igual", "="),
+    EqualsTo("Igual", "=="),
     DifferentTo("Diferent", "!="),
     GraterThan("Mayor que", ">"),
     GraterEq("Mayor o igual que", ">="),

@@ -770,7 +770,7 @@ arit_exp ::=
                     :}
             | ID:i
                     {:
-                        RESULT = new SingleExp(
+                        RESULT = new PVarUse(
                             i, new Position(ileft,iright)
                         );
                     :}
@@ -808,7 +808,7 @@ arit_exp ::=
 
 literals ::= BOOLEAN_LIT:l
                     {:
-                        RESULT = new SingleExp(
+                        RESULT = new PLiteral(
                             PrimitiveType.BooleanPT, 
                             l,
                             new Position(lleft, lright)
@@ -816,7 +816,7 @@ literals ::= BOOLEAN_LIT:l
                     :}
             | INTEGER_LIT:l
                     {:
-                        RESULT = new SingleExp(
+                        RESULT = new PLiteral(
                             PrimitiveType.IntegerPT, 
                             l,
                             new Position(lleft, lright)
@@ -824,14 +824,15 @@ literals ::= BOOLEAN_LIT:l
                     :}
             | FLOAT_LIT:l
                     {:
-                        RESULT = new SingleExp(
+                        RESULT = new PLiteral(
                             PrimitiveType.RealPT, 
+                            l,
                             new Position(lleft, lright)
                         );
                     :}
             | CHAR_LIT:l
                     {:
-                        RESULT = new SingleExp(
+                        RESULT = new PLiteral(
                             PrimitiveType.CharPT, 
                             l,
                             new Position(lleft, lright)
@@ -839,8 +840,9 @@ literals ::= BOOLEAN_LIT:l
                     :}
             | STRING_LIT:l
                     {:
-                        RESULT = new SingleExp(
+                        RESULT = new PLiteral(
                             PrimitiveType.StringPT, 
+                            l,
                             new Position(lleft, lright)
                         );
                     :}
@@ -2288,7 +2290,16 @@ jbool_exp ::= jarit_exp:p1 EQUALS:o jarit_exp:p2
             :}
         ;
 
-jarit_exp ::= jarit_exp:p1 PLUS:o jarit_exp:p2
+jarit_exp ::= 
+        /*MANAGE ERRORS*/
+          error PLUS error
+        | error MINUS error
+        | error TIMES error
+        | error DIV error
+        | error BARRA error
+        | error MOD error
+
+        | jarit_exp:p1 PLUS:o jarit_exp:p2
             {:
                 RESULT = new JOperation(
                     new Position(oleft, oright), 

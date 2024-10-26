@@ -31,7 +31,7 @@ public class IfC3D extends Cuarteta{
         first.generateCcode(builder);
         builder.append(operation.getSign());
         second.generateCcode(builder);
-        builder.append("){");
+        builder.append("){\n");
         gotoTrue.generateCcode(builder);
         builder.append("}\n");
     }

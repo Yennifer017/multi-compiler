@@ -3,11 +3,14 @@ package compi2.multi.compilator.semantic.cexp;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
@@ -29,10 +32,16 @@ public class CUnaryOperation extends CExp{
     private CExp exp;
     private DefiniteOperation operation;
     
+    private PrimitiveType type;
+    private AdmiRegisters admiRegisters;
+    private ExpGenC3D expGenC3D;
+    
     public CUnaryOperation(Position pos, DefiniteOperation operation, CExp exp) {
         super(pos);
         this.operation = operation;
         this.exp = exp;
+        admiRegisters = new AdmiRegisters();
+        expGenC3D = new ExpGenC3D();
     }
 
     @Override

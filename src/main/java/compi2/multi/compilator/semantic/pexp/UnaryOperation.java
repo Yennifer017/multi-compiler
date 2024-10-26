@@ -6,6 +6,11 @@ import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
@@ -31,7 +36,7 @@ public class UnaryOperation extends Expression{
     @Override
     public boolean canRecoveryIntValue() {
         if((operation == DefiniteOperation.Addition || operation == DefiniteOperation.Substraction) 
-                && expression.canRecoveryIntValue() && (expression instanceof SingleExp)){
+                && expression.canRecoveryIntValue() && (expression instanceof PLiteral)){
             return true;
         } else {
             return false;
@@ -40,7 +45,7 @@ public class UnaryOperation extends Expression{
     
     @Override
     public int recoveryIntegerData(){
-        if(expression instanceof SingleExp){
+        if(expression instanceof PLiteral){
             if(operation == DefiniteOperation.Substraction){
                 return expression.recoveryIntegerData() * -1;
             }
@@ -76,6 +81,11 @@ public class UnaryOperation extends Expression{
             );
             return new Label(Analyzator.ERROR_TYPE, pos);
         }
+    }
+
+    @Override
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
 
