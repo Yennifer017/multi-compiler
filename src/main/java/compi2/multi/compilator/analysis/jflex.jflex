@@ -144,7 +144,7 @@ OctDigit          = [0-7]
         "do"            { return symbol(sym.DO); }
         "else"          { return symbol(sym.ELSE); }
         "float"         { return symbol(sym.FLOAT_TKN); }
-        "for"           { return symbol(sym.FLOAT_TKN); }
+        "for"           { return symbol(sym.FOR); }
         "getch"         { return symbol(sym.GETCH); }
         "if"            { return symbol(sym.IF); }
         "include"       { return symbol(sym.INCLUDE); }

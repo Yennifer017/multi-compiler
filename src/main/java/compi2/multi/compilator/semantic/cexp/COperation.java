@@ -95,7 +95,9 @@ public class COperation extends CExp {
                         admiMemory, internalCuartetas, temporals, pass, leftExp, rightExp, type, operation
                 );
             case DefiniteOperation.Or:
-                throw new RuntimeException();
+                return expGenC3D.generateOrCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, leftExp, rightExp, type, operation
+                );
             case DefiniteOperation.And:
                 return expGenC3D.generateAndCuartetas(
                         admiMemory, internalCuartetas, temporals, pass, leftExp, rightExp, type, operation

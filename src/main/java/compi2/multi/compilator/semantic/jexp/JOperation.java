@@ -4,8 +4,10 @@ package compi2.multi.compilator.semantic.jexp;
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
@@ -32,6 +34,8 @@ public class JOperation extends JExpression{
     private JExpression left;
     
     private DefiniteOperation operation;
+    private ExpGenC3D expGenC3D;
+    private PrimitiveType type;
     
     public JOperation(Position pos, DefiniteOperation operation, 
             JExpression right, JExpression left){
@@ -39,6 +43,7 @@ public class JOperation extends JExpression{
         this.operation = operation;
         this.left = left;
         this.right = right;
+        this.expGenC3D = new ExpGenC3D();
     }
 
     @Override
@@ -51,10 +56,9 @@ public class JOperation extends JExpression{
         Label rightType = right.validateData(
                 globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
         );
-        return new Label(
-                super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors), 
-                pos
-        );
+        String typeString = super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors);
+        this.type = super.tConvert.convertAllPrimitive(typeString);
+        return new Label(typeString, pos);
     }
 
     @Override
@@ -62,9 +66,9 @@ public class JOperation extends JExpression{
         Label leftType = left.validateSimpleData(semanticErrors);
         Label rightType = right.validateSimpleData(semanticErrors);
         try {
-            return new Label(
-                    super.tConvert.simpleConvert(operation, leftType, rightType, semanticErrors),
-                    pos);
+            String typeString = super.tConvert.simpleConvert(operation, leftType, rightType, semanticErrors);
+            this.type = super.tConvert.convertAllPrimitive(typeString);
+            return new Label(typeString,pos);
         } catch (ConvPrimitiveException ex) {
             return new Label(Analyzator.ERROR_TYPE, pos);
         }
@@ -74,20 +78,35 @@ public class JOperation extends JExpression{
     public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
         switch (operation) {
             case DefiniteOperation.Addition, 
-                    DefiniteOperation.Substraction, 
-                    DefiniteOperation.Multiplication, 
-                    DefiniteOperation.Division, 
-                    DefiniteOperation.Module:
-                
-                break;
-            case DefiniteOperation.And, 
-                    DefiniteOperation.Or:
-                
-                break;
+                    DefiniteOperation.Division,
+                    DefiniteOperation.Module,
+                    DefiniteOperation.Multiplication,
+                    DefiniteOperation.Power,
+                    DefiniteOperation.Substraction,
+                    
+                    DefiniteOperation.EqualsTo,
+                    DefiniteOperation.GraterEq,
+                    DefiniteOperation.GraterThan,
+                    DefiniteOperation.LessEq,
+                    DefiniteOperation.LessThan
+                    :
+                return expGenC3D.generateAritCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, 
+                        left, right, type, operation
+                );
+            case DefiniteOperation.Or:
+                return expGenC3D.generateOrCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, 
+                        left, right, type, operation
+                );
+            case DefiniteOperation.And:
+                return expGenC3D.generateAndCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, 
+                        left, right, type, operation
+                );
             default:
-                throw new AssertionError();
+                throw new RuntimeException("Cuarteas en una j operation no definida");
         }
-        throw new RuntimeException();
     }
     
 }

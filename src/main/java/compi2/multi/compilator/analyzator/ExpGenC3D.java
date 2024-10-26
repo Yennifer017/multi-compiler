@@ -95,6 +95,68 @@ public class ExpGenC3D {
         );
     }
     
+        
+    public RetParamsC3D generateOrCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass,
+            ExpressionGenerateC3D leftExp, ExpressionGenerateC3D rightExp,
+            PrimitiveType type, DefiniteOperation operation){
+        int count = temporals.getBooleanCount();
+        temporals.setBooleanCount(temporals.getBooleanCount() + 1);
+        
+        int firstL = admiMemory.getCountLabels();
+        admiMemory.setCountLabels(admiMemory.getCountLabels() + 4);
+        
+        this.generateConditionCuartetas(
+                admiMemory, internalCuartetas, temporals, pass,
+                pass, leftExp, firstL
+        );
+        internalCuartetas.add(
+                new GotoC3D(firstL + 1)
+        );
+        internalCuartetas.add(
+                new LabelC3D(firstL)
+        );
+        //t = 1
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.BooleanPT, count, temporals),
+                        new AtomicValue(1)
+                )
+        );
+        internalCuartetas.add(
+                new GotoC3D(firstL + 2)
+        );
+        internalCuartetas.add(
+                new LabelC3D(firstL + 1)
+        );
+        this.generateConditionCuartetas(
+                admiMemory, internalCuartetas, temporals, pass,
+                pass, rightExp, firstL
+        );
+        internalCuartetas.add(
+                new GotoC3D(firstL + 3)
+        );
+        internalCuartetas.add(
+                new LabelC3D(firstL + 3)
+        );
+        //t = 0
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.BooleanPT, count, temporals),
+                        new AtomicValue(0)
+                )
+        );
+        internalCuartetas.add(
+                new GotoC3D(firstL + 2)
+        );
+        internalCuartetas.add(
+                new LabelC3D(firstL + 2)
+        );
+        return new RetParamsC3D(
+                new TemporalUse(PrimitiveType.BooleanPT, count, temporals)
+        );
+    }
+    
     
     public void generateConditionCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass, C3Dpass passInternal, ExpressionGenerateC3D condition, 
@@ -129,12 +191,6 @@ public class ExpGenC3D {
                     )
             );
         }
-    }
-    
-    
-    
-    public RetParamsC3D generateOrCuartetas(){
-        throw new RuntimeException();
     }
     
     public RetParamsC3D generateAritCuartetas(AdmiMemory admiMemory, 
