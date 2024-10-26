@@ -22,7 +22,6 @@ import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.c.CStatement;
-import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
@@ -97,11 +96,7 @@ public abstract class CControlStmt extends CStatement{
             internalCuartetas.add(
                     new AssignationC3D(
                             new RegisterUse(Register.AX_INT), 
-                            new TemporalUse(
-                                    PrimitiveType.IntegerPT, 
-                                    retCondition.getTemporalUse().getCountTemp(),
-                                    temporals
-                            )
+                            retCondition.getTemporalUse()
                     )
             );
             temporals.setIntegerCount(temporals.getIntegerCount() + 1);

@@ -62,38 +62,6 @@ public class JDoWhileAst extends JControlStmt{
         C3Dpass passInternal = new C3Dpass(finalLabel, firstLabel);
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, passInternal);
         
-        /*RetParamsC3D retCondition = condition.generateCuartetas(
-                admiMemory, internalCuartetas, temporals, passInternal
-        );
-        
-        if(retCondition.getTemporalUse() != null){
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(RegisterUse.AX_INT), 
-                            new TemporalUse(PrimitiveType.IntegerPT, 
-                                    retCondition.getTemporalUse().getCountTemp())
-                    )
-            );
-            temporals.setIntegerCount(temporals.getIntegerCount() + 1);
-            internalCuartetas.add(
-                    new IfC3D(
-                            new RegisterUse(RegisterUse.AX_INT), 
-                            new AtomicValue(1), 
-                            DefiniteOperation.GraterEq, 
-                            new GotoC3D(firstLabel)
-                    )
-            );
-        } else {
-            internalCuartetas.add(
-                    new IfC3D(
-                            new AtomicValue(retCondition.getAtomicValue()), 
-                            new AtomicValue(1), 
-                            DefiniteOperation.GraterEq, 
-                            new GotoC3D(firstLabel)
-                    )
-            );
-        }*/
-        
         super.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, passInternal, condition, firstLabel
         );

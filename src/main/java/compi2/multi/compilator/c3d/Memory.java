@@ -52,4 +52,29 @@ public class Memory implements CodeTransformable{
         return this.name + type.getName();
     }
     
+    public int getCount(PrimitiveType type){
+        switch (type) {
+            case PrimitiveType.IntegerPT:
+                return this.integerCount;
+            case PrimitiveType.BooleanPT:
+                return this.booleanCount;
+            case PrimitiveType.RealPT:
+                return this.floatCount;
+            case PrimitiveType.StringPT:
+                return this.stringCount;
+            default:
+                return this.charCount;
+        }
+    }
+    
+    public void increment(PrimitiveType type, int increment){
+        switch (type) {
+            case PrimitiveType.IntegerPT -> this.integerCount += increment;
+            case PrimitiveType.BooleanPT -> this.booleanCount += increment;
+            case PrimitiveType.RealPT -> this.floatCount += increment;
+            case PrimitiveType.StringPT -> this.stringCount += increment;
+            default -> this.charCount += increment;
+        }
+    }
+    
 }

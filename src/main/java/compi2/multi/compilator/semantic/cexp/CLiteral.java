@@ -38,12 +38,15 @@ public class CLiteral extends CExp{
     }
 
     @Override
-    public Label validateComplexData(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors) {
+    public Label validateComplexData(CImports imports, JSymbolTable clasesST, 
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+            List<String> semanticErrors) {
         return new Label(this.type.getName(), pos);
     }
 
     @Override
-    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
         return new RetParamsC3D(object, type);
     }
     

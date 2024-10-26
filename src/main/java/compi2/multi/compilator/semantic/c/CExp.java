@@ -5,6 +5,7 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
+import compi2.multi.compilator.analyzator.RefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
@@ -23,11 +24,13 @@ public abstract class CExp {
     protected Position pos;
     protected TConvertidor tConvert;
     protected ErrorsRep errorsRep;
+    protected RefAnalyzator refAnalyzator;
     
     public CExp(Position pos){
         this.pos = pos;
         this.tConvert = new TConvertidor();
         this.errorsRep = new ErrorsRep();
+        this.refAnalyzator = new RefAnalyzator();
     }
     
     public abstract Label validateComplexData(CImports imports, JSymbolTable clasesST, 
