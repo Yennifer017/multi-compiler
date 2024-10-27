@@ -2,14 +2,25 @@
 package compi2.multi.compilator.semantic.jast.others;
 
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
+import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.HeapDirecST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.access.HeapAccess;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
+import compi2.multi.compilator.c3d.access.RegisterUse;
+import compi2.multi.compilator.c3d.access.StackAccess;
+import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.Register;
+import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jast.inv.JContextRef;
@@ -33,15 +44,22 @@ public class JAssignAst extends JStatement{
     private List<JInvocation> variable;
     private JExpression value;
     
+    private PrimitiveType primType;
+    private int instanceRef;
+    
+    private ExpGenC3D expGenC3D;
+    
     public JAssignAst(Position initPos, List<JInvocation> variable, JExpression value) {
         super(initPos);
         this.variable = variable;
         this.value = value;
+        this.expGenC3D = new ExpGenC3D();
     }
     
     public JAssignAst(Position initPos, List<JInvocation> variable, 
             JExpression value, JContextRef first) {
         super(initPos);
+        this.expGenC3D = new ExpGenC3D();
         try {
             variable.get(0).setContext(first);
             this.variable = variable;
@@ -58,8 +76,9 @@ public class JAssignAst extends JStatement{
         Label typeValue = value.validateData(
                 globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
         );
-        Label typeVar = validateInvocation(globalST, symbolTable, typeTable, jerar, semanticErrors);
-        
+        Label typeVar = this.validateInvocation(globalST, symbolTable, typeTable, jerar, semanticErrors);
+        saveInstanceRef(symbolTable);
+        primType = super.tConvert.convertAllPrimitive(typeVar.getName());
         if(!typeVar.getName().equals(typeValue.getName())){
             semanticErrors.add(errorsRep.incorrectTypeError(
                     typeValue.getName(), 
@@ -68,6 +87,19 @@ public class JAssignAst extends JStatement{
             );
         }
         return new ReturnCase(false);
+    }
+    
+    private void saveInstanceRef(SymbolTable symbolTable){
+        try {
+            SymbolTable currentST = symbolTable;
+            while(currentST != null){
+                currentST = currentST.getFather();
+            }
+            RowST rowST = currentST.get(AdditionalInfoST.DIR_HEAP_ROW.getNameRow());
+            HeapDirecST heapST = (HeapDirecST) rowST;
+            this.instanceRef = heapST.getDirMemory();
+        } catch (NullPointerException | ClassCastException e) {
+        }
     }
     
     
@@ -86,13 +118,59 @@ public class JAssignAst extends JStatement{
                         jerar, semanticErrors, currentType
                 );
             }
+            
+            if((i == variable.size() - 1) && invocation.isStatement()){
+                semanticErrors.add(
+                        errorsRep.notAssignationAcurrateError(initPos)
+                );
+            }
         }
         return currentType;
     }
 
     @Override
-    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass) {
+        RetJInvC3D invRet = this.generateInvocations(admiMemory, internalCuartetas, temporals);
+        MemoryAccess expAccess = expGenC3D.getAccess(
+                value, admiMemory, internalCuartetas, temporals, pass
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new RegisterUse(Register.BX_INT), 
+                        invRet.getTemporalUse()
+                )
+        );
+        MemoryAccess assignAccess;
+        if(invRet.isHeapAccess()){
+            assignAccess = new HeapAccess(primType, new RegisterUse(Register.BX_INT));
+        } else {
+            assignAccess = new StackAccess(primType, new RegisterUse(Register.BX_INT));
+        }
+        internalCuartetas.add(
+                new AssignationC3D(
+                        assignAccess, 
+                        expAccess
+                )
+        );
+    }
+    
+    private RetJInvC3D generateInvocations(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals){
+        RetJInvC3D currentRetInv = null;
+        for (int i = 0; i < variable.size(); i++) {
+            JInvocation invocation = variable.get(i);
+            if(i == 0){
+                currentRetInv = invocation.generateCuartetas(
+                        admiMemory, internalCuartetas, temporals, instanceRef
+                );
+            } else {
+                currentRetInv = invocation.generateCuartetas(
+                        admiMemory, internalCuartetas, temporals, currentRetInv.getTemporalUse()
+                );
+            }
+        }
+        return currentRetInv;
     }
 
     

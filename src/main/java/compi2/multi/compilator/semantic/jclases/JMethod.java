@@ -18,6 +18,7 @@ import compi2.multi.compilator.c3d.cuartetas.FunctionC3D;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jclases.components.JReferType;
 import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
@@ -119,7 +120,18 @@ public class JMethod extends JFunction implements Typable{
     public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
         this.type.validateSemantic(globalST, typeTable, semanticErrors, true);
         super.validateArgs(globalST, methodSt.getInternalST(), typeTable, semanticErrors);
-        super.validateInternalStmts(globalST, methodSt.getInternalST(), typeTable, semanticErrors);
+        SemanticRestrictions restrictions = new SemanticRestrictions(
+                false, 
+                false, 
+                this.type.getCompleateName()
+        );
+        super.validateInternalStmts(
+                globalST, 
+                methodSt.getInternalST(), 
+                typeTable, 
+                semanticErrors, 
+                restrictions
+        );
     }
 
     @Override

@@ -11,7 +11,9 @@ import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
@@ -49,12 +51,16 @@ public abstract class JInvocation {
             TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors);
     
     public abstract Label validate(JSymbolTable globalST, SymbolTable symbolTable,
-            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrorrs, Label previus);
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, Label previus);
     
     public abstract boolean isStatement();
     public abstract boolean refersStack();
     
-    public abstract RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
+    public abstract RetJInvC3D generateCuartetas(AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, 
-            Memory temporals, C3Dpass pass);
+            Memory temporals, int instanceStackRef);
+    
+    public abstract RetJInvC3D generateCuartetas(AdmiMemory admiMemory,
+            List<Cuarteta> internalCuartetas,
+            Memory temporals, TemporalUse previus);
 }

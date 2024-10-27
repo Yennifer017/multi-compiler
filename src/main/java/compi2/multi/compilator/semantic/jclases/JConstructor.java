@@ -12,6 +12,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
@@ -28,6 +29,7 @@ import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -73,7 +75,16 @@ public class JConstructor extends JFunction{
             //validar el uso de constructores
         }
         super.validateArgs(globalST, constructorST.getInternalST(), typeTable, semanticErrors);
-        super.validateInternalStmts(globalST, constructorST.getInternalST(), typeTable, semanticErrors);
+        SemanticRestrictions restrictions = new SemanticRestrictions(
+                false, false, Analyzator.VOID_METHOD
+        );
+        super.validateInternalStmts(
+                globalST, 
+                constructorST.getInternalST(), 
+                typeTable, 
+                semanticErrors, 
+                restrictions
+        );
     }
     
     @Override

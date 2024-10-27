@@ -18,6 +18,7 @@ import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -88,9 +89,14 @@ public abstract class JFunction extends JDef{
     }
     
     protected void validateInternalStmts(JSymbolTable globalST, SymbolTable symbolTable, 
-            TypeTable typeTable, List<String> semanticErrors){
+            TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions){
         if(this.internalStmts != null && !this.internalStmts.isEmpty()){
-            
+            for (JStatement internalStmt : internalStmts) {
+                internalStmt.validate(
+                        globalST, symbolTable, typeTable, jerar, semanticErrors, 
+                        restrictions
+                );
+            }
         }
     }
     

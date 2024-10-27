@@ -168,4 +168,8 @@ public class ErrorsRep {
     public String mascaraError(Position pos){
         return "La mascara es invalida, se esperaba %d, %c, %f o %s " + report(pos);
     }
+    
+    public String notAssignationAcurrateError(Position pos){
+        return "No se puede realizar la asignacion a una instruccion " + report(pos);
+    }
 }

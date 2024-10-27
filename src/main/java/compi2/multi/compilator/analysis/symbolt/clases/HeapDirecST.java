@@ -4,11 +4,13 @@ package compi2.multi.compilator.analysis.symbolt.clases;
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.RowST;
+import lombok.Getter;
 
 /**
  *
  * @author blue-dragon
  */
+@Getter
 public class HeapDirecST extends RowST{
     
     private int dirMemory;

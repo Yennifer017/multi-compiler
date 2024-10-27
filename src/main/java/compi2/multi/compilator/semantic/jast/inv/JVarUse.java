@@ -20,6 +20,7 @@ import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.Register;
+import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.util.Label;
@@ -76,7 +77,17 @@ public class JVarUse extends JInvocation {
                         FieldST fieldST = (FieldST) rowST;
                         return new Label(fieldST.getType(), position);
                     } else {
-                        return continueFind(symbolTable);
+                        int index = 1;
+                        while (symbolTable.containsKey(
+                                refFun.getSTName(this.name, index))) {
+                            RowST anotherRowST = symbolTable.get(
+                                    refFun.getSTName(this.name, index)
+                            );
+                            if (anotherRowST instanceof FieldST) {
+                                return new Label(anotherRowST.getType(), position);
+                            }
+                            index++;
+                        }
                     }
                 }
             default: //from father
@@ -116,7 +127,8 @@ public class JVarUse extends JInvocation {
     }
 
     @Override
-    public Label validate(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrorrs, Label previus) {
+    public Label validate(JSymbolTable globalST, SymbolTable symbolTable, 
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, Label previus) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -126,8 +138,17 @@ public class JVarUse extends JInvocation {
     }
 
     @Override
-    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
-            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+    public boolean refersStack() {
+        if(this.rowST instanceof SingleData){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public RetJInvC3D generateCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, int instanceStackRef) {
         if(rowST instanceof SingleData){
             SingleData singleData = (SingleData) rowST;
             int currentIntTemp = temporals.getIntegerCount();
@@ -150,10 +171,14 @@ public class JVarUse extends JInvocation {
                             new RegisterUse(Register.AX_INT)
                     )
             );
-            return new RetParamsC3D(
-                    new TemporalUse(PrimitiveType.IntegerPT, currentIntTemp, temporals)
+            return new RetJInvC3D(
+                    new TemporalUse(
+                            PrimitiveType.IntegerPT, 
+                            currentIntTemp, 
+                            temporals
+                    ), 
+                    false
             );
-            
         } else if (rowST instanceof FieldST){
             throw new UnsupportedOperationException("Not supported yet.");
         } else {
@@ -162,12 +187,9 @@ public class JVarUse extends JInvocation {
     }
 
     @Override
-    public boolean refersStack() {
-        if(this.rowST instanceof SingleData){
-            return true;
-        } else {
-            return false;
-        }
+    public RetJInvC3D generateCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, TemporalUse previus) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 

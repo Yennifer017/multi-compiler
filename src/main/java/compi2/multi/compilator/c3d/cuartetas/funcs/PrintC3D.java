@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.c3d.cuartetas;
+package compi2.multi.compilator.c3d.cuartetas.funcs;
 
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.access.MemoryAccess;

@@ -10,15 +10,22 @@ import compi2.multi.compilator.analysis.symbolt.estruc.JArrayST;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.MemoryAccess;
+import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
+import compi2.multi.compilator.c3d.access.StackPtrUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
+import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
+import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jclases.components.JArrayType;
@@ -46,12 +53,14 @@ public class JDeclaration extends JStatement{
     private PrimitiveType primType;
     
     private AdmiRegisters admiRegisters;
+    private ExpGenC3D expGenC3D;
 
     public JDeclaration(Position initPos, String name, JType type) {
         super(initPos);
         this.name = name;
         this.type = type;
         this.admiRegisters = new AdmiRegisters();
+        this.expGenC3D = new ExpGenC3D();
     }
     
     public JDeclaration(Position initPos, String name, JType type, JExpression value){
@@ -60,6 +69,7 @@ public class JDeclaration extends JStatement{
         this.type = type;
         this.value = value;
         this.admiRegisters = new AdmiRegisters();
+        this.expGenC3D = new ExpGenC3D();
     }
 
     @Override
@@ -114,25 +124,56 @@ public class JDeclaration extends JStatement{
     }
 
     @Override
-    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass) {
         if(rowST instanceof SingleData){
             SingleData singleData = (SingleData) rowST;
-            if( value !=  null){
-                RetParamsC3D returnExp = value.generateCuartetas(
-                    admiMemory, internalCuartetas, temporals, new C3Dpass()
-                );
-
-            } else {
-                /*internalCuartetas.add(
-                        new AssignationC3D(
-                                new StackAccess(type, singleData.getRelativeDir()),
-                                new AtomicValue(type.getDefaultVal())
-                        )
-                );*/
-            }
+            generateSingleCuartetas(admiMemory, internalCuartetas, temporals, pass, singleData);
         } else {
-            throw new RuntimeException();
+            //declarar array
+            throw new RuntimeException("se quiere declarar un array");
         }
         
     }
+    
+    private void generateSingleCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass, SingleData singleData){
+        int tempCount = temporals.getIntegerCount();
+        temporals.setIntegerCount(tempCount + 1);
+        if(value != null){
+            MemoryAccess access = expGenC3D.getAccess(
+                    value, admiMemory, internalCuartetas, temporals, new C3Dpass()
+            );
+            internalCuartetas.add(
+                    new OperationC3D(
+                            new RegisterUse(Register.BX_INT), 
+                            new StackPtrUse(), 
+                            new AtomicValue(singleData.getRelativeDir()), 
+                            DefiniteOperation.Addition
+                    )
+            );
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new StackAccess(primType, new RegisterUse(Register.BX_INT)),
+                            access
+                    )
+            );
+        } else {
+            internalCuartetas.add(
+                    new OperationC3D(
+                            new RegisterUse(Register.BX_INT), 
+                            new StackPtrUse(), 
+                            new AtomicValue(singleData.getRelativeDir()), 
+                            DefiniteOperation.Addition
+                    )
+            );
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new StackAccess(primType, new RegisterUse(Register.BX_INT)),
+                            new AtomicValue(primType.getDefaultVal())
+                    )
+            );
+        }
+    }
+    
 }

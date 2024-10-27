@@ -51,18 +51,19 @@ public class JField extends JDef implements Typable{
     
     protected String getNameFunctionForST(SymbolTable symbolTable){
         if(symbolTable.containsKey(name.getName())){            
-            RowST rowST = symbolTable.get(name.getName());
+            /*RowST rowST = symbolTable.get(name.getName());
             if(rowST instanceof FieldST){
                 return null;
             } else {
                 return verificateOthersFields(symbolTable);
-            }
+            }*/
+            return null;
         } else {
             return this.name.getName();
         }
     }
     
-    private String verificateOthersFields(SymbolTable symbolTable){
+    /*private String verificateOthersFields(SymbolTable symbolTable){
         int index = 1;
         while (symbolTable.containsKey(
                 refFun.getSTName(this.name.getName(), index))) {
@@ -73,7 +74,7 @@ public class JField extends JDef implements Typable{
             index++;
         }
         return refFun.getSTName(this.name.getName(), index);
-    }
+    }*/
 
     @Override
     public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
