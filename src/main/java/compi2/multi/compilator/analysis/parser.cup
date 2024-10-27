@@ -1297,7 +1297,7 @@ procedure_dec ::= PROCEDURE ID:i LPAREN arguments:a RPAREN SEMICOLON
         ;
 
 /*---------------------------------- PARAMS / ARGUMENTS ----------------------------------*/
-arguments ::= arguments:l COMMA type_arg:args
+arguments ::= arguments:l SEMICOLON type_arg:args
                 {:
                     try{
                         l.addAll(args);
@@ -3053,7 +3053,16 @@ cbool_exp ::= carit_exp:e1 EQUALS:o carit_exp:e2
             :}
         ;
 
-carit_exp ::= carit_exp:e1 PLUS:o carit_exp:e2
+carit_exp ::= 
+        /*MANAGE ERRORS*/
+          error PLUS error
+        | error MINUS error
+        | error TIMES error
+        | error DIV error
+        | error BARRA error
+        | error MOD error
+
+        | carit_exp:e1 PLUS:o carit_exp:e2
             {:
                 RESULT = new COperation(
                     new Position(oleft, oright),

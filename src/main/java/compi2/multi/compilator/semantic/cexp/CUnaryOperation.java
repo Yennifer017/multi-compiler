@@ -50,9 +50,9 @@ public class CUnaryOperation extends CExp{
                 imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
         );
         try {
-            return new Label(
-                    super.tConvert.simpleConvert(operation, typeLabel, semanticErrors),
-                    pos);
+            String typeString = super.tConvert.simpleConvert(operation, typeLabel, semanticErrors);
+            this.type = super.tConvert.convertAllPrimitive(typeString);
+            return new Label(typeString,pos);
         } catch (ConvPrimitiveException ex) {
             semanticErrors.add(errorsRep.incorrectTypeError(
                     typeLabel.getName(), typeLabel.getPosition())
@@ -65,17 +65,31 @@ public class CUnaryOperation extends CExp{
     public Label validateSimpleData(SymbolTable symbolTable, List<String> semanticErrors) {
         Label typeLabel = exp.validateSimpleData(symbolTable, semanticErrors);
         try {
-            return new Label(
-                    super.tConvert.simpleConvert(operation, typeLabel, semanticErrors),
-                    pos);
+            String typeString = super.tConvert.simpleConvert(operation, typeLabel, semanticErrors);
+            this.type = super.tConvert.convertAllPrimitive(typeString);
+            return new Label( typeString,pos);
         } catch (ConvPrimitiveException ex) {
             return new Label(Analyzator.ERROR_TYPE, pos);
         }
     }
 
     @Override
-    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory,
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        switch (operation) {
+            case DefiniteOperation.Addition, 
+                    DefiniteOperation.Substraction
+                    :
+                return expGenC3D.generateAritUnaryCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, exp, type, operation
+                );
+            case DefiniteOperation.Not:
+                return expGenC3D.generateNotCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, exp, type, operation
+                );
+            default:
+                throw new RuntimeException("Cuarteas en una c Unary operation no definida");
+        }
     }
     
 }

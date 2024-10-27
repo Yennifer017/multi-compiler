@@ -20,7 +20,10 @@ public enum Register implements CodeTransformable{
     CX_FLOAT(PrimitiveType.RealPT, "CX_FLOAT"),
     AX_CHAR(PrimitiveType.CharPT, "AX_CHAR"),
     BX_CHAR(PrimitiveType.CharPT, "BX_CHAR"),
-    CX_CHAR(PrimitiveType.CharPT, "CX_CHAR");
+    CX_CHAR(PrimitiveType.CharPT, "CX_CHAR"),
+    AX_BOOL(PrimitiveType.BooleanPT, "AX_BOOL"),
+    BX_BOOL(PrimitiveType.BooleanPT, "BX_BOOL"),
+    CX_BOOL(PrimitiveType.BooleanPT, "CX_BOOL");
     
     private PrimitiveType type;
     private String name;

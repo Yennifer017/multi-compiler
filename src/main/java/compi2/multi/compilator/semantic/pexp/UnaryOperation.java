@@ -4,8 +4,10 @@ package compi2.multi.compilator.semantic.pexp;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.analyzator.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
@@ -26,11 +28,15 @@ import lombok.Setter;
 public class UnaryOperation extends Expression{
     private DefiniteOperation operation;
     private Expression expression;
+    
+    private ExpGenC3D expGenC3D;
+    private PrimitiveType type;
 
     public UnaryOperation(DefiniteOperation operation, Expression expression, Position pos) {
         this.operation = operation;
         this.expression = expression;
         super.pos = pos;
+        this.expGenC3D = new ExpGenC3D();
     }
 
     @Override
@@ -59,9 +65,9 @@ public class UnaryOperation extends Expression{
     public Label validateSimpleData(SymbolTable symbolTable, List<String> semanticErrors) {
         Label typeLabel = expression.validateSimpleData(symbolTable, semanticErrors);
         try {
-            return new Label(
-                    super.tConvert.simpleConvert(operation, typeLabel, semanticErrors),
-                    pos);
+            String typeString = super.tConvert.simpleConvert(operation, typeLabel, semanticErrors);
+            type = super.tConvert.convertAllPrimitive(typeString);
+            return new Label(typeString,pos);
         } catch (ConvPrimitiveException ex) {
             return new Label(Analyzator.ERROR_TYPE, pos);
         }
@@ -72,9 +78,9 @@ public class UnaryOperation extends Expression{
             List<String> semanticErrors) {
         Label typeLabel = expression.validateComplexData(symbolTable, typeTable, semanticErrors);
         try {
-            return new Label(
-                    super.tConvert.simpleConvert(operation, typeLabel, semanticErrors),
-                    pos);
+            String typeString = super.tConvert.simpleConvert(operation, typeLabel, semanticErrors);
+            type = super.tConvert.convertAllPrimitive(typeString);
+            return new Label(typeString,pos);
         } catch (ConvPrimitiveException ex) {
             semanticErrors.add(errorsRep.incorrectTypeError(
                     typeLabel.getName(), typeLabel.getPosition())
@@ -85,7 +91,20 @@ public class UnaryOperation extends Expression{
 
     @Override
     public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        switch (operation) {
+            case DefiniteOperation.Addition, 
+                    DefiniteOperation.Substraction
+                    :
+                return expGenC3D.generateAritUnaryCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, expression, type, operation
+                );
+            case DefiniteOperation.Not:
+                return expGenC3D.generateNotCuartetas(
+                        admiMemory, internalCuartetas, temporals, pass, expression, type, operation
+                );
+            default:
+                throw new RuntimeException("Cuarteas en una pascal Unary operation no definida");
+        }
     }
 
 

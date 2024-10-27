@@ -14,6 +14,7 @@ import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
 import compi2.multi.compilator.c3d.cuartetas.IfC3D;
 import compi2.multi.compilator.c3d.cuartetas.LabelC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.cuartetas.UnaryOpC3D;
 import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
@@ -221,6 +222,97 @@ public class ExpGenC3D {
         );
         return new RetParamsC3D(
                 new TemporalUse(type, count, temporals)
+        );
+    }
+    
+    public RetParamsC3D generateAritUnaryCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass,
+            ExpressionGenerateC3D exp,
+            PrimitiveType type, DefiniteOperation operation
+        ){
+        RetParamsC3D retParamC3D = exp.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
+        Register register = admiRegisters.findRegister(type, 1);
+        int count = temporals.getCount(type);
+        temporals.increment(type, 1);
+        if(retParamC3D.getTemporalUse() != null){
+            internalCuartetas.add(
+                    new UnaryOpC3D(
+                            new RegisterUse(register), 
+                            operation, 
+                            retParamC3D.getTemporalUse()
+                    )
+            );
+        } else {
+            internalCuartetas.add(
+                    new UnaryOpC3D(
+                            new RegisterUse(register), 
+                            operation, 
+                            new AtomicValue(retParamC3D.getAtomicValue())
+                    )
+            );
+        }
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(type, count, temporals), 
+                        new RegisterUse(register)
+                )
+        );
+        return new RetParamsC3D(
+                new TemporalUse(type, count, temporals)
+        );
+    }
+    
+    public RetParamsC3D generateNotCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass,
+            ExpressionGenerateC3D exp,
+            PrimitiveType type, DefiniteOperation operation){
+        MemoryAccess access = getAccess(exp, admiMemory, internalCuartetas, temporals, pass);
+        int fistLabel = admiMemory.getCountLabels();
+        admiMemory.setCountLabels(admiMemory.getCountLabels() + 3);
+        int count = temporals.getBooleanCount();
+        temporals.setBooleanCount(temporals.getBooleanCount() + 1);
+        internalCuartetas.add(
+                new IfC3D(
+                        access, 
+                        new AtomicValue(1), 
+                        DefiniteOperation.GraterEq, 
+                        new GotoC3D(fistLabel)
+                )
+        );
+        internalCuartetas.add(
+                new GotoC3D(fistLabel + 1)
+        );
+        internalCuartetas.add(
+                new LabelC3D(fistLabel)
+        );
+        //t = 0
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.BooleanPT, count, temporals),
+                        new AtomicValue(0)
+                )
+        );
+        internalCuartetas.add(
+                new GotoC3D(fistLabel + 2)
+        );
+        internalCuartetas.add(
+                new LabelC3D(fistLabel + 1)
+        );
+        //t = 1
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.BooleanPT, count, temporals),
+                        new AtomicValue(1)
+                )
+        );
+        internalCuartetas.add(
+                new GotoC3D(fistLabel + 2)
+        );
+        internalCuartetas.add(
+                new LabelC3D(fistLabel + 2)
+        );
+        return new RetParamsC3D(
+                new TemporalUse(PrimitiveType.BooleanPT, count, temporals)
         );
     }
     

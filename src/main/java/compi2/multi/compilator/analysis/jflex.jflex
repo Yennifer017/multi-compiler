@@ -161,11 +161,12 @@ OctDigit          = [0-7]
         "while"         { return symbol(sym.WHILE); }
 
         /* others */
-        "=="             { return symbol(sym.EQUALS); }
+        "=="            { return symbol(sym.EQUALS); }
         "="             { return symbol(sym.ASSIGNATION); }
         "&&"            { return symbol(sym.AND); }
         "||"            { return symbol(sym.OR); }
-        "!"             { return symbol(sym.DIFFERENT); }
+        "!="            { return symbol(sym.DIFFERENT); }
+        "!"             { return symbol(sym.NOT); }
         "&"             { return symbol(sym.AMPERSAND); }
         "#"             { return symbol(sym.HASH); }
 
@@ -271,11 +272,12 @@ OctDigit          = [0-7]
         "while"         { return symbol(sym.WHILE); }
 
         /* others */
-        "=="             { return symbol(sym.EQUALS); }
+        "=="            { return symbol(sym.EQUALS); }
         "="             { return symbol(sym.ASSIGNATION); }
         "&&"            { return symbol(sym.AND); }
         "||"            { return symbol(sym.OR); }
-        "!"             { return symbol(sym.DIFFERENT); }
+        "!="            { return symbol(sym.DIFFERENT); }
+        "!"             { return symbol(sym.NOT); }
 
         /* prints */
         "print"         { return symbol(sym.PRINT); }

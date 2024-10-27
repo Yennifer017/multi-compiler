@@ -34,6 +34,14 @@ public class AdmiRegisters {
             
             case PrimitiveType.BooleanPT -> {
                 return switch (number) {
+                    case 1 -> Register.AX_BOOL;
+                    case 2 -> Register.BX_BOOL;
+                    default -> Register.CX_BOOL;
+                };
+            }
+            
+            case PrimitiveType.CharPT -> {
+                return switch (number) {
                     case 1 -> Register.AX_CHAR;
                     case 2 -> Register.BX_CHAR;
                     default -> Register.CX_CHAR;
