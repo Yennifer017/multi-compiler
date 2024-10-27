@@ -3,6 +3,7 @@ package compi2.multi.compilator.analysis.symbolt.clases;
 
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.Category;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.ModuleRowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analyzator.Analyzator;
@@ -21,13 +22,13 @@ public class MethodST extends ModuleRowST{
     private int arrayDims;
 
     public MethodST(String name, String type, SymbolTable internalST, 
-            List<String> typesParams, AccessMod access, int arrayDims) {
+            List<InfParam> typesParams, AccessMod access, int arrayDims) {
         super(name, Category.JMethod, type, internalST, typesParams);
         this.access = access;
         this.arrayDims = arrayDims;
     }
     
-    public MethodST(String name, SymbolTable internalST, List<String> typesParams, 
+    public MethodST(String name, SymbolTable internalST, List<InfParam> typesParams, 
             AccessMod access, int arrayDims) {
         super(name, Category.JMethod, Analyzator.VOID_METHOD, internalST, typesParams);
         this.access = access;

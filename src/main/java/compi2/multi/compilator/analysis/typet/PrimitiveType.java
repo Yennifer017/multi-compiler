@@ -6,12 +6,12 @@ package compi2.multi.compilator.analysis.typet;
  * @author blue-dragon
  */
 public enum PrimitiveType {
-    IntegerPT("integer", 2, true, true, "int"),
-    RealPT("real", 4, false, true, "float"),
-    BooleanPT("boolean", 0, true, true, "int"),
-    CharPT("char", 1, true, true, "char"),
-    StringPT("string", 5, false, false, "std::string"),
-    LongintPT("longint", 3, false, true, "long")
+    IntegerPT("integer", 2, true, true, "int", 0),
+    RealPT("real", 4, false, true, "float", 0),
+    BooleanPT("boolean", 0, true, true, "int", 0),
+    CharPT("char", 1, true, true, "char", ' '),
+    StringPT("string", 5, false, false, "std::string", ""),
+    LongintPT("longint", 3, false, true, "long", 0)
     ;
     
     private String name;
@@ -20,14 +20,23 @@ public enum PrimitiveType {
     private boolean isIntegerNumeric;
     private boolean isNumeric;
     private String cName;
+    private Object defaultVal;
     
-    private PrimitiveType(String name, int id, boolean isIntegerNumeric, boolean isNumeric, String cName){
+    private PrimitiveType(
+            String name, 
+            int id, 
+            boolean isIntegerNumeric, 
+            boolean isNumeric, 
+            String cName,
+            Object defaultVal
+    ){
         this.name = name;
         this.type = new Type(name, 1);
         this.id = id;
         this.isIntegerNumeric = isIntegerNumeric;
         this.isNumeric = isNumeric;
         this.cName = cName;
+        this.defaultVal = defaultVal;
     }
     
     public String getName(){
@@ -52,6 +61,10 @@ public enum PrimitiveType {
    
     public boolean isNumeric(){
         return this.isNumeric;
+    }
+    
+    public Object getDefaultVal(){
+        return this.defaultVal;
     }
     
 }   

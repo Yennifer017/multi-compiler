@@ -321,7 +321,9 @@ public class ExpGenC3D {
         RetParamsC3D retParamC3D = expression.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
         if(retParamC3D.getTemporalUse() != null){
             
-            Register register = admiRegisters.findRegister(retParamC3D.getTemporalUse().getType(), 1);
+            Register register = admiRegisters.findRegister(
+                    retParamC3D.getTemporalUse().getType(), 1
+            );
             internalCuartetas.add(
                     new AssignationC3D(
                             new RegisterUse(register),

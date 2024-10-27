@@ -3,6 +3,7 @@ package compi2.multi.compilator.analysis.symbolt.clases;
 
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.Category;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.ModuleRowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analyzator.Analyzator;
@@ -16,7 +17,7 @@ public class ConstructorST extends ModuleRowST{
     
     private AccessMod access;
 
-    public ConstructorST(String name, SymbolTable internalST, List<String> typesParams, AccessMod access) {
+    public ConstructorST(String name, SymbolTable internalST, List<InfParam> typesParams, AccessMod access) {
         super(name, Category.JConstruct, Analyzator.VOID_METHOD, internalST, typesParams);
     }
     

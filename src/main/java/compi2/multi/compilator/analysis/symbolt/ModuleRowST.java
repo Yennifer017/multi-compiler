@@ -13,14 +13,14 @@ import lombok.Setter;
 public abstract class ModuleRowST extends RowST{
     
     protected SymbolTable internalST;
-    protected List<String> typesParams; 
+    protected List<InfParam> params; 
     protected String convertedName;
     
     public ModuleRowST(String name, Category category, String type, 
-            SymbolTable internalST, List<String> typesParams) {
+            SymbolTable internalST, List<InfParam> params) {
         super(name, category, type);
         this.internalST = internalST;
-        this.typesParams = typesParams;
+        this.params = params;
     }
     
     protected void addReturRow(){

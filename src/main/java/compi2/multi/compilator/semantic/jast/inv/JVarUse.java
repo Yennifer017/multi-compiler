@@ -6,8 +6,22 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.Analyzator;
+import compi2.multi.compilator.c3d.AdmiMemory;
+import compi2.multi.compilator.c3d.Cuarteta;
+import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.RegisterUse;
+import compi2.multi.compilator.c3d.access.StackPtrUse;
+import compi2.multi.compilator.c3d.access.TemporalUse;
+import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
+import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.Register;
+import compi2.multi.compilator.c3d.util.RetParamsC3D;
+import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
@@ -23,6 +37,8 @@ import lombok.Setter;
 public class JVarUse extends JInvocation {
 
     private String name;
+    
+    private RowST rowST;
 
     public JVarUse(Position position, String name, JContextRef context) {
         super(position, context);
@@ -37,12 +53,16 @@ public class JVarUse extends JInvocation {
                 SymbolTable currentST = symbolTable;
                 while (currentST != null) {
                     if (currentST.containsKey(name)) {
-                        RowST rowST = currentST.get(name);
+                        this.rowST = currentST.get(name);
                         if (rowST instanceof SingleData) {
                             SingleData singleData = (SingleData) rowST;
                             return new Label(singleData.getType(), position);
                         } else {
-                            //add error
+                            semanticErrors.add(super.errorsRep.invalidCategoryAccessError(
+                                    rowST.getName(),
+                                    rowST.getCategory().getName(),
+                                    position)
+                            );
                             return new Label(Analyzator.ERROR_TYPE, position);
                         }
                     }
@@ -51,7 +71,7 @@ public class JVarUse extends JInvocation {
             case JContextRef.FromObject:
                 currentST = jerar.getClassST().getFieldsST();
                 if (currentST.containsKey(name)) {
-                    RowST rowST = currentST.get(name);
+                    this.rowST = currentST.get(name);
                     if (rowST instanceof FieldST) {
                         FieldST fieldST = (FieldST) rowST;
                         return new Label(fieldST.getType(), position);
@@ -64,7 +84,7 @@ public class JVarUse extends JInvocation {
                 while (currentNode != null) {
                     currentST = currentNode.getClassST().getFieldsST();
                     if (currentST.containsKey(name)) {
-                        RowST rowST = currentST.get(name);
+                        this.rowST = currentST.get(name);
                         if (rowST instanceof FieldST) {
                             FieldST fieldST = (FieldST) rowST;
                             return new Label(fieldST.getType(), position);
@@ -74,7 +94,9 @@ public class JVarUse extends JInvocation {
                     }
                     currentNode = currentNode.getFather();
                 }
-                //add error
+                semanticErrors.add(
+                        super.errorsRep.undefiniteVarUseError(name, position)
+                );
                 return new Label(Analyzator.ERROR_TYPE, position);
         }
     }
@@ -97,5 +119,56 @@ public class JVarUse extends JInvocation {
     public Label validate(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrorrs, Label previus) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+    @Override
+    public boolean isStatement() {
+        return false;
+    }
+
+    @Override
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+        if(rowST instanceof SingleData){
+            SingleData singleData = (SingleData) rowST;
+            int currentIntTemp = temporals.getIntegerCount();
+            temporals.setIntegerCount(currentIntTemp + 1);
+            internalCuartetas.add( //AX = ptr + n
+                    new OperationC3D(
+                            new RegisterUse(Register.AX_INT), 
+                            new StackPtrUse(),
+                            new AtomicValue<>(singleData.getRelativeDir()), 
+                            DefiniteOperation.Addition
+                    )
+            );
+            internalCuartetas.add( //t[0] = AX_INT
+                    new AssignationC3D(
+                            new TemporalUse(
+                                    PrimitiveType.IntegerPT, 
+                                    currentIntTemp, 
+                                    temporals
+                            ), 
+                            new RegisterUse(Register.AX_INT)
+                    )
+            );
+            return new RetParamsC3D(
+                    new TemporalUse(PrimitiveType.IntegerPT, currentIntTemp, temporals)
+            );
+            
+        } else if (rowST instanceof FieldST){
+            throw new UnsupportedOperationException("Not supported yet.");
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+    @Override
+    public boolean refersStack() {
+        if(this.rowST instanceof SingleData){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
 
 }

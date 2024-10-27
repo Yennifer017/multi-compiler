@@ -27,4 +27,9 @@ public class JArrayFMUse extends JMethodUse{
         this.arrayAccess = arrayAccess;
     }
     
+    @Override
+    public boolean isStatement() {
+        return false;
+    }
+    
 }

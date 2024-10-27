@@ -2,6 +2,7 @@
 package compi2.multi.compilator.semantic.pmodule;
 
 
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -37,7 +38,7 @@ public class ProcedureDec extends ModuleDec {
         SymbolTable internalST = genSymbolTab.generateInternalTable(
                 symbolTable, typeTable, args, semanticErrors
         );
-        List<String> argsStringList = super.generateArgsStringList();
+        List<InfParam> argsStringList = super.generateArgsStringList();
         String nameForST = super.getNameFunctionForST(symbolTable, argsStringList);
         if(nameForST != null){
             functionST = new FunctionST(

@@ -21,4 +21,9 @@ public class FromCArrUse extends JVarUse{
         this.arrayAccess = arrayAccess;
     }
     
+    @Override
+    public boolean isStatement() {
+        return false;
+    }
+    
 }

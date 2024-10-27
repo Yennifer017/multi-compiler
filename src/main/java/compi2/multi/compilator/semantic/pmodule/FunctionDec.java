@@ -2,6 +2,7 @@
 package compi2.multi.compilator.semantic.pmodule;
 
 
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -46,7 +47,7 @@ public class FunctionDec extends ModuleDec{
         refAnalyzator.existReference(typeTable, semanticErrors, varType);
         
         //valida si la funcion no esta definida
-        List<String> argsStringList = super.generateArgsStringList();
+        List<InfParam> argsStringList = super.generateArgsStringList();
         String nameForST = super.getNameFunctionForST(symbolTable, argsStringList);
         if(nameForST != null){
             functionST = new FunctionST(

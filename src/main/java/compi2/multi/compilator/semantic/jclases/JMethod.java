@@ -5,6 +5,7 @@ import compi2.multi.compilator.semantic.jclases.components.JType;
 import compi2.multi.compilator.semantic.jclases.components.Typable;
 import compi2.multi.compilator.semantic.jclases.components.JArg;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
@@ -38,7 +39,7 @@ public class JMethod extends JFunction implements Typable{
 
     @Override
     public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
-        List<String> params = super.generateArgsList();
+        List<InfParam> params = super.generateArgsList();
             String nameForST = getNameFunctionForST(symbolTable, params);
         if(nameForST != null){
             if(type.getRefType() == JReferType.Void){
@@ -80,12 +81,12 @@ public class JMethod extends JFunction implements Typable{
      * @return
      */
     @Override
-    protected String getNameFunctionForST(SymbolTable symbolTable, List<String> argsStringList){
+    protected String getNameFunctionForST(SymbolTable symbolTable, List<InfParam> argsStringList){
         if(symbolTable.containsKey(name.getName())){            
             RowST rowST = symbolTable.get(name.getName());
             if(rowST instanceof MethodST){
                 MethodST functionST = (MethodST) rowST;
-                if(refFun.hasTheSameArgs(functionST.getTypesParams(), argsStringList)){
+                if(refFun.hasTheSameArgs(functionST.getParams(), argsStringList)){
                     return null;
                 } else {
                     return validateOtherMethods(symbolTable, argsStringList);
@@ -98,14 +99,14 @@ public class JMethod extends JFunction implements Typable{
         }
     }
     
-    private String validateOtherMethods(SymbolTable symbolTable, List<String> argsStringList){
+    private String validateOtherMethods(SymbolTable symbolTable, List<InfParam> argsStringList){
         int index = 1;
         while (symbolTable.containsKey(
                 refFun.getSTName(this.name.getName(), index))) {
             RowST anotherRowST = symbolTable.get(refFun.getSTName(this.name.getName(), index));
             if (anotherRowST instanceof MethodST) {
                 MethodST f1 = (MethodST) anotherRowST;
-                if (refFun.hasTheSameArgs(f1.getTypesParams(), argsStringList)) {
+                if (refFun.hasTheSameArgs(f1.getParams(), argsStringList)) {
                     return null;
                 }
             }

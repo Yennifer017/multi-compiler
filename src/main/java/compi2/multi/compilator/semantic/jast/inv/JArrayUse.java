@@ -20,4 +20,8 @@ public class JArrayUse extends JVarUse{
         this.arrayAccess = arrayAccess;
     }
     
+    @Override
+    public boolean isStatement() {
+        return false;
+    }
 }

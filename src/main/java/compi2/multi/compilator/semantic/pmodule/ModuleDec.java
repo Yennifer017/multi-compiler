@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.semantic.pmodule;
 
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -51,12 +52,12 @@ public abstract class ModuleDec extends DefAst{
      * @param argsStringList
      * @return el nombre de la funcion si se puede declarar, null de lo contrario.
      */
-    protected String getNameFunctionForST(SymbolTable symbolTable, List<String> argsStringList){
+    protected String getNameFunctionForST(SymbolTable symbolTable, List<InfParam> argsStringList){
         if(symbolTable.containsKey(name.getName())){
             RowST rowST = symbolTable.get(name.getName());
             if(rowST instanceof FunctionST){
                 FunctionST functionST = (FunctionST) rowST;
-                if(refFun.hasTheSameArgs(functionST.getTypesParams(), argsStringList)){
+                if(refFun.hasTheSameArgs(functionST.getParams(), argsStringList)){
                     return null;
                 } else {
                     int index = 1;
@@ -66,7 +67,7 @@ public abstract class ModuleDec extends DefAst{
                             ) {                
                         FunctionST f1 = (FunctionST) 
                                 symbolTable.get(refFun.getSTName(this.name.getName(), index));
-                        if(refFun.hasTheSameArgs(f1.getTypesParams(), argsStringList)){
+                        if(refFun.hasTheSameArgs(f1.getParams(), argsStringList)){
                             return null;
                         }
                         index ++;
@@ -81,11 +82,12 @@ public abstract class ModuleDec extends DefAst{
         }
     }
     
-    protected List<String> generateArgsStringList(){
-        List<String> list = new ArrayList<>();
+    protected List<InfParam> generateArgsStringList(){
+        List<InfParam> list = new ArrayList<>();
         if(args !=  null && !args.isEmpty()){
             for (Argument arg : args) {
-                list.add(arg.getType().getName());
+                //list.add(arg.getType().getName());
+                list.add(new InfParam(arg.getType().getName(), arg.getName().getName()));
             }
         }
         return list;

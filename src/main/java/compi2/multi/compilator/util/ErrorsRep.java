@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.util;
 
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import java.util.List;
 
 /**
@@ -114,13 +115,13 @@ public class ErrorsRep {
         return "No se puede definir una clase con el nombre " + supername + ", esta reservada";
     }
     
-    public String redeclareFunctionError(String name, List<String> args, Position pos){
+    public String redeclareFunctionError(String name, List<InfParam> args, Position pos){
         StringBuilder builder = new StringBuilder("Se esta redeclarando la function ")
                 .append(name)
                 .append(" con los tipos [ ");
         if(args != null){
             for (int i = 0; i < args.size(); i++) {
-                String arg = args.get(i);
+                String arg = args.get(i).getType();
                 builder.append(arg);
                 if(i != args.size() - 1){
                     builder.append(", ");
@@ -136,14 +137,14 @@ public class ErrorsRep {
         return "El contructor no se encontro " + report(pos);
     }
     
-    public String noSuitableFunctionError(String name, List<String> args, Position pos){
+    public String noSuitableFunctionError(String name, List<InfParam> args, Position pos){
         StringBuilder builder = new StringBuilder(
                 "No se pudo encontrar una llamada a la funccion ")
                 .append(name)
                 .append(" con los parametros tipo [");
         if(args != null){
             for (int i = 0; i < args.size(); i++) {
-                String arg = args.get(i);
+                String arg = args.get(i).getType();
                 builder.append(arg);
                 if(i != args.size() - 1){
                     builder.append(", ");

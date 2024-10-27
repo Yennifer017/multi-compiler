@@ -2,6 +2,7 @@
 package compi2.multi.compilator.semantic.past;
 
 
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.semantic.Statement;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -59,7 +60,7 @@ public class FunctionUseStmt extends Statement{
             functionST = SPECIAL_FUNTION;
             refFun.validateArgs(this.args, symbolTable, typeTable, semanticErrors);
         } else {
-            List<String> argsStringList = refFun.validateArgs(
+            List<InfParam> argsStringList = refFun.validateArgs(
                     this.args, symbolTable, typeTable, semanticErrors
             );
             functionST = refFun.existReference(

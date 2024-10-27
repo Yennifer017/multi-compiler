@@ -3,6 +3,7 @@ package compi2.multi.compilator.analyzator;
 
 
 import compi2.multi.compilator.analysis.symbolt.Category;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -28,20 +29,21 @@ public class FunctionRefAnalyzator {
         errorsRep = new ErrorsRep();
     }
     
-    public List<String> validateArgs(List<Expression> args, SymbolTable symbolTable, TypeTable typeTable, 
+    public List<InfParam> validateArgs(List<Expression> args, SymbolTable symbolTable, TypeTable typeTable, 
             List<String> semanticErrors){
-        List<String> list =  new ArrayList<>();
+        List<InfParam> list =  new ArrayList<>();
         if(args !=  null && !args.isEmpty()){
             for (Expression arg : args) {
                 Label paramLabel = arg.validateComplexData(symbolTable, typeTable, semanticErrors);
-                list.add(paramLabel.getName());
+                //list.add(paramLabel.getName());
+                list.add(new InfParam(paramLabel.getName()));
             }
         }
         return list;
     }
     
     public FunctionST existReference(Label name, SymbolTable symbolTable, TypeTable typeTable, 
-            List<String> semanticErrors, List<String> typeArgs){
+            List<String> semanticErrors, List<InfParam> typeArgs){
         SymbolTable currentTab = symbolTable;
         while (currentTab != null) {            
             if (currentTab.containsKey(name.getName())) {
@@ -49,28 +51,28 @@ public class FunctionRefAnalyzator {
                 if (rowST instanceof FunctionST) {
                     FunctionST functionST = (FunctionST) rowST;
                     //exactly match
-                    if (this.hasTheSameArgs(functionST.getTypesParams(), typeArgs)) {
+                    if (this.hasTheSameArgs(functionST.getParams(), typeArgs)) {
                         return functionST;
                     } else {
                         int index = 1;
                         while (currentTab.containsKey(
                                 this.getSTName(name.getName(), index))) {
                             FunctionST f1 = (FunctionST) currentTab.get(this.getSTName(name.getName(), index));
-                            if (this.hasTheSameArgs(f1.getTypesParams(), typeArgs)) {
+                            if (this.hasTheSameArgs(f1.getParams(), typeArgs)) {
                                 return f1;
                             }
                             index++;
                         }
                     }
                     //converted match
-                    if (this.hasTheSameConvertArgs(functionST.getTypesParams(), typeArgs)) {
+                    if (this.hasTheSameConvertArgs(functionST.getParams(), typeArgs)) {
                         return functionST;
                     } else {
                         int index = 1;
                         while (currentTab.containsKey(
                                 this.getSTName(name.getName(), index))) {
                             FunctionST f1 = (FunctionST) currentTab.get(this.getSTName(name.getName(), index));
-                            if (this.hasTheSameConvertArgs(f1.getTypesParams(), typeArgs)) {
+                            if (this.hasTheSameConvertArgs(f1.getParams(), typeArgs)) {
                                 return f1;
                             }
                             index++;
@@ -102,7 +104,7 @@ public class FunctionRefAnalyzator {
     }
     
     public String getTypeReturnFun(Label name, SymbolTable symbolTable, TypeTable typeTable, 
-            List<String> typeArgs){
+            List<InfParam> typeArgs){
         SymbolTable currentTab = symbolTable;
         while (currentTab != null) {            
             if (currentTab.containsKey(name.getName())) {
@@ -111,28 +113,28 @@ public class FunctionRefAnalyzator {
                     FunctionST functionST = (FunctionST) rowST;
                     
                     //exactly match
-                    if (this.hasTheSameArgs(functionST.getTypesParams(), typeArgs)) {
+                    if (this.hasTheSameArgs(functionST.getParams(), typeArgs)) {
                         return functionST.getType();
                     } else {
                         int index = 1;
                         while (currentTab.containsKey(
                                 this.getSTName(name.getName(), index))) {
                             FunctionST f1 = (FunctionST) currentTab.get(this.getSTName(name.getName(), index));
-                            if (this.hasTheSameArgs(f1.getTypesParams(), typeArgs)) {
+                            if (this.hasTheSameArgs(f1.getParams(), typeArgs)) {
                                 return f1.getType();
                             }
                             index++;
                         }
                     }
                     //converted match
-                    if (this.hasTheSameConvertArgs(functionST.getTypesParams(), typeArgs)) {
+                    if (this.hasTheSameConvertArgs(functionST.getParams(), typeArgs)) {
                         return functionST.getType();
                     } else {
                         int index = 1;
                         while (currentTab.containsKey(
                                 this.getSTName(name.getName(), index))) {
                             FunctionST f1 = (FunctionST) currentTab.get(this.getSTName(name.getName(), index));
-                            if (this.hasTheSameConvertArgs(f1.getTypesParams(), typeArgs)) {
+                            if (this.hasTheSameConvertArgs(f1.getParams(), typeArgs)) {
                                 return f1.getType();
                             }
                             index++;
@@ -150,12 +152,12 @@ public class FunctionRefAnalyzator {
     }
     
     
-    public boolean hasTheSameArgs(List<String> oficialList, List<String> newList){
+    public boolean hasTheSameArgs(List<InfParam> oficialList, List<InfParam> newList){
         if(oficialList.size() != newList.size()){
             return false;
         } else {
             for (int i = 0; i < oficialList.size(); i++) {
-                if(!oficialList.get(i).equals(newList.get(i))){
+                if(!oficialList.get(i).getType().equals(newList.get(i).getType())){
                     return false;
                 }
             }
@@ -163,13 +165,13 @@ public class FunctionRefAnalyzator {
         return true;
     }
     
-    public boolean hasTheSameConvertArgs(List<String> oficialList, List<String> newList){
+    public boolean hasTheSameConvertArgs(List<InfParam> oficialList, List<InfParam> newList){
         if(oficialList.size() != newList.size()){
             return false;
         } else {
             for (int i = 0; i < oficialList.size(); i++) {
                 if(!oficialList.get(i).equals(newList.get(i))
-                        && !tConvert.canUpgradeType(oficialList.get(i), newList.get(i))
+                        && !tConvert.canUpgradeType(oficialList.get(i).getType(), newList.get(i).getType())
                         ){
                     return false;
                 }

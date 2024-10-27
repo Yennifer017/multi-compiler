@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.semantic.pexp;
 
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -59,7 +60,7 @@ public class FunctionUse extends Expression{
     @Override
     public Label validateComplexData(SymbolTable symbolTable, TypeTable typeTable, 
             List<String> semanticErrors) {
-        List<String> argsStringList = refFunc.validateArgs(
+        List<InfParam> argsStringList = refFunc.validateArgs(
                 params, symbolTable, typeTable, semanticErrors
         );
         functionST = refFunc.existReference(

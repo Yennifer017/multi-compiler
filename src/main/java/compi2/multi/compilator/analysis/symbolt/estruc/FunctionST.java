@@ -3,6 +3,7 @@ package compi2.multi.compilator.analysis.symbolt.estruc;
 
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.Category;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.ModuleRowST;
 import compi2.multi.compilator.analysis.symbolt.ReturnRow;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -18,14 +19,13 @@ import lombok.Setter;
 @Getter @Setter
 public class FunctionST extends ModuleRowST{
 
-    public FunctionST(String name, SymbolTable internalST, List<String> typesParams) {
+    public FunctionST(String name, SymbolTable internalST, List<InfParam> typesParams) {
         super(name, Category.Procedure, Analyzator.VOID_METHOD, internalST, typesParams);
     }
     
-    public FunctionST(String name, String type, SymbolTable internalST, List<String> typesParams){
+    public FunctionST(String name, String type, SymbolTable internalST, List<InfParam> typesParams){
         super(name, Category.Function, type, internalST, typesParams);
         this.internalST = internalST;
-        this.typesParams = typesParams;
         super.addReturRow();
     }
     
@@ -34,10 +34,10 @@ public class FunctionST extends ModuleRowST{
         if(this.convertedName == null){
             convertedName = super.name;
             convertedName += "(";
-            if(typesParams != null){
-                for (int i = 0; i < typesParams.size(); i++) {
-                    convertedName += typesParams.get(i);
-                    if(i != typesParams.size() - 1) {
+            if(params != null){
+                for (int i = 0; i < params.size(); i++) {
+                    convertedName += params.get(i).getType();
+                    if(i != params.size() - 1) {
                         convertedName += ", ";
                     }
                 }

@@ -2,6 +2,7 @@
 package compi2.multi.compilator.semantic.jexp;
 
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
@@ -69,14 +70,14 @@ public class JCreateClassE extends JExpression{
         if(globalST.containsKey(name)){
             ClassST classST = globalST.get(name);
             SymbolTable st = classST.getMethodsST();
-            List<String> paramsList = getTypeParams(
+            List<InfParam> paramsList = getTypeParams(
                     globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
             );
             if(st.containsKey(name)){
                 RowST rowST = st.get(name);
                 if(rowST instanceof ConstructorST){ //y tiene los mismos parametros
                     ConstructorST construct = (ConstructorST) rowST;
-                    if(refFun.hasTheSameArgs(construct.getTypesParams(), paramsList)){
+                    if(refFun.hasTheSameArgs(construct.getParams(), paramsList)){
                         return construct;
                     } else {
                         return searchConstruct(st, paramsList, semanticErrors);
@@ -93,7 +94,7 @@ public class JCreateClassE extends JExpression{
         return null;
     }
     
-    private ConstructorST searchConstruct(SymbolTable symbolTable, List<String> args,
+    private ConstructorST searchConstruct(SymbolTable symbolTable, List<InfParam> args,
             List<String> semanticErrors){
         int index = 1;
         while (symbolTable.containsKey(
@@ -101,7 +102,7 @@ public class JCreateClassE extends JExpression{
             RowST anotherRowST = symbolTable.get(refFun.getSTName(this.name, index));
             if (anotherRowST instanceof ConstructorST) {
                 ConstructorST f1 = (ConstructorST) anotherRowST;
-                if (refFun.hasTheSameArgs(f1.getTypesParams(), args)) {
+                if (refFun.hasTheSameArgs(f1.getParams(), args)) {
                     return f1;
                 }
             }
@@ -113,16 +114,17 @@ public class JCreateClassE extends JExpression{
     
     
     
-    private List<String> getTypeParams(JSymbolTable globalST, SymbolTable symbolTable, 
+    private List<InfParam> getTypeParams(JSymbolTable globalST, SymbolTable symbolTable, 
             TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, 
             SemanticRestrictions restrictions){
-        List<String> list = new LinkedList<>();
+        List<InfParam> list = new LinkedList<>();
         if(params != null && !params.isEmpty()){
             for (JExpression param : params) {
                 Label type = param.validateData(
                         globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
                 );
-                list.add(type.getName());
+                //list.add(type.getName());
+                list.add(new InfParam(type.getName()));
             }
         }
         return list;

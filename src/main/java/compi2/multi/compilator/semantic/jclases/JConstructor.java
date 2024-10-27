@@ -4,6 +4,7 @@ package compi2.multi.compilator.semantic.jclases;
 import compi2.multi.compilator.semantic.jclases.components.JArg;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ConstructorST;
@@ -46,7 +47,7 @@ public class JConstructor extends JFunction{
     @Override
     public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
         if(super.nameClass.getName().equals(this.name.getName())){
-            List<String> params = super.generateArgsList();
+            List<InfParam> params = super.generateArgsList();
             String nameForST = getNameFunctionForST(symbolTable, params);
             if(nameForST != null){
                 this.constructorST = new ConstructorST(
@@ -76,12 +77,12 @@ public class JConstructor extends JFunction{
     }
     
     @Override
-    protected String getNameFunctionForST(SymbolTable symbolTable, List<String> argsStringList){
+    protected String getNameFunctionForST(SymbolTable symbolTable, List<InfParam> argsStringList){
         if(symbolTable.containsKey(name.getName())){            
             RowST rowST = symbolTable.get(name.getName());
             if(rowST instanceof ConstructorST){
                 ConstructorST functionST = (ConstructorST) rowST;
-                if(refFun.hasTheSameArgs(functionST.getTypesParams(), argsStringList)){
+                if(refFun.hasTheSameArgs(functionST.getParams(), argsStringList)){
                     return null;
                 } else {
                     return verificateOthersConstructs(symbolTable, argsStringList);
@@ -94,14 +95,14 @@ public class JConstructor extends JFunction{
         }
     }
     
-    private String verificateOthersConstructs(SymbolTable symbolTable, List<String> argsStringList){
+    private String verificateOthersConstructs(SymbolTable symbolTable, List<InfParam> argsStringList){
         int index = 1;
         while (symbolTable.containsKey(
                 refFun.getSTName(this.name.getName(), index))) {
             RowST anotherRowST = symbolTable.get(refFun.getSTName(this.name.getName(), index));
             if (anotherRowST instanceof ConstructorST) {
                 ConstructorST f1 = (ConstructorST) anotherRowST;
-                if (refFun.hasTheSameArgs(f1.getTypesParams(), argsStringList)) {
+                if (refFun.hasTheSameArgs(f1.getParams(), argsStringList)) {
                     return null;
                 }
             }

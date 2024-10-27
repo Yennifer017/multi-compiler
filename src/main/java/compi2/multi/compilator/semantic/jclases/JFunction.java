@@ -4,6 +4,7 @@ package compi2.multi.compilator.semantic.jclases;
 import compi2.multi.compilator.semantic.jclases.components.JArg;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
+import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.ReturnRow;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
@@ -39,11 +40,12 @@ public abstract class JFunction extends JDef{
         this.refAnalyzator = new RefAnalyzator();
     }
     
-    protected List<String> generateArgsList(){
-        List<String> list = new ArrayList<>();
+    protected List<InfParam> generateArgsList(){
+        List<InfParam> list = new ArrayList<>();
         if(args != null && !args.isEmpty()){
             for (JArg arg : args) {
-                list.add(arg.getType().getCompleateName());
+                //list.add(arg.getType().getCompleateName());
+                list.add(new InfParam(arg.getType().getCompleateName(), arg.getName().getName()));
             }
         }
         return list;
@@ -69,7 +71,7 @@ public abstract class JFunction extends JDef{
         return internal;
     }
     
-    protected abstract String getNameFunctionForST(SymbolTable symbolTable, List<String> argsStringList);
+    protected abstract String getNameFunctionForST(SymbolTable symbolTable, List<InfParam> argsStringList);
     
     protected void validateArgs(JSymbolTable globalST, SymbolTable symbolTable, 
             TypeTable typeTable, List<String> semanticErrors){
