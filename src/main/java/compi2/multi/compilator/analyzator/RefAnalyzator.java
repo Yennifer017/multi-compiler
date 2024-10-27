@@ -1,8 +1,10 @@
 
 package compi2.multi.compilator.analyzator;
 
+import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.HeapDirecST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
@@ -111,4 +113,17 @@ public class RefAnalyzator {
         }
     }
     
+    public int findInstanceRef(SymbolTable symbolTable){
+        try {
+            SymbolTable currentST = symbolTable;
+            while(currentST != null){
+                currentST = currentST.getFather();
+            }
+            RowST rowST = currentST.get(AdditionalInfoST.DIR_HEAP_ROW.getNameRow());
+            HeapDirecST heapST = (HeapDirecST) rowST;
+            return heapST.getDirMemory();
+        } catch (NullPointerException | ClassCastException e) {
+        }
+        return -1;
+    }
 }

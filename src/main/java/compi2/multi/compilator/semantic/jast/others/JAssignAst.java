@@ -23,6 +23,7 @@ import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
+import compi2.multi.compilator.semantic.jast.inv.InvocationsUtil;
 import compi2.multi.compilator.semantic.jast.inv.JContextRef;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
 import compi2.multi.compilator.semantic.util.Label;
@@ -48,12 +49,14 @@ public class JAssignAst extends JStatement{
     private int instanceRef;
     
     private ExpGenC3D expGenC3D;
+    private InvocationsUtil invsUtil;
     
     public JAssignAst(Position initPos, List<JInvocation> variable, JExpression value) {
         super(initPos);
         this.variable = variable;
         this.value = value;
         this.expGenC3D = new ExpGenC3D();
+        this.invsUtil = new InvocationsUtil();
     }
     
     public JAssignAst(Position initPos, List<JInvocation> variable, 
@@ -76,8 +79,19 @@ public class JAssignAst extends JStatement{
         Label typeValue = value.validateData(
                 globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
         );
-        Label typeVar = this.validateInvocation(globalST, symbolTable, typeTable, jerar, semanticErrors);
-        saveInstanceRef(symbolTable);
+        //Label typeVar = invsUtil.validateInvocation(globalST, symbolTable, typeTable, jerar, semanticErrors);
+        Label typeVar = invsUtil.validateInvocation(
+                globalST, 
+                symbolTable, 
+                typeTable, 
+                jerar, 
+                semanticErrors, 
+                variable, 
+                initPos, 
+                false
+        );
+        //saveInstanceRef(symbolTable);
+        this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
         primType = super.tConvert.convertAllPrimitive(typeVar.getName());
         if(!typeVar.getName().equals(typeValue.getName())){
             semanticErrors.add(errorsRep.incorrectTypeError(
@@ -89,49 +103,14 @@ public class JAssignAst extends JStatement{
         return new ReturnCase(false);
     }
     
-    private void saveInstanceRef(SymbolTable symbolTable){
-        try {
-            SymbolTable currentST = symbolTable;
-            while(currentST != null){
-                currentST = currentST.getFather();
-            }
-            RowST rowST = currentST.get(AdditionalInfoST.DIR_HEAP_ROW.getNameRow());
-            HeapDirecST heapST = (HeapDirecST) rowST;
-            this.instanceRef = heapST.getDirMemory();
-        } catch (NullPointerException | ClassCastException e) {
-        }
-    }
-    
-    
-    private Label validateInvocation(JSymbolTable globalST, SymbolTable symbolTable, 
-            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors){
-        Label currentType = null;
-        for (int i = 0; i < variable.size(); i++) {
-            JInvocation invocation = variable.get(i);
-            if(i == 0){
-                currentType = invocation.validate(
-                        globalST, symbolTable, typeTable, jerar, semanticErrors
-                );
-            } else {
-                currentType = invocation.validate(
-                        globalST, symbolTable, typeTable, 
-                        jerar, semanticErrors, currentType
-                );
-            }
-            
-            if((i == variable.size() - 1) && invocation.isStatement()){
-                semanticErrors.add(
-                        errorsRep.notAssignationAcurrateError(initPos)
-                );
-            }
-        }
-        return currentType;
-    }
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass) {
-        RetJInvC3D invRet = this.generateInvocations(admiMemory, internalCuartetas, temporals);
+        //RetJInvC3D invRet = this.generateInvocations(admiMemory, internalCuartetas, temporals);
+        RetJInvC3D invRet = invsUtil.generateC3DInvocations(
+                admiMemory, internalCuartetas, temporals, variable, instanceRef
+        );
         MemoryAccess expAccess = expGenC3D.getAccess(
                 value, admiMemory, internalCuartetas, temporals, pass
         );
@@ -154,24 +133,5 @@ public class JAssignAst extends JStatement{
                 )
         );
     }
-    
-    private RetJInvC3D generateInvocations(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
-            Memory temporals){
-        RetJInvC3D currentRetInv = null;
-        for (int i = 0; i < variable.size(); i++) {
-            JInvocation invocation = variable.get(i);
-            if(i == 0){
-                currentRetInv = invocation.generateCuartetas(
-                        admiMemory, internalCuartetas, temporals, instanceRef
-                );
-            } else {
-                currentRetInv = invocation.generateCuartetas(
-                        admiMemory, internalCuartetas, temporals, currentRetInv.getTemporalUse()
-                );
-            }
-        }
-        return currentRetInv;
-    }
-
     
 }

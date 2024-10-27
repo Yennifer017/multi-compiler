@@ -42,6 +42,7 @@ public abstract class JControlStmt extends JStatement{
     public JControlStmt(Position initPos) {
         super(initPos);
         this.expGenC3D = new ExpGenC3D();
+        this.stmtsAnalizator = new StmtsAnalizator();
     }
     
     protected ReturnCase validateInternalStmts(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, 
