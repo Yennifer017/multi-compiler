@@ -19,9 +19,9 @@ public class AtomicValue<T> extends MemoryAccess{
     @Override
     public void generateCcode(StringBuilder builder) {
         if(value instanceof String){
-            builder.append("\"");
+            builder.append("std::string(\"");
             builder.append(value);
-            builder.append("\"");
+            builder.append("\")");
         } else if (value instanceof Character){
             builder.append("'");
             builder.append(value);

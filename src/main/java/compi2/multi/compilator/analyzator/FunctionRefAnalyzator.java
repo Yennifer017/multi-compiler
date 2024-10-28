@@ -7,9 +7,12 @@ import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.c.CExp;
+import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.ArrayList;
@@ -36,6 +39,21 @@ public class FunctionRefAnalyzator {
             for (Expression arg : args) {
                 Label paramLabel = arg.validateComplexData(symbolTable, typeTable, semanticErrors);
                 //list.add(paramLabel.getName());
+                list.add(new InfParam(paramLabel.getName()));
+            }
+        }
+        return list;
+    }
+    
+    public List<InfParam> validateArgs(List<CExp> args, CImports imports, JSymbolTable clasesST, 
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+            List<String> semanticErrors){
+        List<InfParam> list =  new ArrayList<>();
+        if(args !=  null && !args.isEmpty()){
+            for (CExp arg : args) {
+                Label paramLabel = arg.validateComplexData(
+                        imports, clasesST, symbolTable, symbolTable, typeTable, semanticErrors
+                );
                 list.add(new InfParam(paramLabel.getName()));
             }
         }

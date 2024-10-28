@@ -24,7 +24,8 @@ public enum Category {
     JField("atributo de clase"), 
     JHeapDir("direccion dentro del heap"),
     JMethod("metodo de una clase"), 
-    JDirInstance("direccion de instancia de una clase");
+    JDirInstance("direccion de instancia de una clase"),
+    JObject("objeto de java");
     ;
     
     private String name;

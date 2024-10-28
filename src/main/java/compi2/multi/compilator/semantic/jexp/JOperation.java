@@ -38,7 +38,7 @@ public class JOperation extends JExpression{
     private PrimitiveType type;
     
     public JOperation(Position pos, DefiniteOperation operation, 
-            JExpression right, JExpression left){
+            JExpression left, JExpression right){
         super(pos);
         this.operation = operation;
         this.left = left;

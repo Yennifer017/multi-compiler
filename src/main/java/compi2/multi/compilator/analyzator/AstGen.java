@@ -1,6 +1,5 @@
 package compi2.multi.compilator.analyzator;
 
-import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.pmodule.Argument;
 import compi2.multi.compilator.semantic.util.PassIf;
 import compi2.multi.compilator.semantic.past.IfAst;

@@ -26,9 +26,5 @@ public class ConstructorST extends ModuleRowST{
         return true;
     }
 
-    @Override
-    public String getCompleateName() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
 }

@@ -27,14 +27,23 @@ public class CObjectsDec extends CDef{
     public RowST generateRowST(CImports imports, JSymbolTable clasesST, 
             SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
             List<String> semanticErrors) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (CObjectDec object : objects) {
+            RowST rowST = object.generateRowST(
+                    imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
+            );
+            if(rowST != null){
+                symbolTable.put(rowST.getName(), rowST);
+            }
+        }
+        return null;
     }
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (CObjectDec object : objects) {
+            object.generateCuartetas(admiMemory, internalCuartetas, temporals);
+        }
     }
-
 
     
 }

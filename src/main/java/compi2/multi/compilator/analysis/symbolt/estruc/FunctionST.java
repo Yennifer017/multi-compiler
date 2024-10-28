@@ -28,25 +28,6 @@ public class FunctionST extends ModuleRowST{
         this.internalST = internalST;
         super.addReturRow();
     }
-    
-    @Override
-    public String getCompleateName(){
-        if(this.convertedName == null){
-            convertedName = super.name;
-            convertedName += "(";
-            if(params != null){
-                for (int i = 0; i < params.size(); i++) {
-                    convertedName += params.get(i).getType();
-                    if(i != params.size() - 1) {
-                        convertedName += ", ";
-                    }
-                }
-            }
-            convertedName += ")";
-        }
-        return convertedName;
-    }
-
 
     @Override
     public boolean isLinked() {

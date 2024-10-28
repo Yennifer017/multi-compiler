@@ -16,6 +16,8 @@ public abstract class ModuleRowST extends RowST{
     protected List<InfParam> params; 
     protected String convertedName;
     
+    protected String compleateName;
+    
     public ModuleRowST(String name, Category category, String type, 
             SymbolTable internalST, List<InfParam> params) {
         super(name, category, type);
@@ -30,11 +32,5 @@ public abstract class ModuleRowST extends RowST{
         );
         internalST.incrementLastDir(1);
     }
-    
-    /**
-     *
-     * @return el nombre completo
-     */
-    public abstract String getCompleateName();
     
 }

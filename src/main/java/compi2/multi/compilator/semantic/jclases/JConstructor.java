@@ -55,6 +55,8 @@ public class JConstructor extends JFunction{
                 this.constructorST = new ConstructorST(
                         nameForST, super.generateInternalST(true), params, access
                 );
+                String finalName = super.getFinalName(constructorST.getName());
+                constructorST.setCompleateName(finalName);
                 return this.constructorST;
             } else {
                 semanticErrors.add(
@@ -173,14 +175,13 @@ public class JConstructor extends JFunction{
                 )
         );
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);
-        String finalName = super.getFinalName(constructorST.getName());
         admiMemory.getCuartetas().add(
                 new FunctionC3D(
-                    finalName, 
+                    constructorST.getCompleateName(), 
                     temporals, 
                     internalCuartetas)
         );
-        admiMemory.getDefinitions().add(finalName);
+        admiMemory.getDefinitions().add(constructorST.getCompleateName());
     }
     
 }

@@ -61,6 +61,8 @@ public class JMethod extends JFunction implements Typable{
                         type.getArrayDimensions()
                 );
             }
+            String finalName = super.getFinalName(methodSt.getName());
+            methodSt.setCompleateName(finalName);
             return this.methodSt;
         } else {
             semanticErrors.add(
@@ -139,13 +141,12 @@ public class JMethod extends JFunction implements Typable{
         List<Cuarteta> internalCuartetas = new LinkedList<>();
         Memory temporals = new Memory("internal");
         super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);
-        String finalName = super.getFinalName(methodSt.getName());
         admiMemory.getCuartetas().add(
                 new FunctionC3D(
-                    finalName, 
+                    methodSt.getCompleateName(), 
                     temporals, 
                     internalCuartetas)
         );
-        admiMemory.getDefinitions().add(finalName);
+        admiMemory.getDefinitions().add(methodSt.getCompleateName());
     }
 }
