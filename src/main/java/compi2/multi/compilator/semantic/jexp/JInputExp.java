@@ -9,7 +9,13 @@ import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.access.RegisterUse;
+import compi2.multi.compilator.c3d.access.TemporalUse;
+import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
+import compi2.multi.compilator.c3d.cuartetas.funcs.ScanC3D;
+import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
+import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
@@ -26,10 +32,12 @@ import lombok.Setter;
 @Getter @Setter
 public class JInputExp extends JExpression{
     private JTypeInput type;
+    private AdmiRegisters admiRegisters;
     
     public JInputExp(Position pos, JTypeInput type){
         super(pos);
         this.type = type;
+        this.admiRegisters = new AdmiRegisters();
     }
 
     @Override
@@ -46,8 +54,23 @@ public class JInputExp extends JExpression{
     }
 
     @Override
-    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass) {
+        Register register = admiRegisters.findRegister(type.getPrimType(), 1);
+        int countTemp = temporals.getCount(type.getPrimType());
+        temporals.increment(type.getPrimType(), 1);
+        internalCuartetas.add(
+                new ScanC3D(new RegisterUse(register))
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(type.getPrimType(), countTemp, temporals), 
+                        new RegisterUse(register)
+                )
+        );
+        return new RetParamsC3D(
+                new TemporalUse(type.getPrimType(), countTemp, temporals)
+        );
     }
 
     

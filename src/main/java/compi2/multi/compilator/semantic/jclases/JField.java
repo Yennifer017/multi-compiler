@@ -35,7 +35,15 @@ public class JField extends JDef implements Typable{
     public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
         String nameForST = getNameFunctionForST(symbolTable);
         if(nameForST != null){
-            return new FieldST(name.getName(), type.getName().getName(), access, this);
+            int dir = symbolTable.getLastDir();
+            symbolTable.incrementLastDir(1);
+            return new FieldST(
+                    name.getName(), 
+                    type.getName().getName(), 
+                    access, 
+                    dir, 
+                    this
+            );
         } else {
             semanticErrors.add(
                 super.errorsRep.repeatedDeclarationError(name.getName(), name.getPosition())

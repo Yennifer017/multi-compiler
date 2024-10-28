@@ -63,6 +63,7 @@ public class JAssignAst extends JStatement{
             JExpression value, JContextRef first) {
         super(initPos);
         this.expGenC3D = new ExpGenC3D();
+        this.invsUtil = new InvocationsUtil();
         try {
             variable.get(0).setContext(first);
             this.variable = variable;

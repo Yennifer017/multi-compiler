@@ -7,8 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ConstructorST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
-import compi2.multi.compilator.analysis.symbolt.clases.ObjectST;
-import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
+import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
@@ -43,7 +42,8 @@ public class CObjectDec extends CDef {
     
     private ConstructorST constructorST;
     private SymbolTable st;
-    private ObjectST objectST;
+    //private ObjectST objectST;
+    private SingleData singleDataST;
     
     public CObjectDec(Label name){
         super.name = name;
@@ -74,8 +74,15 @@ public class CObjectDec extends CDef {
                 constructorST = existReference(objST, argsStringList, semanticErrors);
                 st = symbolTable;
                 if(constructorST != null){
-                    this.objectST = new ObjectST(this.name.getName(), objectName.getName());
-                    return this.objectST;
+                    /*this.objectST = new ObjectST(this.name.getName(), objectName.getName());
+                    return this.objectST;*/
+                    int relativeDir = symbolTable.getLastDir();
+                    symbolTable.incrementLastDir(relativeDir + 1);
+                    this.singleDataST = new SingleData(
+                            this.name.getName(), 
+                            Category.JObject, objectName.getName(), 
+                            relativeDir
+                    );
                 }
             } else {
                 semanticErrors.add(
@@ -170,6 +177,7 @@ public class CObjectDec extends CDef {
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals) {
+        //TODO: pasar parametros
         internalCuartetas.add(
                 new OperationC3D(
                         new StackPtrUse(), 

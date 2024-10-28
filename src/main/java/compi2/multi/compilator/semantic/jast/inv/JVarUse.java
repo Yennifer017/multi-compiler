@@ -14,6 +14,7 @@ import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.AtomicValue;
 import compi2.multi.compilator.c3d.access.RegisterUse;
+import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
 import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
@@ -178,7 +179,42 @@ public class JVarUse extends JInvocation {
                     false
             );
         } else if (rowST instanceof FieldST){
-            throw new UnsupportedOperationException("Not supported yet.");
+            //TODO: validar si es heredado
+            FieldST fieldST = (FieldST) rowST;
+            int temporalCount = temporals.getIntegerCount();
+            temporals.setIntegerCount(temporalCount + 1);
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new RegisterUse(Register.AX_INT), 
+                            new StackAccess(PrimitiveType.IntegerPT, instanceStackRef)
+                    )
+            );
+            internalCuartetas.add(
+                    new OperationC3D(
+                            new RegisterUse(Register.BX_INT), 
+                            new RegisterUse(Register.AX_INT), 
+                            new AtomicValue(fieldST.getRelativeDir()), 
+                            DefiniteOperation.Addition
+                    )
+            );
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new TemporalUse(
+                                    PrimitiveType.IntegerPT, 
+                                    temporalCount, 
+                                    temporals
+                            ),
+                            new RegisterUse(Register.BX_INT)
+                    )
+            );
+            return new RetJInvC3D(
+                    new TemporalUse(
+                            PrimitiveType.IntegerPT, 
+                            temporalCount, 
+                            temporals
+                    ), 
+                    true
+            );
         } else {
             throw new RuntimeException();
         }
