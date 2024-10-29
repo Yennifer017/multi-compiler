@@ -43,11 +43,9 @@ public class JArg {
                             symbolTable.getLastDir())
             );
             symbolTable.incrementLastDir(1);
-        }
-        
-        if (symbolTable.containsKey(this.name.getName())) {
+        } else {
             semanticErrors.add(errorsRep.repeatedDeclarationError(
-                    this.name.getName(), this.name.getPosition())
+                this.name.getName(), this.name.getPosition())
             );
         }
     }

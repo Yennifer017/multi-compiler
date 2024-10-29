@@ -128,12 +128,16 @@ public class JConstructor extends JFunction{
     public void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields) {
         List<Cuarteta> internalCuartetas = new LinkedList<>();
         Memory temporals = new Memory("internal");
-        //reservando espacio en el heap
-        int espacioHeap = temporals.getIntegerCount();
-        temporals.setIntegerCount(temporals.getIntegerCount() + 1);
-        internalCuartetas.add( //t1 = h
+        
+        DirInstanceST dirInstanceST = (DirInstanceST) 
+                constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
+        int instanceDir = temporals.getIntegerCount();
+        int stackDir = instanceDir + 1;
+        temporals.setIntegerCount(instanceDir + 2);
+        
+        internalCuartetas.add( 
                 new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, espacioHeap, temporals), 
+                        new TemporalUse(PrimitiveType.IntegerPT, instanceDir, temporals), 
                         new HeapPtrUse())
         );
         internalCuartetas.add( // h = h + nfields
@@ -144,33 +148,39 @@ public class JConstructor extends JFunction{
                         DefiniteOperation.Addition
                 )
         );
-        //setear la referencia del objeto en el stack
-        DirInstanceST dirInstanceST = (DirInstanceST) 
-                constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
-        internalCuartetas.add( //AX = ptr + 0
+        internalCuartetas.add(
                 new OperationC3D(
                         new RegisterUse(Register.AX_INT), 
-                        new StackPtrUse(),
-                        new AtomicValue<>(dirInstanceST.getDirMemory()), 
+                        new StackPtrUse(), 
+                        new AtomicValue(dirInstanceST.getDirMemory()), 
                         DefiniteOperation.Addition
                 )
         );
-        internalCuartetas.add( //internal[n] = AX
+        internalCuartetas.add(
                 new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, temporals.getIntegerCount(), temporals), 
+                        new TemporalUse(PrimitiveType.IntegerPT, stackDir, temporals), 
                         new RegisterUse(Register.AX_INT)
                 )
         );
-        temporals.setIntegerCount(temporals.getIntegerCount() + 1);
+        
         internalCuartetas.add(
-                new AssignationC3D( //BX = stack[0]
-                        new RegisterUse(Register.BX_INT), 
-                        new StackAccess(PrimitiveType.IntegerPT, espacioHeap)
+                new AssignationC3D(
+                        new RegisterUse(Register.AX_INT), 
+                        new TemporalUse(PrimitiveType.IntegerPT, stackDir, temporals)
                 )
         );
         internalCuartetas.add(
-                new AssignationC3D( //stack[AX] = BX
-                        new StackAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT)),
+                new AssignationC3D(
+                        new RegisterUse(Register.BX_INT), 
+                        new TemporalUse(PrimitiveType.IntegerPT, instanceDir, temporals)
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new StackAccess(
+                                PrimitiveType.IntegerPT, 
+                                new RegisterUse(Register.AX_INT)
+                        ),
                         new RegisterUse(Register.BX_INT)
                 )
         );

@@ -117,6 +117,9 @@ public class RefAnalyzator {
         try {
             SymbolTable currentST = symbolTable;
             while(currentST != null){
+                if(currentST.getFather() == null){
+                    break;
+                }
                 currentST = currentST.getFather();
             }
             RowST rowST = currentST.get(AdditionalInfoST.DIR_HEAP_ROW.getNameRow());

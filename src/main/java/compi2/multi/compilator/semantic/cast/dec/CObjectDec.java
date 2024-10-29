@@ -1,4 +1,3 @@
-
 package compi2.multi.compilator.semantic.cast.dec;
 
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
@@ -20,6 +19,7 @@ import compi2.multi.compilator.c3d.access.AtomicValue;
 import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
+import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.MethodInvC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
@@ -40,28 +40,29 @@ import lombok.Setter;
  *
  * @author blue-dragon
  */
-@Getter @Setter
+@Getter
+@Setter
 public class CObjectDec extends CDef {
-    
+
     private Label objectName;
     private List<CExp> args;
-    
+
     private FunctionRefAnalyzator refFun;
     private ParamsGenC3D paramsGenC3D;
-    
+
     private ConstructorST constructorST;
     private SymbolTable st;
     //private ObjectST objectST;
     private SingleData singleDataST;
-    
-    public CObjectDec(Label name){
+
+    public CObjectDec(Label name) {
         super.name = name;
         args = new LinkedList<>();
         this.refFun = new FunctionRefAnalyzator();
         this.paramsGenC3D = new ParamsGenC3D();
     }
-    
-    public CObjectDec(Label name, List<CExp> args){
+
+    public CObjectDec(Label name, List<CExp> args) {
         super.name = name;
         this.args = args;
         this.refFun = new FunctionRefAnalyzator();
@@ -69,10 +70,10 @@ public class CObjectDec extends CDef {
     }
 
     @Override
-    public RowST generateRowST(CImports imports, JSymbolTable clasesST, 
-            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
+    public RowST generateRowST(CImports imports, JSymbolTable clasesST,
+            SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable,
             List<String> semanticErrors) {
-        if(symbolTable.containsKey(this.name.getName())){
+        if (symbolTable.containsKey(this.name.getName())) {
             semanticErrors.add(super.errorsRep.repeatedDeclarationError(
                     name.getName(), name.getPosition())
             );
@@ -81,18 +82,18 @@ public class CObjectDec extends CDef {
             List<InfParam> argsStringList = refFun.validateArgs(
                     args, imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
             );
-            if(clasesST.containsKey(objectName.getName())){
+            if (clasesST.containsKey(objectName.getName())) {
                 SymbolTable objST = clasesST.get(objectName.getName()).getMethodsST();
                 constructorST = existReference(objST, argsStringList, semanticErrors);
                 st = symbolTable;
-                if(constructorST != null){
+                if (constructorST != null) {
                     /*this.objectST = new ObjectST(this.name.getName(), objectName.getName());
                     return this.objectST;*/
                     int relativeDir = symbolTable.getLastDir();
                     symbolTable.incrementLastDir(relativeDir + 1);
                     this.singleDataST = new SingleData(
-                            this.name.getName(), 
-                            Category.JObject, objectName.getName(), 
+                            this.name.getName(),
+                            Category.JObject, objectName.getName(),
                             relativeDir
                     );
                     return this.singleDataST;
@@ -107,15 +108,15 @@ public class CObjectDec extends CDef {
         }
         return null;
     }
-    
-    private ConstructorST existReference(SymbolTable symbolTable, List<InfParam> argsStringList, 
-            List<String> semanticErrors){
-        if(symbolTable.containsKey(objectName.getName())){
+
+    private ConstructorST existReference(SymbolTable symbolTable, List<InfParam> argsStringList,
+            List<String> semanticErrors) {
+        if (symbolTable.containsKey(objectName.getName())) {
             RowST rowST = symbolTable.get(objectName.getName());
             //exactly match
-            if(rowST instanceof ConstructorST){
+            if (rowST instanceof ConstructorST) {
                 ConstructorST constructorST = (ConstructorST) rowST;
-                if(refFun.hasTheSameArgs(constructorST.getParams(), argsStringList)){
+                if (refFun.hasTheSameArgs(constructorST.getParams(), argsStringList)) {
                     return constructorST;
                 } else {
                     try {
@@ -130,9 +131,9 @@ public class CObjectDec extends CDef {
                 }
             }
             //converted match
-            if(rowST instanceof ConstructorST){
+            if (rowST instanceof ConstructorST) {
                 ConstructorST constructorST = (ConstructorST) rowST;
-                if(refFun.hasTheSameConvertArgs(constructorST.getParams(), argsStringList)){
+                if (refFun.hasTheSameConvertArgs(constructorST.getParams(), argsStringList)) {
                     return constructorST;
                 } else {
                     try {
@@ -153,12 +154,12 @@ public class CObjectDec extends CDef {
         return null;
     }
 
-    private ConstructorST verificateOthersConstructs(SymbolTable symbolTable, List<InfParam> argsStringList) 
-            throws NoDataFoundEx{
+    private ConstructorST verificateOthersConstructs(SymbolTable symbolTable, List<InfParam> argsStringList)
+            throws NoDataFoundEx {
         int index = 1;
         while (symbolTable.containsKey(
-                refFun.getSTName(this.name.getName(), index))) {
-            RowST anotherRowST = symbolTable.get(refFun.getSTName(this.name.getName(), index));
+                refFun.getSTName(this.objectName.getName(), index))) {
+            RowST anotherRowST = symbolTable.get(refFun.getSTName(this.objectName.getName(), index));
             if (anotherRowST instanceof ConstructorST) {
                 ConstructorST f1 = (ConstructorST) anotherRowST;
                 if (refFun.hasTheSameArgs(f1.getParams(), argsStringList)) {
@@ -169,9 +170,9 @@ public class CObjectDec extends CDef {
         }
         throw new NoDataFoundEx();
     }
-    
-     private ConstructorST verificateTransConstructs(SymbolTable symbolTable, List<InfParam> argsStringList) 
-            throws NoDataFoundEx{
+
+    private ConstructorST verificateTransConstructs(SymbolTable symbolTable, List<InfParam> argsStringList)
+            throws NoDataFoundEx {
         int index = 1;
         while (symbolTable.containsKey(
                 refFun.getSTName(this.name.getName(), index))) {
@@ -186,57 +187,112 @@ public class CObjectDec extends CDef {
         }
         throw new NoDataFoundEx();
     }
-     
+
     @Override
-    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas,
             Memory temporals) {
-        //moviendose en el stack
+        //moviendose temporalmente en el stack
         internalCuartetas.add(
                 new OperationC3D(
-                        new StackPtrUse(), 
-                        new StackPtrUse(), 
-                        new AtomicValue(st.getLastDir()), 
+                        new RegisterUse(Register.AX_INT),
+                        new StackPtrUse(),
+                        new AtomicValue(st.getLastDir()),
                         DefiniteOperation.Addition
                 )
         );
+        int tempIntCount = temporals.getIntegerCount();
+        temporals.setIntegerCount(tempIntCount + 1);
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(
+                                PrimitiveType.IntegerPT,
+                                tempIntCount,
+                                temporals
+                        ),
+                        new RegisterUse(Register.AX_INT)
+                )
+        );
+        //seteando los parametros
         this.paramsGenC3D.generateParamsC3D(
-                admiMemory, 
-                internalCuartetas, 
-                temporals, 
-                constructorST.getInternalST(), 
-                constructorST.getParams(), 
-                args
+                admiMemory,
+                internalCuartetas,
+                temporals,
+                constructorST.getInternalST(),
+                constructorST.getParams(),
+                args,
+                new TemporalUse(PrimitiveType.IntegerPT, tempIntCount, temporals)
+        );
+        //moviendose en el stack
+        internalCuartetas.add(
+                new OperationC3D(
+                        new StackPtrUse(),
+                        new StackPtrUse(),
+                        new AtomicValue(st.getLastDir()),
+                        DefiniteOperation.Addition
+                )
         );
         internalCuartetas.add(
                 new MethodInvC3D(constructorST.getCompleateName())
         );
-        //recuperar la referencia
-        DirInstanceST dirInstanceST = (DirInstanceST) 
-                constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
-        internalCuartetas.add( //AX = stack + n
-                new OperationC3D(
-                        new RegisterUse(Register.AX_INT), 
-                        new StackPtrUse(), 
-                        new AtomicValue(dirInstanceST.getDirMemory()), 
-                        DefiniteOperation.Addition
-                )
-        );
-        //setear la referencia en el stack
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new StackAccess(PrimitiveType.IntegerPT, singleDataST.getRelativeDir()), 
-                        new RegisterUse(Register.AX_INT)
-                )
-        );
         //regresar al stack
         internalCuartetas.add(
                 new OperationC3D(
-                        new StackPtrUse(), 
-                        new StackPtrUse(), 
-                        new AtomicValue(st.getLastDir()), 
+                        new StackPtrUse(),
+                        new StackPtrUse(),
+                        new AtomicValue(st.getLastDir()),
                         DefiniteOperation.Substraction
                 )
         );
+        //moverse en el stack y recuperar la referencia
+        internalCuartetas.add(
+                new OperationC3D(
+                        new RegisterUse(Register.AX_INT),
+                        new StackPtrUse(),
+                        new AtomicValue(st.getLastDir()),
+                        DefiniteOperation.Addition
+                )
+        );
+        int otherTemporal = temporals.getIntegerCount();
+        temporals.setIntegerCount(otherTemporal + 1);
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(
+                                PrimitiveType.IntegerPT,
+                                otherTemporal,
+                                temporals
+                        ),
+                        new RegisterUse(Register.AX_INT)
+                )
+        );
+
+        //recuperar la referencia
+        DirInstanceST dirInstanceST = (DirInstanceST) constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
+
+        //recuperando la posicion en el stack del metodo
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new RegisterUse(Register.BX_INT),
+                        new RegisterUse(Register.AX_INT)
+                )
+        );
+        internalCuartetas.add(
+                new OperationC3D(
+                        new RegisterUse(Register.CX_INT),
+                        new RegisterUse(Register.BX_INT),
+                        new AtomicValue(dirInstanceST.getDirMemory()),
+                        DefiniteOperation.Addition
+                )
+        );
+        //setear la referencia devuelta
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new StackAccess(
+                                PrimitiveType.IntegerPT,
+                                new RegisterUse(Register.CX_INT)
+                        ),
+                        new RegisterUse(Register.AX_INT)
+                )
+        );
     }
-    
+
 }

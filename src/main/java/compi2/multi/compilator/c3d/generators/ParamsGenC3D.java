@@ -13,7 +13,7 @@ import compi2.multi.compilator.c3d.access.AtomicValue;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
 import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
-import compi2.multi.compilator.c3d.access.StackPtrUse;
+import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
@@ -37,7 +37,7 @@ public class ParamsGenC3D {
     }
     public void generateParamsC3D(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, SymbolTable symbolTable, List<InfParam> params, 
-            List<? extends ExpressionGenerateC3D> expressions){
+            List<? extends ExpressionGenerateC3D> expressions, TemporalUse stackTemp){
         if(!params.isEmpty()){
             for (int i = 0; i < params.size(); i++) {
                 InfParam param = params.get(i);
@@ -48,22 +48,29 @@ public class ParamsGenC3D {
                         exp, admiMemory, internalCuartetas, temporals, new C3Dpass()
                 );
                 
+                //recuperando la posicion en el stack del metodo
+                internalCuartetas.add(
+                        new AssignationC3D(
+                                new RegisterUse(Register.BX_INT), 
+                                stackTemp
+                        )
+                );
                 internalCuartetas.add(
                         new OperationC3D(
+                                new RegisterUse(Register.CX_INT), 
                                 new RegisterUse(Register.BX_INT), 
-                                new StackPtrUse(), 
                                 new AtomicValue(rowST.getRelativeDir()), 
                                 DefiniteOperation.Addition
                         )
                 );
+                //setear el parametro
                 PrimitiveType type = tConvertidor.convertAllPrimitive(param.getType());
                 internalCuartetas.add(
                         new AssignationC3D(
-                                new StackAccess(type, new RegisterUse(Register.BX_INT)), 
+                                new StackAccess(type, new RegisterUse(Register.CX_INT)), 
                                 expAccess
                         )
                 );
-                
             }
         }
     }
