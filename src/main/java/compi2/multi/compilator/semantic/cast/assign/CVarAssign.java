@@ -7,7 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.analyzator.ExpGenC3D;
+import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.analyzator.RefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
@@ -15,6 +15,7 @@ import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
 import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
+import compi2.multi.compilator.c3d.generators.AccessGenC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
 import compi2.multi.compilator.semantic.c.CExp;
@@ -38,6 +39,7 @@ public class CVarAssign extends CAssign{
     
     private RefAnalyzator refAnalyzator;
     private ExpGenC3D expGenC3D;
+    private AccessGenC3D accessGenC3D;
     
     private SingleData singleData;
     private PrimitiveType type;
@@ -47,6 +49,7 @@ public class CVarAssign extends CAssign{
         this.nameVar = nameVar;
         this.refAnalyzator = new RefAnalyzator();
         this.expGenC3D = new ExpGenC3D();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     @Override
@@ -83,7 +86,7 @@ public class CVarAssign extends CAssign{
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        MemoryAccess memoryAccess = expGenC3D.getAccess(
+        MemoryAccess memoryAccess = accessGenC3D.getAccess(
                 expression, admiMemory, internalCuartetas, temporals, pass
         );
         internalCuartetas.add(

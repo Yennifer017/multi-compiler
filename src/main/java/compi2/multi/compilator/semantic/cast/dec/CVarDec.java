@@ -7,7 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.analyzator.ExpGenC3D;
+import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
@@ -18,9 +18,9 @@ import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.generators.AccessGenC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.Register;
-import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.c.CExp;
@@ -44,18 +44,21 @@ public class CVarDec extends CDef {
     private SingleData singleData;
 
     private ExpGenC3D expGenC3D;
+    private AccessGenC3D accessGenC3D;
 
     public CVarDec(Label name, PrimitiveType type, CExp exp) {
         super.name = name;
         this.type = type;
         this.exp = exp;
         this.expGenC3D = new ExpGenC3D();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     public CVarDec(Label name, PrimitiveType type) {
         super.name = name;
         this.type = type;
         this.expGenC3D = new ExpGenC3D();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     @Override
@@ -93,7 +96,7 @@ public class CVarDec extends CDef {
         int tempCount = temporals.getIntegerCount();
         temporals.setIntegerCount(tempCount + 1);
         if(exp != null){
-            MemoryAccess access = expGenC3D.getAccess(
+            MemoryAccess access = accessGenC3D.getAccess(
                     exp, admiMemory, internalCuartetas, temporals, new C3Dpass()
             );
             internalCuartetas.add(

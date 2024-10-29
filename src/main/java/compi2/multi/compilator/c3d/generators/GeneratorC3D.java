@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.analyzator;
+package compi2.multi.compilator.c3d.generators;
 
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;

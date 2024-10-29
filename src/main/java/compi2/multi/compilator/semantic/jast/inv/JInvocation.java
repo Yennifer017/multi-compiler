@@ -6,7 +6,7 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
-import compi2.multi.compilator.analyzator.ExpGenC3D;
+import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;

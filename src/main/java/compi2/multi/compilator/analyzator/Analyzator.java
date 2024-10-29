@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.analyzator;
 
+import compi2.multi.compilator.c3d.generators.GeneratorC3D;
 import compi2.multi.compilator.analysis.Lexer;
 import compi2.multi.compilator.analysis.Parser;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;

@@ -56,6 +56,7 @@ public class JInvocationExp extends JExpression{
     public JInvocationExp(List<JInvocation> invocations, JContextRef firstContext){
         super(null);
         this.invsUtil =  new InvocationsUtil();
+        this.admiRegisters = new AdmiRegisters();
         try {
             invocations.get(0).setContext(firstContext);
             this.invocations = invocations;

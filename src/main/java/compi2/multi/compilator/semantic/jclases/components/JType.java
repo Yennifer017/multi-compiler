@@ -80,7 +80,7 @@ public class JType {
     }
     
     public String getCompleateName(){
-        return this.name + this.getArrayName(this.getArrayDimensions());
+        return this.name.getName() + this.getArrayName(this.getArrayDimensions());
     }
     
     private String getArrayName(int times){

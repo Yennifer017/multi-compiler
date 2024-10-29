@@ -10,7 +10,7 @@ import compi2.multi.compilator.analysis.symbolt.estruc.JArrayST;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
-import compi2.multi.compilator.analyzator.ExpGenC3D;
+import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
@@ -21,10 +21,10 @@ import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.generators.AccessGenC3D;
 import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.Register;
-import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
@@ -54,6 +54,7 @@ public class JDeclaration extends JStatement{
     
     private AdmiRegisters admiRegisters;
     private ExpGenC3D expGenC3D;
+    private AccessGenC3D accessGenC3D;
 
     public JDeclaration(Position initPos, String name, JType type) {
         super(initPos);
@@ -61,6 +62,7 @@ public class JDeclaration extends JStatement{
         this.type = type;
         this.admiRegisters = new AdmiRegisters();
         this.expGenC3D = new ExpGenC3D();
+        this.accessGenC3D = new AccessGenC3D();
     }
     
     public JDeclaration(Position initPos, String name, JType type, JExpression value){
@@ -70,6 +72,7 @@ public class JDeclaration extends JStatement{
         this.value = value;
         this.admiRegisters = new AdmiRegisters();
         this.expGenC3D = new ExpGenC3D();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     @Override
@@ -141,7 +144,7 @@ public class JDeclaration extends JStatement{
         int tempCount = temporals.getIntegerCount();
         temporals.setIntegerCount(tempCount + 1);
         if(value != null){
-            MemoryAccess access = expGenC3D.getAccess(
+            MemoryAccess access = accessGenC3D.getAccess(
                     value, admiMemory, internalCuartetas, temporals, new C3Dpass()
             );
             internalCuartetas.add(

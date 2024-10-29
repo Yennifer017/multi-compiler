@@ -1,22 +1,30 @@
 
 package compi2.multi.compilator.semantic.cast.dec;
 
+import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ConstructorST;
+import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.RegisterUse;
+import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
+import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.MethodInvC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.generators.ParamsGenC3D;
+import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.exceptions.NoDataFoundEx;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.c.CDef;
@@ -39,6 +47,7 @@ public class CObjectDec extends CDef {
     private List<CExp> args;
     
     private FunctionRefAnalyzator refFun;
+    private ParamsGenC3D paramsGenC3D;
     
     private ConstructorST constructorST;
     private SymbolTable st;
@@ -49,11 +58,14 @@ public class CObjectDec extends CDef {
         super.name = name;
         args = new LinkedList<>();
         this.refFun = new FunctionRefAnalyzator();
+        this.paramsGenC3D = new ParamsGenC3D();
     }
     
     public CObjectDec(Label name, List<CExp> args){
         super.name = name;
         this.args = args;
+        this.refFun = new FunctionRefAnalyzator();
+        this.paramsGenC3D = new ParamsGenC3D();
     }
 
     @Override
@@ -83,6 +95,7 @@ public class CObjectDec extends CDef {
                             Category.JObject, objectName.getName(), 
                             relativeDir
                     );
+                    return this.singleDataST;
                 }
             } else {
                 semanticErrors.add(
@@ -177,7 +190,7 @@ public class CObjectDec extends CDef {
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals) {
-        //TODO: pasar parametros
+        //moviendose en el stack
         internalCuartetas.add(
                 new OperationC3D(
                         new StackPtrUse(), 
@@ -186,9 +199,36 @@ public class CObjectDec extends CDef {
                         DefiniteOperation.Addition
                 )
         );
+        this.paramsGenC3D.generateParamsC3D(
+                admiMemory, 
+                internalCuartetas, 
+                temporals, 
+                constructorST.getInternalST(), 
+                constructorST.getParams(), 
+                args
+        );
         internalCuartetas.add(
                 new MethodInvC3D(constructorST.getCompleateName())
         );
+        //recuperar la referencia
+        DirInstanceST dirInstanceST = (DirInstanceST) 
+                constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
+        internalCuartetas.add( //AX = stack + n
+                new OperationC3D(
+                        new RegisterUse(Register.AX_INT), 
+                        new StackPtrUse(), 
+                        new AtomicValue(dirInstanceST.getDirMemory()), 
+                        DefiniteOperation.Addition
+                )
+        );
+        //setear la referencia en el stack
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new StackAccess(PrimitiveType.IntegerPT, singleDataST.getRelativeDir()), 
+                        new RegisterUse(Register.AX_INT)
+                )
+        );
+        //regresar al stack
         internalCuartetas.add(
                 new OperationC3D(
                         new StackPtrUse(), 
@@ -197,7 +237,6 @@ public class CObjectDec extends CDef {
                         DefiniteOperation.Substraction
                 )
         );
-        //recuperar la instancia del stack y setearla en la posicion original del stack
     }
     
 }

@@ -1,4 +1,4 @@
-package compi2.multi.compilator.analyzator;
+package compi2.multi.compilator.c3d.generators;
 
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.c3d.AdmiMemory;
@@ -30,9 +30,11 @@ import java.util.List;
 public class ExpGenC3D {
 
     private AdmiRegisters admiRegisters;
+    private AccessGenC3D accessGenC3D;
 
     public ExpGenC3D() {
-        admiRegisters = new AdmiRegisters();
+        this.admiRegisters = new AdmiRegisters();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     public RetParamsC3D generateAndCuartetas(AdmiMemory admiMemory,
@@ -197,8 +199,8 @@ public class ExpGenC3D {
             ExpressionGenerateC3D leftExp, ExpressionGenerateC3D rightExp,
             PrimitiveType type, DefiniteOperation operation
     ) {
-        MemoryAccess firstAccess = getAccess(leftExp, admiMemory, internalCuartetas, temporals, pass);
-        MemoryAccess secondAccess = getAccess(rightExp, admiMemory, internalCuartetas, temporals, pass);
+        MemoryAccess firstAccess = accessGenC3D.getAccess(leftExp, admiMemory, internalCuartetas, temporals, pass);
+        MemoryAccess secondAccess = accessGenC3D.getAccess(rightExp, admiMemory, internalCuartetas, temporals, pass);
 
         if (firstAccess instanceof AtomicValue atomicVal && atomicVal.getValue() instanceof String) {
             secondAccess = new AtomicStringConvC3D(secondAccess);
@@ -272,7 +274,7 @@ public class ExpGenC3D {
             List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass,
             ExpressionGenerateC3D exp,
             PrimitiveType type, DefiniteOperation operation) {
-        MemoryAccess access = getAccess(exp, admiMemory, internalCuartetas, temporals, pass);
+        MemoryAccess access = accessGenC3D.getAccess(exp, admiMemory, internalCuartetas, temporals, pass);
         int fistLabel = admiMemory.getCountLabels();
         admiMemory.setCountLabels(admiMemory.getCountLabels() + 3);
         int count = temporals.getBooleanCount();
@@ -322,23 +324,4 @@ public class ExpGenC3D {
         );
     }
 
-    public MemoryAccess getAccess(ExpressionGenerateC3D expression, AdmiMemory admiMemory,
-            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        RetParamsC3D retParamC3D = expression.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
-        if (retParamC3D.getTemporalUse() != null) {
-
-            Register register = admiRegisters.findRegister(
-                    retParamC3D.getTemporalUse().getType(), 1
-            );
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(register),
-                            retParamC3D.getTemporalUse()
-                    )
-            );
-            return new RegisterUse(register);
-        } else {
-            return new AtomicValue(retParamC3D.getAtomicValue());
-        }
-    }
 }
