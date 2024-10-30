@@ -38,7 +38,7 @@ public class InvocationsUtil {
             } else {
                 currentRetInv = invocation.generateCuartetas(
                         admiMemory, internalCuartetas, temporals, 
-                        currentRetInv.getTemporalUse()
+                        currentRetInv
                 );
             }
         }

@@ -23,8 +23,10 @@ import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.MethodInvC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.generators.ConstructorC3DGen;
 import compi2.multi.compilator.c3d.generators.ParamsGenC3D;
 import compi2.multi.compilator.c3d.util.Register;
+import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.NoDataFoundEx;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.c.CDef;
@@ -48,7 +50,7 @@ public class CObjectDec extends CDef {
     private List<CExp> args;
 
     private FunctionRefAnalyzator refFun;
-    private ParamsGenC3D paramsGenC3D;
+    private ConstructorC3DGen constructorC3DGen;
 
     private ConstructorST constructorST;
     private SymbolTable st;
@@ -59,14 +61,14 @@ public class CObjectDec extends CDef {
         super.name = name;
         args = new LinkedList<>();
         this.refFun = new FunctionRefAnalyzator();
-        this.paramsGenC3D = new ParamsGenC3D();
+        this.constructorC3DGen = new ConstructorC3DGen();
     }
 
     public CObjectDec(Label name, List<CExp> args) {
         super.name = name;
         this.args = args;
         this.refFun = new FunctionRefAnalyzator();
-        this.paramsGenC3D = new ParamsGenC3D();
+        this.constructorC3DGen = new ConstructorC3DGen();
     }
 
     @Override
@@ -191,100 +193,11 @@ public class CObjectDec extends CDef {
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas,
             Memory temporals) {
-        //moviendose temporalmente en el stack
-        internalCuartetas.add(
-                new OperationC3D(
-                        new RegisterUse(Register.AX_INT),
-                        new StackPtrUse(),
-                        new AtomicValue(st.getLastDir()),
-                        DefiniteOperation.Addition
-                )
-        );
-        int tempIntCount = temporals.getIntegerCount();
-        temporals.setIntegerCount(tempIntCount + 1);
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new TemporalUse(
-                                PrimitiveType.IntegerPT,
-                                tempIntCount,
-                                temporals
-                        ),
-                        new RegisterUse(Register.AX_INT)
-                )
-        );
-        //seteando los parametros
-        this.paramsGenC3D.generateParamsC3D(
-                admiMemory,
-                internalCuartetas,
-                temporals,
-                constructorST.getInternalST(),
-                constructorST.getParams(),
-                args,
-                new TemporalUse(PrimitiveType.IntegerPT, tempIntCount, temporals)
-        );
-        //moviendose en el stack
-        internalCuartetas.add(
-                new OperationC3D(
-                        new StackPtrUse(),
-                        new StackPtrUse(),
-                        new AtomicValue(st.getLastDir()),
-                        DefiniteOperation.Addition
-                )
-        );
-        internalCuartetas.add(
-                new MethodInvC3D(constructorST.getCompleateName())
-        );
-        //regresar al stack
-        internalCuartetas.add(
-                new OperationC3D(
-                        new StackPtrUse(),
-                        new StackPtrUse(),
-                        new AtomicValue(st.getLastDir()),
-                        DefiniteOperation.Substraction
-                )
-        );
-        //moverse en el stack y recuperar la referencia
-        internalCuartetas.add(
-                new OperationC3D(
-                        new RegisterUse(Register.AX_INT),
-                        new StackPtrUse(),
-                        new AtomicValue(st.getLastDir()),
-                        DefiniteOperation.Addition
-                )
-        );
-        int otherTemporal = temporals.getIntegerCount();
-        temporals.setIntegerCount(otherTemporal + 1);
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new TemporalUse(
-                                PrimitiveType.IntegerPT,
-                                otherTemporal,
-                                temporals
-                        ),
-                        new RegisterUse(Register.AX_INT)
-                )
-        );
-
-        //recuperar la referencia
-        DirInstanceST dirInstanceST = (DirInstanceST) constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
-
-        //recuperando la posicion en el stack del metodo
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new RegisterUse(Register.BX_INT),
-                        new RegisterUse(Register.AX_INT)
-                )
-        );
-        internalCuartetas.add(
-                new OperationC3D(
-                        new RegisterUse(Register.CX_INT),
-                        new RegisterUse(Register.BX_INT),
-                        new AtomicValue(dirInstanceST.getDirMemory()),
-                        DefiniteOperation.Addition
-                )
+        RetParamsC3D retParamsC3D = constructorC3DGen.generateCuartetas(
+                args, admiMemory, internalCuartetas, temporals, st, constructorST
         );
         //setear la referencia devuelta
-        internalCuartetas.add(
+        /*internalCuartetas.add(
                 new AssignationC3D(
                         new StackAccess(
                                 PrimitiveType.IntegerPT,
@@ -292,7 +205,7 @@ public class CObjectDec extends CDef {
                         ),
                         new RegisterUse(Register.AX_INT)
                 )
-        );
+        );*/
     }
 
 }

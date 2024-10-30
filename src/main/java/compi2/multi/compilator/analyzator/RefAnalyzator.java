@@ -4,6 +4,7 @@ package compi2.multi.compilator.analyzator;
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
 import compi2.multi.compilator.analysis.symbolt.clases.HeapDirecST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -122,10 +123,11 @@ public class RefAnalyzator {
                 }
                 currentST = currentST.getFather();
             }
-            RowST rowST = currentST.get(AdditionalInfoST.DIR_HEAP_ROW.getNameRow());
-            HeapDirecST heapST = (HeapDirecST) rowST;
+            RowST rowST = currentST.get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
+            DirInstanceST heapST = (DirInstanceST) rowST;
             return heapST.getDirMemory();
         } catch (NullPointerException | ClassCastException e) {
+            System.out.println(e);
         }
         return -1;
     }

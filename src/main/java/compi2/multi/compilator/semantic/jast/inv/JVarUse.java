@@ -3,6 +3,7 @@ package compi2.multi.compilator.semantic.jast.inv;
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
@@ -13,6 +14,7 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.HeapAccess;
 import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
@@ -37,7 +39,7 @@ import lombok.Setter;
 public class JVarUse extends JInvocation {
 
     private String name;
-    
+
     private RowST rowST;
 
     public JVarUse(Position position, String name, JContextRef context) {
@@ -126,9 +128,25 @@ public class JVarUse extends JInvocation {
     }
 
     @Override
-    public Label validate(JSymbolTable globalST, SymbolTable symbolTable, 
+    public Label validate(JSymbolTable globalST, SymbolTable symbolTable,
             TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, Label previus) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if (globalST.containsKey(previus.getName())) {
+            ClassST classST = globalST.get(previus.getName());
+            SymbolTable fieldsClassST = classST.getFieldsST();
+            if (fieldsClassST.containsKey(this.name)) {
+                rowST = fieldsClassST.get(this.name);
+                return new Label(rowST.getType(), position);
+            } else {
+                semanticErrors.add(errorsRep.invalidInvocationError(
+                        previus.getName(), name, position)
+                );
+            }
+        } else {
+            semanticErrors.add(errorsRep.invalidInvocationError(
+                    previus.getName(), name, position)
+            );
+        }
+        return new Label(Analyzator.ERROR_TYPE, position);
     }
 
     @Override
@@ -138,7 +156,7 @@ public class JVarUse extends JInvocation {
 
     @Override
     public boolean refersStack() {
-        if(this.rowST instanceof SingleData){
+        if (this.rowST instanceof SingleData) {
             return true;
         } else {
             return false;
@@ -146,73 +164,94 @@ public class JVarUse extends JInvocation {
     }
 
     @Override
-    public RetJInvC3D generateCuartetas(AdmiMemory admiMemory, 
+    public RetJInvC3D generateCuartetas(AdmiMemory admiMemory,
             List<Cuarteta> internalCuartetas, Memory temporals, int instanceStackRef) {
-        if(rowST instanceof SingleData){
+        if (rowST instanceof SingleData) {
             SingleData singleData = (SingleData) rowST;
             int currentIntTemp = temporals.getIntegerCount();
             temporals.setIntegerCount(currentIntTemp + 1);
             internalCuartetas.add( //AX = ptr + n
                     new OperationC3D(
-                            new RegisterUse(Register.AX_INT), 
+                            new RegisterUse(Register.AX_INT),
                             new StackPtrUse(),
-                            new AtomicValue<>(singleData.getRelativeDir()), 
+                            new AtomicValue<>(singleData.getRelativeDir()),
                             DefiniteOperation.Addition
                     )
             );
             internalCuartetas.add( //t[0] = AX_INT
                     new AssignationC3D(
                             new TemporalUse(
-                                    PrimitiveType.IntegerPT, 
-                                    currentIntTemp, 
+                                    PrimitiveType.IntegerPT,
+                                    currentIntTemp,
                                     temporals
-                            ), 
+                            ),
                             new RegisterUse(Register.AX_INT)
                     )
             );
             return new RetJInvC3D(
                     new TemporalUse(
-                            PrimitiveType.IntegerPT, 
-                            currentIntTemp, 
+                            PrimitiveType.IntegerPT,
+                            currentIntTemp,
                             temporals
-                    ), 
+                    ),
                     false
             );
-        } else if (rowST instanceof FieldST){
+        } else if (rowST instanceof FieldST) {
             //TODO: validar si es heredado
             FieldST fieldST = (FieldST) rowST;
             int temporalCount = temporals.getIntegerCount();
             temporals.setIntegerCount(temporalCount + 1);
+            
+            
+            /**
+             * 
+             * 
+             *    HERE IS A FATAL ERROR 
+             * 
+             *
+             *
+             */
+            internalCuartetas.add(
+                    new OperationC3D(
+                            new RegisterUse(Register.AX_INT), 
+                            new StackPtrUse(), 
+                            new AtomicValue(instanceStackRef), 
+                            DefiniteOperation.Addition
+                    )
+            );
             internalCuartetas.add(
                     new AssignationC3D(
-                            new RegisterUse(Register.AX_INT), 
-                            new StackAccess(PrimitiveType.IntegerPT, instanceStackRef)
+                            new RegisterUse(Register.BX_INT), 
+                            new StackAccess(
+                                    PrimitiveType.IntegerPT, 
+                                    new RegisterUse(Register.AX_INT)
+                            )
                     )
             );
             internalCuartetas.add(
                     new OperationC3D(
-                            new RegisterUse(Register.BX_INT), 
-                            new RegisterUse(Register.AX_INT), 
-                            new AtomicValue(fieldST.getRelativeDir()), 
+                            new RegisterUse(Register.AX_INT),
+                            new RegisterUse(Register.BX_INT),
+                            new AtomicValue(fieldST.getRelativeDir()),
                             DefiniteOperation.Addition
                     )
             );
             internalCuartetas.add(
                     new AssignationC3D(
                             new TemporalUse(
-                                    PrimitiveType.IntegerPT, 
-                                    temporalCount, 
+                                    PrimitiveType.IntegerPT,
+                                    temporalCount,
                                     temporals
                             ),
-                            new RegisterUse(Register.BX_INT)
+                            new RegisterUse(Register.AX_INT)
                     )
             );
             return new RetJInvC3D(
                     new TemporalUse(
-                            PrimitiveType.IntegerPT, 
-                            temporalCount, 
+                            PrimitiveType.IntegerPT,
+                            temporalCount,
                             temporals
-                    ), 
+                    ),
                     true
             );
         } else {
@@ -221,10 +260,81 @@ public class JVarUse extends JInvocation {
     }
 
     @Override
-    public RetJInvC3D generateCuartetas(AdmiMemory admiMemory, 
-            List<Cuarteta> internalCuartetas, Memory temporals, TemporalUse previus) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public RetJInvC3D generateCuartetas(AdmiMemory admiMemory,
+            List<Cuarteta> internalCuartetas, Memory temporals, RetJInvC3D previus) {
+        FieldST fieldST = (FieldST) rowST;
+        int countTemp = temporals.getIntegerCount();
+        temporals.setIntegerCount(countTemp + 3);
+        
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new RegisterUse(Register.AX_INT), 
+                        previus.getTemporalUse()
+                )
+        );
+        //if(previus.isHeapAccess()){
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new RegisterUse(Register.BX_INT), 
+                            new HeapAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
+                    )
+            );
+        /*} else {
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new RegisterUse(Register.BX_INT), 
+                            new StackAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
+                    )
+            );
+        }*/
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals), 
+                        new RegisterUse(Register.BX_INT)
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new RegisterUse(Register.AX_INT), 
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals)
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new RegisterUse(Register.BX_INT), 
+                        new HeapAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
+                        new RegisterUse(Register.BX_INT)
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new RegisterUse(Register.AX_INT), 
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals)
+                )
+        );
+        internalCuartetas.add(
+                new OperationC3D(
+                        new RegisterUse(Register.BX_INT), 
+                        new RegisterUse(Register.AX_INT), 
+                        new AtomicValue(fieldST.getRelativeDir()), 
+                        DefiniteOperation.Addition
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 2, temporals), 
+                        new RegisterUse(Register.BX_INT)
+                )
+        );
+        return new RetJInvC3D(
+                new TemporalUse(PrimitiveType.IntegerPT, countTemp + 2, temporals), 
+                true
+        );
     }
-    
 
 }

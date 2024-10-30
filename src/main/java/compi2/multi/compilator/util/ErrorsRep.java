@@ -172,4 +172,8 @@ public class ErrorsRep {
     public String notAssignationAcurrateError(Position pos){
         return "No se puede realizar la asignacion a una instruccion " + report(pos);
     }
+    
+    public String invalidInvocationError(String supertype, String field, Position pos){
+        return "No se encontro el atributo " + field +  "en la clase " + supertype + report(pos);
+    }
 }

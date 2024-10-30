@@ -14,6 +14,7 @@ import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.generators.ConstructorC3DGen;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.j.JExpression;
@@ -29,31 +30,40 @@ import lombok.Setter;
  *
  * @author blue-dragon
  */
-@Getter @Setter
-public class JCreateClassE extends JExpression{
+@Getter
+@Setter
+public class JCreateClassE extends JExpression {
+
     private List<JExpression> params;
     private String name;
-    
+
     private FunctionRefAnalyzator refFun;
-    
+    private ConstructorC3DGen constructorC3DGen;
+
     private ConstructorST constructorST;
-    
-    public JCreateClassE(Position pos, String name, List<JExpression> params){
+    private SymbolTable st;
+
+    public JCreateClassE(Position pos, String name, List<JExpression> params) {
         super(pos);
         this.name = name;
         this.params = params;
+        this.refFun = new FunctionRefAnalyzator();
+        this.constructorC3DGen = new ConstructorC3DGen();
     }
-    
-    public JCreateClassE(Position pos, String name){
+
+    public JCreateClassE(Position pos, String name) {
         super(pos);
         this.name = name;
         this.params = new LinkedList<>();
+        this.refFun = new FunctionRefAnalyzator();
+        this.constructorC3DGen = new ConstructorC3DGen();
     }
 
     @Override
-    public Label validateData(JSymbolTable globalST, SymbolTable symbolTable, 
-            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, 
+    public Label validateData(JSymbolTable globalST, SymbolTable symbolTable,
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors,
             SemanticRestrictions restrictions) {
+        this.st = symbolTable;
         constructorST = validateExistence(globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions);
         return new Label(name, pos);
     }
@@ -63,21 +73,21 @@ public class JCreateClassE extends JExpression{
         semanticErrors.add(errorsRep.ilegalUseError(name, pos));
         return new Label(Analyzator.ERROR_TYPE, pos);
     }
-    
-    private ConstructorST validateExistence(JSymbolTable globalST, SymbolTable symbolTable, 
-            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, 
-            SemanticRestrictions restrictions){
-        if(globalST.containsKey(name)){
+
+    private ConstructorST validateExistence(JSymbolTable globalST, SymbolTable symbolTable,
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors,
+            SemanticRestrictions restrictions) {
+        if (globalST.containsKey(name)) {
             ClassST classST = globalST.get(name);
             SymbolTable st = classST.getMethodsST();
             List<InfParam> paramsList = getTypeParams(
                     globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
             );
-            if(st.containsKey(name)){
+            if (st.containsKey(name)) {
                 RowST rowST = st.get(name);
-                if(rowST instanceof ConstructorST){ //y tiene los mismos parametros
+                if (rowST instanceof ConstructorST) { //y tiene los mismos parametros
                     ConstructorST construct = (ConstructorST) rowST;
-                    if(refFun.hasTheSameArgs(construct.getParams(), paramsList)){
+                    if (refFun.hasTheSameArgs(construct.getParams(), paramsList)) {
                         return construct;
                     } else {
                         return searchConstruct(st, paramsList, semanticErrors);
@@ -93,9 +103,9 @@ public class JCreateClassE extends JExpression{
         }
         return null;
     }
-    
+
     private ConstructorST searchConstruct(SymbolTable symbolTable, List<InfParam> args,
-            List<String> semanticErrors){
+            List<String> semanticErrors) {
         int index = 1;
         while (symbolTable.containsKey(
                 refFun.getSTName(name, index))) {
@@ -111,14 +121,12 @@ public class JCreateClassE extends JExpression{
         semanticErrors.add(errorsRep.undefiniteConstructorError(pos));
         return null;
     }
-    
-    
-    
-    private List<InfParam> getTypeParams(JSymbolTable globalST, SymbolTable symbolTable, 
-            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, 
-            SemanticRestrictions restrictions){
+
+    private List<InfParam> getTypeParams(JSymbolTable globalST, SymbolTable symbolTable,
+            TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors,
+            SemanticRestrictions restrictions) {
         List<InfParam> list = new LinkedList<>();
-        if(params != null && !params.isEmpty()){
+        if (params != null && !params.isEmpty()) {
             for (JExpression param : params) {
                 Label type = param.validateData(
                         globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
@@ -131,8 +139,16 @@ public class JCreateClassE extends JExpression{
     }
 
     @Override
-    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass) {
+        return constructorC3DGen.generateCuartetas(
+                params, 
+                admiMemory, 
+                internalCuartetas, 
+                temporals, 
+                st, 
+                constructorST
+        );
     }
-    
+
 }
