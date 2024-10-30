@@ -201,16 +201,6 @@ public class JVarUse extends JInvocation {
             FieldST fieldST = (FieldST) rowST;
             int temporalCount = temporals.getIntegerCount();
             temporals.setIntegerCount(temporalCount + 1);
-            
-            
-            /**
-             * 
-             * 
-             *    HERE IS A FATAL ERROR 
-             * 
-             *
-             *
-             */
             internalCuartetas.add(
                     new OperationC3D(
                             new RegisterUse(Register.AX_INT), 
@@ -264,7 +254,7 @@ public class JVarUse extends JInvocation {
             List<Cuarteta> internalCuartetas, Memory temporals, RetJInvC3D previus) {
         FieldST fieldST = (FieldST) rowST;
         int countTemp = temporals.getIntegerCount();
-        temporals.setIntegerCount(countTemp + 3);
+        temporals.setIntegerCount(countTemp + 2);
         
         internalCuartetas.add(
                 new AssignationC3D(
@@ -272,21 +262,27 @@ public class JVarUse extends JInvocation {
                         previus.getTemporalUse()
                 )
         );
-        //if(previus.isHeapAccess()){
+        if(previus.isHeapAccess()){
             internalCuartetas.add(
                     new AssignationC3D(
                             new RegisterUse(Register.BX_INT), 
-                            new HeapAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
+                            new HeapAccess(
+                                    PrimitiveType.IntegerPT, 
+                                    new RegisterUse(Register.AX_INT)
+                            )
                     )
             );
-        /*} else {
+        } else {
             internalCuartetas.add(
                     new AssignationC3D(
                             new RegisterUse(Register.BX_INT), 
-                            new StackAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
+                            new StackAccess(
+                                    PrimitiveType.IntegerPT, 
+                                    new RegisterUse(Register.AX_INT)
+                            )
                     )
             );
-        }*/
+        }
         internalCuartetas.add(
                 new AssignationC3D(
                         new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals), 
@@ -300,24 +296,6 @@ public class JVarUse extends JInvocation {
                 )
         );
         internalCuartetas.add(
-                new AssignationC3D(
-                        new RegisterUse(Register.BX_INT), 
-                        new HeapAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
-                )
-        );
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
-                        new RegisterUse(Register.BX_INT)
-                )
-        );
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
-                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals)
-                )
-        );
-        internalCuartetas.add(
                 new OperationC3D(
                         new RegisterUse(Register.BX_INT), 
                         new RegisterUse(Register.AX_INT), 
@@ -327,12 +305,12 @@ public class JVarUse extends JInvocation {
         );
         internalCuartetas.add(
                 new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 2, temporals), 
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
                         new RegisterUse(Register.BX_INT)
                 )
         );
         return new RetJInvC3D(
-                new TemporalUse(PrimitiveType.IntegerPT, countTemp + 2, temporals), 
+                new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
                 true
         );
     }

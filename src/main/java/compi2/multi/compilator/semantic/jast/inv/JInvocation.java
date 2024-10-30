@@ -11,7 +11,6 @@ import compi2.multi.compilator.analyzator.FunctionRefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
@@ -54,6 +53,15 @@ public abstract class JInvocation {
     public abstract boolean isStatement();
     public abstract boolean refersStack();
     
+    /**
+     * Genera cuartetas
+     * @param admiMemory
+     * @param internalCuartetas
+     * @param temporals
+     * @param instanceStackRef
+     * @return un objeto que contiene la posicion de memoria del objeto
+     * ya sea en el heap o en el stack
+     */
     public abstract RetJInvC3D generateCuartetas(AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, 
             Memory temporals, int instanceStackRef);
