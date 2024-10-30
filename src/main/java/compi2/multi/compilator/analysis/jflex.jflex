@@ -153,6 +153,7 @@ OctDigit          = [0-7]
         "main"          { return symbol(sym.MAIN); }
         "PASCAL"        { return symbol(sym.PASCAL); }
         "print"         { return symbol(sym.PRINT); }
+        "println"       { return symbol(sym.PRINTLN); }
         "printf"        { return symbol(sym.PRINTF); }
         "scanf"         { return symbol(sym.SCANF); }
         "string"        { return symbol(sym.STRING_TKN); }

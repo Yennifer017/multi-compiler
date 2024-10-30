@@ -133,6 +133,7 @@ OctDigit          = [0-7]
         "main"          { return coloreado(TypeTkn.RESERVED_WORD); }
         "PASCAL"        { return coloreado(TypeTkn.RESERVED_WORD); }
         "print"         { return coloreado(TypeTkn.RESERVED_WORD); }
+        "println"       { return coloreado(TypeTkn.RESERVED_WORD); }
         "printf"        { return coloreado(TypeTkn.RESERVED_WORD); }
         "scanf"         { return coloreado(TypeTkn.RESERVED_WORD); }
         "string"        { return coloreado(TypeTkn.RESERVED_WORD); }

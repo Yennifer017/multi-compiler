@@ -2768,7 +2768,14 @@ cdef_functions_stmt ::=  SCANF:s LPAREN STRING_LIT:m COMMA AMPERSAND ID:v RPAREN
             {:
                 RESULT = new CPrint(
                     new Position(pleft, pright),
-                    le
+                    le, false
+                );
+            :}
+        | PRINTLN:p LPAREN cparams:le RPAREN
+            {:
+                RESULT = new CPrint(
+                    new Position(pleft, pright),
+                    le, true
                 );
             :}
         | CLEAR:c LPAREN RPAREN 
