@@ -109,7 +109,6 @@ public class JAssignAst extends JStatement{
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass) {
-        //RetJInvC3D invRet = this.generateInvocations(admiMemory, internalCuartetas, temporals);
         RetJInvC3D invRet = invsUtil.generateC3DInvocations(
                 admiMemory, internalCuartetas, temporals, variable, instanceRef
         );

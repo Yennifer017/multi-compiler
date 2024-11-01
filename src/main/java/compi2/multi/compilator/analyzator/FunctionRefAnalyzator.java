@@ -2,6 +2,7 @@
 package compi2.multi.compilator.analyzator;
 
 
+import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
@@ -13,7 +14,9 @@ import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
 import compi2.multi.compilator.semantic.Expression;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
+import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
+import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +57,20 @@ public class FunctionRefAnalyzator {
                 Label paramLabel = arg.validateComplexData(
                         imports, clasesST, symbolTable, symbolTable, typeTable, semanticErrors
                 );
+                list.add(new InfParam(paramLabel.getName()));
+            }
+        }
+        return list;
+    }
+    
+    public List<InfParam> validateArgs(List<JExpression> args, JSymbolTable globalST, 
+            SymbolTable symbolTable, TypeTable typeTable, 
+            NodeJerarTree jerar, SemanticRestrictions restrictions, List<String> semanticErrors){
+        List<InfParam> list =  new ArrayList<>();
+        if(args !=  null && !args.isEmpty()){
+            for (JExpression arg : args) {
+                Label paramLabel = arg.validateData(
+                        globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions);
                 list.add(new InfParam(paramLabel.getName()));
             }
         }

@@ -21,7 +21,6 @@ public class FromCArrUse extends JVarUse{
     private List<CExp> arrayAccess;
     
     public FromCArrUse(Label inv, List<CExp> arrayAccess) {
-        //super(position, name, JContextRef.Local);
         super(inv, JContextRef.Local);
         this.arrayAccess = arrayAccess;
     }
