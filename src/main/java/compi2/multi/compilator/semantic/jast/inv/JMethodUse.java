@@ -3,6 +3,7 @@ package compi2.multi.compilator.semantic.jast.inv;
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
 import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
+import compi2.multi.compilator.analysis.symbolt.ReturnRow;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
@@ -19,13 +20,13 @@ import compi2.multi.compilator.c3d.access.AtomicValue;
 import compi2.multi.compilator.c3d.access.HeapAccess;
 import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
-import compi2.multi.compilator.c3d.access.StackPtrUse;
 import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.generators.MethodGenC3D;
 import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
+import compi2.multi.compilator.exceptions.ConvPrimitiveException;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
@@ -48,6 +49,8 @@ public class JMethodUse extends JInvocation {
 
     private MethodST methodST;
     private SymbolTable lastST;
+    private PrimitiveType type;
+    private boolean isObjectReturn;
 
     private MethodGenC3D methodGenC3D;
 
@@ -76,11 +79,13 @@ public class JMethodUse extends JInvocation {
                 SymbolTable currentST = jerar.getClassST().getMethodsST();
                 methodST = findMethod(currentST, argsStringList, semanticErrors, false);
                 if (methodST != null) {
+                    this.recoverType(methodST.getType());
                     return new Label(methodST.getType(), this.inv.getPosition());
                 }
                 if (tryConvert) {
                     methodST = findMethod(currentST, argsStringList, semanticErrors, true);
                     if (methodST != null) {
+                        this.recoverType(methodST.getType());
                         return new Label(methodST.getType(), this.inv.getPosition());
                     }
                 }
@@ -90,11 +95,13 @@ public class JMethodUse extends JInvocation {
                     currentST = currentNode.getClassST().getMethodsST();
                     methodST = findMethod(currentST, argsStringList, semanticErrors, false);
                     if (methodST != null) {
+                        this.recoverType(methodST.getType());
                         return new Label(methodST.getType(), this.inv.getPosition());
                     }
                     if (tryConvert) {
                         methodST = findMethod(currentST, argsStringList, semanticErrors, true);
                         if (methodST != null) {
+                            this.recoverType(methodST.getType());
                             return new Label(methodST.getType(), this.inv.getPosition());
                         }
                     }
@@ -103,6 +110,7 @@ public class JMethodUse extends JInvocation {
                 semanticErrors.add(
                         super.errorsRep.undefiniteFunctionError(this.inv.getName(), this.inv.getPosition())
                 );
+                
                 return new Label(Analyzator.ERROR_TYPE, this.inv.getPosition());
         }
     }
@@ -166,6 +174,7 @@ public class JMethodUse extends JInvocation {
 
             if (currentST.containsKey(this.inv.getName())) {
                 methodST = (MethodST) currentST.get(this.inv.getName());
+                this.recoverType(methodST.getType());
                 return new Label(methodST.getType(), this.inv.getPosition());
             } else {
                 semanticErrors.add(errorsRep.invalidInvocationError(
@@ -189,7 +198,19 @@ public class JMethodUse extends JInvocation {
         if (methodST.getType().equals(Analyzator.VOID_METHOD)) {
             return null;
         } else {
-            throw new RuntimeException("No se pueden devolver cosas de un metodo aun");
+            ReturnRow returnRow = (ReturnRow) methodST.getInternalST()
+                    .get(AdditionalInfoST.DIR_RETORNO_ROW.getNameRow());
+            TemporalUse temporal = methodGenC3D.recoverReturnValue(
+                    internalCuartetas, 
+                    temporals, 
+                    lastST.getLastDir(), 
+                    returnRow.getRelativeDir(), 
+                    this.type
+            );
+            return new RetJInvC3D(
+                    temporal, 
+                    this.isObjectReturn ? RetJInvC3D.HEAP_ACCESS : RetJInvC3D.TEMPORAL_USE
+            );
         }
     }
 
@@ -202,20 +223,23 @@ public class JMethodUse extends JInvocation {
         int countTemp = temporals.getIntegerCount();
         temporals.setIntegerCount(countTemp + 1);
         
+        RegisterUse axIntRegister =  new RegisterUse(Register.AX_INT);
+        RegisterUse bxIntRegister =  new RegisterUse(Register.BX_INT);
+        
         //mandar la direccion de referencia del objeto
         TemporalUse temporalStackPos = methodGenC3D.moveTemporalStack(
                 internalCuartetas, temporals, lastST.getLastDir()
         );
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         temporalStackPos
                 )
         );
         internalCuartetas.add(
                 new OperationC3D(
-                        new RegisterUse(Register.BX_INT), 
-                        new RegisterUse(Register.AX_INT), 
+                        bxIntRegister, 
+                        axIntRegister, 
                         new AtomicValue(heapST.getDirMemory()), 
                         DefiniteOperation.Addition
                 )
@@ -223,50 +247,77 @@ public class JMethodUse extends JInvocation {
         internalCuartetas.add(
                 new AssignationC3D(
                         new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals), 
-                        new RegisterUse(Register.BX_INT)
+                        bxIntRegister
                 )
         );
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         previus.getTemporalUse()
                 )
         );
-        if(previus.isHeapAccess()){
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(Register.BX_INT), 
-                            new HeapAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
-                    )
-            );
-        } else {
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(Register.BX_INT), 
-                            new StackAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT))
-                    )
-            );
+        switch (previus.getTypeAccess()) {
+            case RetJInvC3D.HEAP_ACCESS -> internalCuartetas.add(
+                        new AssignationC3D(
+                                bxIntRegister,
+                                new HeapAccess(PrimitiveType.IntegerPT, axIntRegister)
+                        )
+                );
+            case RetJInvC3D.STACK_ACCESS -> internalCuartetas.add(
+                        new AssignationC3D(
+                                bxIntRegister,
+                                new StackAccess(PrimitiveType.IntegerPT, axIntRegister)
+                        )
+                );
+            default -> throw new RuntimeException();
         }
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals)
                 )
         );
         internalCuartetas.add(
                 new AssignationC3D(
-                        new StackAccess(PrimitiveType.IntegerPT, new RegisterUse(Register.AX_INT)), 
-                        new RegisterUse(Register.BX_INT)
+                        new StackAccess(PrimitiveType.IntegerPT, axIntRegister), 
+                        bxIntRegister
                 )
         );
         
-        methodGenC3D.settingParams(args, admiMemory, internalCuartetas, temporals, lastST, methodST);
-        methodGenC3D.invocateMethod(internalCuartetas, lastST, methodST.getCompleateName());
+        methodGenC3D.settingParams(
+                args, admiMemory, internalCuartetas, temporals, lastST, methodST
+        );
+        methodGenC3D.invocateMethod(
+                internalCuartetas, lastST, methodST.getCompleateName()
+        );
+        
         //devolver el valor de retorno si existe
         if (methodST.getType().equals(Analyzator.VOID_METHOD)) {
             return null;
         } else {
-            throw new RuntimeException("No se pueden devolver cosas de un metodo aun");
+            ReturnRow returnRow = (ReturnRow) methodST.getInternalST()
+                    .get(AdditionalInfoST.DIR_RETORNO_ROW.getNameRow());
+            TemporalUse temporal = methodGenC3D.recoverReturnValue(
+                    internalCuartetas, 
+                    temporals, 
+                    lastST.getLastDir(), 
+                    returnRow.getRelativeDir(), 
+                    this.type
+            );
+            return new RetJInvC3D(
+                    temporal, 
+                    this.isObjectReturn ? RetJInvC3D.HEAP_ACCESS : RetJInvC3D.TEMPORAL_USE
+            );
+        }
+    }
+    
+    private void recoverType(String stringType){
+        try {
+            type = super.tconvert.convertPrimitive(stringType);
+            this.isObjectReturn = false;
+        } catch (ConvPrimitiveException e) {
+            type = PrimitiveType.IntegerPT;
+            this.isObjectReturn = true;
         }
     }
 

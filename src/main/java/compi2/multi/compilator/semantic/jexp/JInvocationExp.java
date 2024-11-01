@@ -110,10 +110,12 @@ public class JInvocationExp extends JExpression{
                 )
         );
         MemoryAccess fromInvMAccess;
-        if(invRet.isHeapAccess()){
+        if(invRet.getTypeAccess() == RetJInvC3D.HEAP_ACCESS){
             fromInvMAccess = new HeapAccess(primType, new RegisterUse(Register.AX_INT));
-        } else {
+        } else if(invRet.getTypeAccess() == RetJInvC3D.STACK_ACCESS){
             fromInvMAccess = new StackAccess(primType, new RegisterUse(Register.AX_INT));
+        } else {
+            throw new RuntimeException("No se puede devolver primitivios an desde JInvocations");
         }
         
         internalCuartetas.add(

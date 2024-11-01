@@ -178,7 +178,7 @@ public class JVarUse extends JInvocation {
                             currentIntTemp,
                             temporals
                     ),
-                    false
+                    RetJInvC3D.STACK_ACCESS
             );
         } else if (rowST instanceof FieldST) {
             //TODO: validar si es heredado
@@ -226,7 +226,7 @@ public class JVarUse extends JInvocation {
                             temporalCount,
                             temporals
                     ),
-                    true
+                    RetJInvC3D.HEAP_ACCESS
             );
         } else {
             throw new RuntimeException();
@@ -240,49 +240,52 @@ public class JVarUse extends JInvocation {
         int countTemp = temporals.getIntegerCount();
         temporals.setIntegerCount(countTemp + 2);
         
+        RegisterUse axIntRegister =  new RegisterUse(Register.AX_INT);
+        RegisterUse bxIntRegister =  new RegisterUse(Register.BX_INT);
+        
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         previus.getTemporalUse()
                 )
         );
-        if(previus.isHeapAccess()){
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(Register.BX_INT), 
-                            new HeapAccess(
-                                    PrimitiveType.IntegerPT, 
-                                    new RegisterUse(Register.AX_INT)
-                            )
-                    )
-            );
-        } else {
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new RegisterUse(Register.BX_INT), 
-                            new StackAccess(
-                                    PrimitiveType.IntegerPT, 
-                                    new RegisterUse(Register.AX_INT)
-                            )
-                    )
-            );
+        switch (previus.getTypeAccess()) {
+            case RetJInvC3D.HEAP_ACCESS -> internalCuartetas.add(
+                        new AssignationC3D(
+                                bxIntRegister,
+                                new HeapAccess(
+                                        PrimitiveType.IntegerPT,
+                                        axIntRegister
+                                )
+                        )
+                );
+            case RetJInvC3D.STACK_ACCESS -> internalCuartetas.add(
+                        new AssignationC3D(
+                                bxIntRegister,
+                                new StackAccess(
+                                        PrimitiveType.IntegerPT,
+                                        axIntRegister
+                                )
+                        )
+                );
+            default -> throw new RuntimeException();
         }
         internalCuartetas.add(
                 new AssignationC3D(
                         new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals), 
-                        new RegisterUse(Register.BX_INT)
+                        bxIntRegister
                 )
         );
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals)
                 )
         );
         internalCuartetas.add(
                 new OperationC3D(
-                        new RegisterUse(Register.BX_INT), 
-                        new RegisterUse(Register.AX_INT), 
+                        bxIntRegister, 
+                        axIntRegister, 
                         new AtomicValue(fieldST.getRelativeDir()), 
                         DefiniteOperation.Addition
                 )
@@ -290,12 +293,12 @@ public class JVarUse extends JInvocation {
         internalCuartetas.add(
                 new AssignationC3D(
                         new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
-                        new RegisterUse(Register.BX_INT)
+                        bxIntRegister
                 )
         );
         return new RetJInvC3D(
                 new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
-                true
+                RetJInvC3D.HEAP_ACCESS
         );
     }
     

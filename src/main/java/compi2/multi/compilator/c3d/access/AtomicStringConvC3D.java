@@ -16,6 +16,8 @@ public class AtomicStringConvC3D extends MemoryAccess{
     public void generateCcode(StringBuilder builder) {
         if (access instanceof AtomicValue atomicValue && atomicValue.getValue() instanceof String) {
             access.generateCcode(builder);
+        } if(access instanceof RegisterUse registerUse && registerUse.isStringRegister()){
+            access.generateCcode(builder);
         } else {
             builder.append("std::to_string(");
             access.generateCcode(builder);

@@ -122,10 +122,13 @@ public class JAssignAst extends JStatement{
                 )
         );
         MemoryAccess assignAccess;
-        if(invRet.isHeapAccess()){
+        if(invRet.getTypeAccess() == RetJInvC3D.HEAP_ACCESS){
             assignAccess = new HeapAccess(primType, new RegisterUse(Register.BX_INT));
-        } else {
+        } else if(invRet.getTypeAccess() == RetJInvC3D.STACK_ACCESS){
             assignAccess = new StackAccess(primType, new RegisterUse(Register.BX_INT));
+        } else {
+            throw new RuntimeException(
+                    "No se puede obtener un valor primitivo desde JAssignAst aun");
         }
         internalCuartetas.add(
                 new AssignationC3D(

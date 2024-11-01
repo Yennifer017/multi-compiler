@@ -19,4 +19,11 @@ public class RegisterUse extends MemoryAccess{
     public void generateCcode(StringBuilder builder) {
         builder.append(register.getName());
     }
+    
+    public boolean isStringRegister(){
+        return switch (register) {
+            case Register.AX_STRING, BX_STRING, CX_STRING -> true;
+            default -> false;
+        };
+    }
 }

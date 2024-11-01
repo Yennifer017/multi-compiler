@@ -41,11 +41,13 @@ public class Memory implements CodeTransformable{
     }
     
     private void definite(StringBuilder builder, PrimitiveType type, int count){
-        builder.append(type.getCName()).append(" ");
-        builder.append(this.name).append(type.getName());
-        builder.append("[");
-        builder.append(count);
-        builder.append("];\n");
+        if(count > 0){
+            builder.append(type.getCName()).append(" ");
+            builder.append(this.name).append(type.getName());
+            builder.append("[");
+            builder.append(count);
+            builder.append("];\n");
+        }
     }
     
     public String getMemoryName(PrimitiveType type){

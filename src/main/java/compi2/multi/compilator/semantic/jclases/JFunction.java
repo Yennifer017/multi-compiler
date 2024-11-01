@@ -45,7 +45,6 @@ public abstract class JFunction extends JDef{
         List<InfParam> list = new ArrayList<>();
         if(args != null && !args.isEmpty()){
             for (JArg arg : args) {
-                //list.add(arg.getType().getCompleateName());
                 list.add(new InfParam(arg.getType().getCompleateName(), arg.getName().getName()));
             }
         }
@@ -103,10 +102,10 @@ public abstract class JFunction extends JDef{
     public abstract void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields);
     
     protected void generateInternalCuartetas(AdmiMemory admiMemory, 
-            List<Cuarteta> internalCuartetas, Memory temporals){
+            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass){
         for (JStatement internalStmt : internalStmts) {
             internalStmt.generateCuartetas(
-                    admiMemory, internalCuartetas, temporals, new C3Dpass()
+                    admiMemory, internalCuartetas, temporals, pass
             );
         }
     }

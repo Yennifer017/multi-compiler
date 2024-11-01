@@ -25,6 +25,7 @@ import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.FunctionC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.j.JStatement;
@@ -184,7 +185,9 @@ public class JConstructor extends JFunction{
                         new RegisterUse(Register.BX_INT)
                 )
         );
-        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);
+        super.generateInternalCuartetas(
+                admiMemory, internalCuartetas, temporals, new C3Dpass()
+        );
         admiMemory.getCuartetas().add(
                 new FunctionC3D(
                     constructorST.getCompleateName(), 

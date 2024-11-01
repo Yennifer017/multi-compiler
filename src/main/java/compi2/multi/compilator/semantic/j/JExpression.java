@@ -11,7 +11,6 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;

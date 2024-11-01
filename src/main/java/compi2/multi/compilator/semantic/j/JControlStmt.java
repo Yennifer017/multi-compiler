@@ -42,7 +42,7 @@ public abstract class JControlStmt extends JStatement{
         SymbolTable currentST = new SymbolTable();
         currentST.setFather(symbolTable);
         currentST.setLastDir(symbolTable.getLastDir());
-        return stmtsAnalizator.validateInternalStmts(globalST, symbolTable, 
+        return stmtsAnalizator.validateInternalStmts(globalST, currentST, 
                 typeTable, jerar, semanticErrors, restrictions, internalStmts);
     }
     

@@ -11,10 +11,13 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.MethodST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
+import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.cuartetas.FunctionC3D;
+import compi2.multi.compilator.c3d.cuartetas.LabelC3D;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jclases.components.JReferType;
 import compi2.multi.compilator.semantic.util.Label;
@@ -140,7 +143,19 @@ public class JMethod extends JFunction implements Typable{
     public void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields) {
         List<Cuarteta> internalCuartetas = new LinkedList<>();
         Memory temporals = new Memory("internal");
-        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals);
+        
+        C3Dpass pass = new C3Dpass();
+        int endMethodEt = admiMemory.getCountLabels();
+        if(!methodSt.getType().equals(Analyzator.VOID_METHOD)){
+            admiMemory.setCountLabels(endMethodEt + 1);
+            pass.setEndMethod(endMethodEt);
+        }
+        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass);
+        if(!methodSt.getType().equals(Analyzator.VOID_METHOD)){
+            internalCuartetas.add(
+                    new LabelC3D(endMethodEt)
+            );
+        }
         admiMemory.getCuartetas().add(
                 new FunctionC3D(
                     methodSt.getCompleateName(), 

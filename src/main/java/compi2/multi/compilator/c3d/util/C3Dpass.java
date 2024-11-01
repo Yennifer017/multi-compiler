@@ -14,6 +14,7 @@ public class C3Dpass {
     private int endLabel;
     private int startBucleLabel;
     private int endIfLabel;
+    private int endMethod;
 
     public C3Dpass(int endLabel) {
         this.endLabel = endLabel;
