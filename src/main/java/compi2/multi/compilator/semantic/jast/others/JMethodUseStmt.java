@@ -10,6 +10,7 @@ import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JStatement;
+import compi2.multi.compilator.semantic.jast.inv.InvocationsUtil;
 import compi2.multi.compilator.semantic.jast.inv.JContextRef;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
 import compi2.multi.compilator.semantic.util.ReturnCase;
@@ -28,13 +29,20 @@ import lombok.Setter;
 public class JMethodUseStmt extends JStatement {
     
     private List<JInvocation> invocations;
+    
+    private InvocationsUtil invUtil;
+    
+    private int instanceRef;
+    
     public JMethodUseStmt(Position initPos, List<JInvocation> invocations) {
         super(initPos);
         this.invocations = invocations;
+        this.invUtil = new InvocationsUtil();
     }
     
     public JMethodUseStmt(Position initPos, List<JInvocation> invocations, JContextRef firstContextRef){
         super(initPos);
+        this.invUtil = new InvocationsUtil();
         try {
             invocations.get(0).setContext(firstContextRef);
             this.invocations = invocations;
@@ -44,14 +52,18 @@ public class JMethodUseStmt extends JStatement {
     }
 
     @Override
-    public ReturnCase validate(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ReturnCase validate(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, 
+            NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
+        this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
+        invUtil.validateInvocation(
+                globalST, symbolTable, typeTable, jerar, semanticErrors, invocations, initPos, false
+        );
+        return new ReturnCase(false);
     }
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        invUtil.generateC3DInvocations(admiMemory, internalCuartetas, temporals, invocations, instanceRef);
     }
 
-    
 }

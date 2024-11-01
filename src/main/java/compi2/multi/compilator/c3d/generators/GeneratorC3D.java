@@ -4,7 +4,6 @@ package compi2.multi.compilator.c3d.generators;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.cuartetas.FunctionC3D;
 import compi2.multi.compilator.c3d.cuartetas.MainC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.exceptions.CompilationException;

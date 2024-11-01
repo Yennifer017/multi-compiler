@@ -47,7 +47,7 @@ public class InvocationsUtil {
     
     public Label validateInvocation(JSymbolTable globalST, SymbolTable symbolTable, 
             TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors,
-            List<JInvocation> invocations, Position initPos, boolean canBeStmt){
+            List<JInvocation> invocations, Position initPos, boolean needExpression){
         Label currentType = null;
         for (int i = 0; i < invocations.size(); i++) {
             JInvocation invocation = invocations.get(i);
@@ -62,12 +62,18 @@ public class InvocationsUtil {
                 );
             }
             
-            if((i == invocations.size() - 1) 
-                    && (canBeStmt != invocation.isStatement())){
-                semanticErrors.add(
-                        errorsRep.notAssignationAcurrateError(initPos)
-                );
+            if(i == (invocations.size() - 1) ){
+                if(needExpression && !invocation.hasReturnType()){
+                    semanticErrors.add(
+                        errorsRep.notExpressionError(initPos)
+                    );
+                } else if(!needExpression && !invocation.isStatement()){ //need statement
+                    semanticErrors.add(
+                        errorsRep.notStatementError(initPos)
+                    );
+                }
             }
+
         }
         return currentType;
     }

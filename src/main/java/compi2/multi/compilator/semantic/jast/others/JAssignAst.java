@@ -10,7 +10,6 @@ import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.access.AtomicValue;
 import compi2.multi.compilator.c3d.access.HeapAccess;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
 import compi2.multi.compilator.c3d.access.RegisterUse;
@@ -91,7 +90,7 @@ public class JAssignAst extends JStatement{
                 semanticErrors, 
                 variable, 
                 initPos, 
-                false
+                true
         );
         //saveInstanceRef(symbolTable);
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);

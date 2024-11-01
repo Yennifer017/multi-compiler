@@ -14,7 +14,6 @@ import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
 import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
-import compi2.multi.compilator.c3d.cuartetas.MethodInvC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
 import compi2.multi.compilator.c3d.util.Register;
@@ -28,83 +27,18 @@ import java.util.List;
  */
 public class ConstructorC3DGen {
 
-    private ParamsGenC3D paramsGenC3D;
+    private MethodGenC3D methodGenC3D;
 
     public ConstructorC3DGen() {
-        this.paramsGenC3D = new ParamsGenC3D();
+        this.methodGenC3D = new MethodGenC3D();
     }
 
     public RetParamsC3D generateCuartetas(List<? extends ExpressionGenerateC3D> args,
             AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals,
             SymbolTable st, ConstructorST constructorST) {
-        this.settingParams(args, admiMemory, internalCuartetas, temporals, st, constructorST);
-        this.invocateConstructor(internalCuartetas, st, constructorST);
+        methodGenC3D.settingParams(args, admiMemory, internalCuartetas, temporals, st, constructorST);
+        methodGenC3D.invocateMethod(internalCuartetas, st, constructorST.getCompleateName());
         return this.recoverReference(internalCuartetas, temporals, st, constructorST);
-    }
-
-    private void settingParams(List<? extends ExpressionGenerateC3D> args,
-            AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals,
-            SymbolTable st, ConstructorST constructorST) {
-        //seteando parametros
-        if (!args.isEmpty()) {
-            int tempIntCount = temporals.getIntegerCount();
-            temporals.setIntegerCount(tempIntCount + 1);
-            //moviendose temporalmente en el stack
-            internalCuartetas.add(
-                    new OperationC3D(
-                            new RegisterUse(Register.AX_INT),
-                            new StackPtrUse(),
-                            new AtomicValue(st.getLastDir()),
-                            DefiniteOperation.Addition
-                    )
-            );
-            internalCuartetas.add(
-                    new AssignationC3D(
-                            new TemporalUse(
-                                    PrimitiveType.IntegerPT,
-                                    tempIntCount,
-                                    temporals
-                            ),
-                            new RegisterUse(Register.AX_INT)
-                    )
-            );
-            //seteando los parametros
-            this.paramsGenC3D.generateParamsC3D(
-                    admiMemory,
-                    internalCuartetas,
-                    temporals,
-                    constructorST.getInternalST(),
-                    constructorST.getParams(),
-                    args,
-                    new TemporalUse(PrimitiveType.IntegerPT, tempIntCount, temporals)
-            );
-        }
-    }
-
-    private void invocateConstructor(List<Cuarteta> internalCuartetas,
-            SymbolTable st, ConstructorST constructorST) {
-        //moviendose en el stack
-        internalCuartetas.add(
-                new OperationC3D(
-                        new StackPtrUse(),
-                        new StackPtrUse(),
-                        new AtomicValue(st.getLastDir()),
-                        DefiniteOperation.Addition
-                )
-        );
-        //invocando el metodo
-        internalCuartetas.add(
-                new MethodInvC3D(constructorST.getCompleateName())
-        );
-        //regresar al stack
-        internalCuartetas.add(
-                new OperationC3D(
-                        new StackPtrUse(),
-                        new StackPtrUse(),
-                        new AtomicValue(st.getLastDir()),
-                        DefiniteOperation.Substraction
-                )
-        );
     }
 
     private RetParamsC3D recoverReference(List<Cuarteta> internalCuartetas, Memory temporals,

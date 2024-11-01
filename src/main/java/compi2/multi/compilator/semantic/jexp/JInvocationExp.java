@@ -68,7 +68,7 @@ public class JInvocationExp extends JExpression{
     @Override
     public Label validateData(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
         try {
-            this.pos = invocations.get(0).getPosition();
+            this.pos = invocations.get(0).getInv().getPosition();
         } catch (IndexOutOfBoundsException e) {
             //add error
         }
@@ -80,7 +80,7 @@ public class JInvocationExp extends JExpression{
                 semanticErrors, 
                 invocations, 
                 pos, 
-                false
+                true
         );
         this.primType = super.tConvert.convertAllPrimitive(type.getName());
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);

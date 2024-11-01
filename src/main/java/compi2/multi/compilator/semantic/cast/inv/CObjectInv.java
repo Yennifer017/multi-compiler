@@ -32,8 +32,10 @@ public class CObjectInv extends CStatement{
     }
 
     @Override
-    public ReturnCase validate(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public ReturnCase validate(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable, 
+            SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors, 
+            SemanticRestrictions restrictions) {
+        throw new RuntimeException();
     }
 
     @Override

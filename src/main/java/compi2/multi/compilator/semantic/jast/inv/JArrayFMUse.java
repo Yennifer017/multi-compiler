@@ -20,15 +20,15 @@ import lombok.Setter;
 public class JArrayFMUse extends JMethodUse{
     private List<JExpression> arrayAccess;
     
-    public JArrayFMUse(Position position, String name, 
+    public JArrayFMUse(Label inv, 
             JContextRef context, List<JExpression> arrayAccess) {
-        super(position, name, context);
+        super(inv, context, arrayAccess);
         this.arrayAccess = arrayAccess;
     }
     
-    public JArrayFMUse(Position position, String name, JContextRef context, 
+    public JArrayFMUse(Label inv, JContextRef context, 
             List<JExpression> args, List<JExpression> arrayAccess) {
-        super(position, name, context, args);
+        super(inv, context, args);
         this.arrayAccess = arrayAccess;
     }
     

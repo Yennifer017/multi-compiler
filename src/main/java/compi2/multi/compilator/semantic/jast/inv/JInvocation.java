@@ -14,7 +14,6 @@ import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
-import compi2.multi.compilator.util.Position;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +25,7 @@ import lombok.Setter;
  */
 @Getter @Setter
 public abstract class JInvocation {
-    protected Position position;
+    protected Label inv;
     protected JContextRef context;
     
     protected ErrorsRep errorsRep;
@@ -35,8 +34,8 @@ public abstract class JInvocation {
             
     protected FunctionRefAnalyzator refFun;
     
-    public JInvocation(Position position, JContextRef context){
-        this.position = position;
+    public JInvocation(Label inv, JContextRef context){
+        this.inv = inv;
         this.context = context;
         this.refFun =  new FunctionRefAnalyzator();
         this.errorsRep = new ErrorsRep();
@@ -50,8 +49,8 @@ public abstract class JInvocation {
     public abstract Label validate(JSymbolTable globalST, SymbolTable symbolTable,
             TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, Label previus);
     
+    public abstract boolean hasReturnType();
     public abstract boolean isStatement();
-    public abstract boolean refersStack();
     
     /**
      * Genera cuartetas

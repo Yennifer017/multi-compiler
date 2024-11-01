@@ -25,7 +25,6 @@ import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;
 import compi2.multi.compilator.semantic.util.Label;
-import compi2.multi.compilator.util.Position;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,13 +37,10 @@ import lombok.Setter;
 @Setter
 public class JVarUse extends JInvocation {
 
-    private String name;
-
     private RowST rowST;
 
-    public JVarUse(Position position, String name, JContextRef context) {
-        super(position, context);
-        this.name = name;
+    public JVarUse(Label inv, JContextRef context) {
+        super(inv, context);
     }
 
     @Override
@@ -54,38 +50,38 @@ public class JVarUse extends JInvocation {
             case JContextRef.Local:
                 SymbolTable currentST = symbolTable;
                 while (currentST != null) {
-                    if (currentST.containsKey(name)) {
-                        this.rowST = currentST.get(name);
+                    if (currentST.containsKey(this.inv.getName())) {
+                        this.rowST = currentST.get(this.inv.getName());
                         if (rowST instanceof SingleData) {
                             SingleData singleData = (SingleData) rowST;
-                            return new Label(singleData.getType(), position);
+                            return new Label(singleData.getType(), this.inv.getPosition());
                         } else {
                             semanticErrors.add(super.errorsRep.invalidCategoryAccessError(
                                     rowST.getName(),
                                     rowST.getCategory().getName(),
-                                    position)
+                                    this.inv.getPosition())
                             );
-                            return new Label(Analyzator.ERROR_TYPE, position);
+                            return new Label(Analyzator.ERROR_TYPE, this.inv.getPosition());
                         }
                     }
                     currentST = symbolTable.getFather();
                 }
             case JContextRef.FromObject:
                 currentST = jerar.getClassST().getFieldsST();
-                if (currentST.containsKey(name)) {
-                    this.rowST = currentST.get(name);
+                if (currentST.containsKey(this.inv.getName())) {
+                    this.rowST = currentST.get(this.inv.getName());
                     if (rowST instanceof FieldST) {
                         FieldST fieldST = (FieldST) rowST;
-                        return new Label(fieldST.getType(), position);
+                        return new Label(fieldST.getType(), this.inv.getPosition());
                     } else {
                         int index = 1;
                         while (symbolTable.containsKey(
-                                refFun.getSTName(this.name, index))) {
+                                refFun.getSTName(this.inv.getName(), index))) {
                             RowST anotherRowST = symbolTable.get(
-                                    refFun.getSTName(this.name, index)
+                                    refFun.getSTName(this.inv.getName(), index)
                             );
                             if (anotherRowST instanceof FieldST) {
-                                return new Label(anotherRowST.getType(), position);
+                                return new Label(anotherRowST.getType(), this.inv.getPosition());
                             }
                             index++;
                         }
@@ -95,36 +91,38 @@ public class JVarUse extends JInvocation {
                 NodeJerarTree currentNode = jerar.getFather();
                 while (currentNode != null) {
                     currentST = currentNode.getClassST().getFieldsST();
-                    if (currentST.containsKey(name)) {
-                        this.rowST = currentST.get(name);
+                    if (currentST.containsKey(this.inv.getName())) {
+                        this.rowST = currentST.get(this.inv.getName());
                         if (rowST instanceof FieldST) {
                             FieldST fieldST = (FieldST) rowST;
-                            return new Label(fieldST.getType(), position);
+                            return new Label(fieldST.getType(), this.inv.getPosition());
                         } else {
-                            return continueFind(currentST);
+                            return continueFind(currentST, semanticErrors);
                         }
                     }
                     currentNode = currentNode.getFather();
                 }
                 semanticErrors.add(
-                        super.errorsRep.undefiniteVarUseError(name, position)
+                        super.errorsRep.undefiniteVarUseError(this.inv.getName(), this.inv.getPosition())
                 );
-                return new Label(Analyzator.ERROR_TYPE, position);
+                return new Label(Analyzator.ERROR_TYPE, this.inv.getPosition());
         }
     }
 
-    private Label continueFind(SymbolTable symbolTable) {
+    private Label continueFind(SymbolTable symbolTable, List<String> semanticErrors) {
         int index = 1;
         while (symbolTable.containsKey(
-                refFun.getSTName(this.name, index))) {
-            RowST anotherRowST = symbolTable.get(refFun.getSTName(this.name, index));
+                refFun.getSTName(this.inv.getName(), index))) {
+            RowST anotherRowST = symbolTable.get(refFun.getSTName(this.inv.getName(), index));
             if (anotherRowST instanceof FieldST) {
-                return new Label(anotherRowST.getType(), position);
+                return new Label(anotherRowST.getType(), this.inv.getPosition());
             }
             index++;
         }
-        //add error
-        return new Label(Analyzator.ERROR_TYPE, position);
+        semanticErrors.add(
+            super.errorsRep.undefiniteVarUseError(this.inv.getName(), this.inv.getPosition())
+        );
+        return new Label(Analyzator.ERROR_TYPE, this.inv.getPosition());
     }
 
     @Override
@@ -133,34 +131,20 @@ public class JVarUse extends JInvocation {
         if (globalST.containsKey(previus.getName())) {
             ClassST classST = globalST.get(previus.getName());
             SymbolTable fieldsClassST = classST.getFieldsST();
-            if (fieldsClassST.containsKey(this.name)) {
-                rowST = fieldsClassST.get(this.name);
-                return new Label(rowST.getType(), position);
+            if (fieldsClassST.containsKey(this.inv.getName())) {
+                rowST = fieldsClassST.get(this.inv.getName());
+                return new Label(rowST.getType(), this.inv.getPosition());
             } else {
                 semanticErrors.add(errorsRep.invalidInvocationError(
-                        previus.getName(), name, position)
+                        previus.getName(), this.inv.getName(), this.inv.getPosition())
                 );
             }
         } else {
             semanticErrors.add(errorsRep.invalidInvocationError(
-                    previus.getName(), name, position)
+                    previus.getName(), this.inv.getName(), this.inv.getPosition())
             );
         }
-        return new Label(Analyzator.ERROR_TYPE, position);
-    }
-
-    @Override
-    public boolean isStatement() {
-        return false;
-    }
-
-    @Override
-    public boolean refersStack() {
-        if (this.rowST instanceof SingleData) {
-            return true;
-        } else {
-            return false;
-        }
+        return new Label(Analyzator.ERROR_TYPE, this.inv.getPosition());
     }
 
     @Override
@@ -313,6 +297,16 @@ public class JVarUse extends JInvocation {
                 new TemporalUse(PrimitiveType.IntegerPT, countTemp + 1, temporals), 
                 true
         );
+    }
+    
+    @Override
+    public boolean isStatement() {
+        return false;
+    }
+
+    @Override
+    public boolean hasReturnType() {
+        return true;
     }
 
 }

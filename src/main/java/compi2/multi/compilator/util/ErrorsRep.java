@@ -169,8 +169,12 @@ public class ErrorsRep {
         return "La mascara es invalida, se esperaba %d, %c, %f o %s " + report(pos);
     }
     
-    public String notAssignationAcurrateError(Position pos){
-        return "No se puede realizar la asignacion a una instruccion " + report(pos);
+    public String notExpressionError(Position pos){
+        return "No se pudo recuperar el valor de una invocacion, se esperaba una expression " + report(pos);
+    }
+    
+    public String notStatementError(Position pos){
+        return "Se esperaba una instrucccion " + report(pos);
     }
     
     public String invalidInvocationError(String supertype, String field, Position pos){

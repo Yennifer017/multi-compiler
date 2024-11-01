@@ -6321,7 +6321,10 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        new JVarUse(initPos, id, JContextRef.Local)
+                        new JVarUse(
+                            new Label(id, initPos),
+                            JContextRef.Local
+                        )
                     ),
                     e
                 );
@@ -6395,7 +6398,11 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        li, new JVarUse(initPos, i, JContextRef.Local)
+                        li, 
+                        new JVarUse(
+                            new Label(i, initPos), 
+                            JContextRef.Local
+                        )
                     ),
                     e
                 );
@@ -6422,7 +6429,11 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        li, new JMethodUse(initPos, i, JContextRef.Local)
+                        li, 
+                        new JMethodUse(
+                            new Label(i, initPos),
+                            JContextRef.Local
+                        )
                     ),
                     e
                 );
@@ -6452,7 +6463,11 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        li, new JMethodUse(initPos, i, JContextRef.Local, args)
+                        li, 
+                        new JMethodUse(
+                            new Label(i, initPos),
+                            JContextRef.Local, args
+                        )
                     ),
                     e
                 );
@@ -6479,7 +6494,10 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        new JArrayFMUse(initPos, i, JContextRef.Local, ac)
+                        new JArrayFMUse(
+                            new Label(i, initPos),
+                            JContextRef.Local, ac
+                        )
                     ),
                     e
                 );
@@ -6509,7 +6527,10 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        li, new JArrayFMUse(initPos, i, JContextRef.Local, ac)
+                        li, new JArrayFMUse(
+                            new Label(i, initPos),
+                            JContextRef.Local, ac
+                        )
                     ),
                     e
                 );
@@ -6539,7 +6560,10 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        new JArrayFMUse(initPos, i, JContextRef.Local, args, ac)
+                        new JArrayFMUse(
+                            new Label(i, initPos),
+                            JContextRef.Local, args, ac
+                        )
                     ),
                     e
                 );
@@ -6572,7 +6596,10 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        li, new JArrayFMUse(initPos, i, JContextRef.Local, args, ac)
+                        li, new JArrayFMUse(
+                            new Label(i, initPos),
+                            JContextRef.Local, args, ac
+                        )
                     ),
                     e
                 );
@@ -6602,7 +6629,11 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        li, new JArrayUse(initPos, i, JContextRef.Local, ac)
+                        li, 
+                        new JArrayUse(
+                            new Label(i, initPos),
+                            JContextRef.Local, ac
+                        )
                     ),
                     e
                 );
@@ -6629,7 +6660,10 @@ class CUP$Parser$actions {
                 RESULT = new JAssignAst(
                     initPos,
                     astGen.genListInv(
-                        new JArrayUse(initPos, i, JContextRef.Local, ac)
+                        new JArrayUse(
+                            new Label(i, initPos), 
+                            JContextRef.Local, ac
+                        )
                     ),
                     e
                 );
@@ -6693,7 +6727,7 @@ class CUP$Parser$actions {
 		List<JInvocation> li = (List<JInvocation>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JMethodUseStmt(
-                    new Position(tleft, tright),
+                        new Position(tleft, tright),
                     li, JContextRef.FromObject
                 );
             
@@ -6713,7 +6747,7 @@ class CUP$Parser$actions {
 		List<JInvocation> li = (List<JInvocation>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JMethodUseStmt(
-                    new Position(sleft, sright),
+                        new Position(sleft, sright),
                     li, JContextRef.FromFather
                 );
             
@@ -6736,7 +6770,11 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition,
                     astGen.genListInv(
-                        li, new JVarUse(initPosition, id, JContextRef.Local)
+                        li, 
+                        new JVarUse(
+                            new Label(id, initPosition), 
+                            JContextRef.Local
+                        )
                     )
                 );
             
@@ -6756,7 +6794,10 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        new JMethodUse(initPosition, id, JContextRef.Local)
+                        new JMethodUse(
+                            new Label(id, initPosition),
+                            JContextRef.Local
+                        )
                     )
                 );
             
@@ -6779,7 +6820,10 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        new JMethodUse(initPosition, id, JContextRef.Local, el)
+                        new JMethodUse(
+                            new Label(id, initPosition), 
+                            JContextRef.Local, el
+                        )
                     )
                 );
             
@@ -6802,7 +6846,11 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        li, new JMethodUse(initPosition, id, JContextRef.Local)
+                        li, 
+                        new JMethodUse(
+                            new Label(id, initPosition),
+                            JContextRef.Local
+                        )
                     )
                 );
             
@@ -6828,7 +6876,11 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        li, new JMethodUse(initPosition, id, JContextRef.Local, el)
+                        li, 
+                        new JMethodUse(
+                            new Label(id, initPosition), 
+                            JContextRef.Local, el
+                        )
                     )
                 );
             
@@ -6854,7 +6906,10 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        li, new JArrayFMUse(initPosition, id, JContextRef.Local, ac)
+                        li, new JArrayFMUse(
+                            new Label(id, initPosition), 
+                            JContextRef.Local, ac
+                        )
                     )
                 );
             
@@ -6883,7 +6938,11 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        li, new JArrayFMUse(initPosition, id, JContextRef.Local,args, ac)
+                        li, 
+                        new JArrayFMUse(
+                            new Label(id, initPosition),
+                            JContextRef.Local,args, ac
+                        )
                     )
                 );
             
@@ -6909,7 +6968,10 @@ class CUP$Parser$actions {
                 RESULT = new JMethodUseStmt(
                     initPosition, 
                     astGen.genListInv(
-                        li, new JArrayUse(initPosition, id, JContextRef.Local, ac)
+                        li, new JArrayUse(
+                            new Label(id, initPosition),
+                            JContextRef.Local, ac
+                        )
                     )
                 );
             
@@ -7034,8 +7096,8 @@ class CUP$Parser$actions {
 		String i = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JVarUse(
-                    new Position(ileft, iright),
-                    i, JContextRef.Local
+                    new Label(i, new Position(ileft, iright)),
+                    JContextRef.Local
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcomplex_access",82, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7051,8 +7113,8 @@ class CUP$Parser$actions {
 		String i = (String)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-2)).value;
 		
                 RESULT = new JMethodUse(
-                    new Position(ileft, iright),
-                    i, JContextRef.Local
+                    new Label(i, new Position(ileft, iright)),
+                    JContextRef.Local
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcomplex_access",82, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7071,8 +7133,8 @@ class CUP$Parser$actions {
 		List<JExpression> ac = (List<JExpression>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JArrayFMUse(
-                    new Position(ileft, iright), 
-                    i, JContextRef.Local, ac
+                    new Label(i, new Position(ileft, iright)),
+                    JContextRef.Local, ac
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcomplex_access",82, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7091,8 +7153,8 @@ class CUP$Parser$actions {
 		List<JExpression> el = (List<JExpression>)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-1)).value;
 		
                 RESULT = new JMethodUse(
-                    new Position(ileft, iright),
-                    i, JContextRef.Local, el
+                    new Label(i, new Position(ileft, iright)),
+                    JContextRef.Local, el
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcomplex_access",82, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7114,8 +7176,8 @@ class CUP$Parser$actions {
 		List<JExpression> ac = (List<JExpression>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JArrayFMUse(
-                    new Position(ileft, iright),
-                    i, JContextRef.Local, el, ac
+                    new Label(i, new Position(ileft, iright)),
+                    JContextRef.Local, el, ac
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcomplex_access",82, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7134,8 +7196,8 @@ class CUP$Parser$actions {
 		List<JExpression> ac = (List<JExpression>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = new JArrayUse(
-                    new Position(ileft, iright),
-                    i, JContextRef.Local, ac
+                    new Label(i, new Position(ileft, iright)),
+                    JContextRef.Local, ac
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jcomplex_access",82, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -7607,8 +7669,8 @@ class CUP$Parser$actions {
 		
                 RESULT = new JInvocationExp(astGen.genListInv(
                     new JArrayUse(
-                        new Position(ileft, iright),
-                        i, JContextRef.Local, ac
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local, ac
                     )
                 ));
                     
@@ -7634,8 +7696,8 @@ class CUP$Parser$actions {
                 RESULT = new JInvocationExp(astGen.genListInv(
                     li,
                     new JArrayUse(
-                        new Position(ileft, iright),
-                        i, JContextRef.Local, ac
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local, ac
                     )
                 ));
             
@@ -7656,8 +7718,8 @@ class CUP$Parser$actions {
 		
                 RESULT = new JInvocationExp(astGen.genListInv(
                     new JMethodUse(
-                        new Position(ileft, iright),
-                        i, JContextRef.Local, args
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local, args
                     )
                 ));
             
@@ -7675,8 +7737,8 @@ class CUP$Parser$actions {
 		
                 RESULT = new JInvocationExp(astGen.genListInv(
                     new JMethodUse(
-                        new Position(ileft, iright),
-                        i, JContextRef.Local
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local
                     )
                 ));
             
@@ -7698,7 +7760,13 @@ class CUP$Parser$actions {
 		int liright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		List<JInvocation> li = (List<JInvocation>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-                
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    li, 
+                    new JMethodUse(
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local, l
+                    )
+                ));
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jarit_exp",74, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -7715,7 +7783,13 @@ class CUP$Parser$actions {
 		int liright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		List<JInvocation> li = (List<JInvocation>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
-                
+                RESULT = new JInvocationExp(astGen.genListInv(
+                    li, 
+                    new JMethodUse(
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local
+                    )
+                ));
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("jarit_exp",74, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -7756,8 +7830,8 @@ class CUP$Parser$actions {
                 RESULT = new JInvocationExp(astGen.genListInv(
                     li,
                     new JVarUse(
-                        new Position(ileft, iright),
-                        i, JContextRef.Local
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local
                     )
                 ));
             
@@ -7775,8 +7849,8 @@ class CUP$Parser$actions {
 		
                 List<JInvocation> invlist = astGen.genListInv(
                     new JVarUse(
-                        new Position(ileft, iright), 
-                        i, JContextRef.Local
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local
                     )
                 );
                 RESULT = new JInvocationExp(invlist);
@@ -9192,7 +9266,11 @@ class CUP$Parser$actions {
 		List<JInvocation> li = (List<JInvocation>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = astGen.genListInv(
-                    li, new JVarUse(new Position(ileft, iright), i, JContextRef.Local)
+                    li, 
+                    new JVarUse(
+                        new Label(i, new Position(ileft, iright)),
+                        JContextRef.Local
+                    )
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("c_jinvocation",99, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -9214,7 +9292,11 @@ class CUP$Parser$actions {
 		List<JInvocation> li = (List<JInvocation>)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
 		
                 RESULT = astGen.genListInv(
-                    li, new FromCArrUse(new Position(ileft, iright), i, lce)
+                    li, 
+                    new FromCArrUse(
+                        new Label(i, new Position(ileft, iright)),
+                        lce
+                    )
                 );
             
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("c_jinvocation",99, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
