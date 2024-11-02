@@ -86,6 +86,7 @@ public class COperation extends CExp {
                     DefiniteOperation.Substraction,
                     
                     DefiniteOperation.EqualsTo,
+                    DefiniteOperation.DifferentTo,
                     DefiniteOperation.GraterEq,
                     DefiniteOperation.GraterThan,
                     DefiniteOperation.LessEq,

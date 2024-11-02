@@ -81,7 +81,6 @@ public class JAssignAst extends JStatement{
         Label typeValue = value.validateData(
                 globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
         );
-        //Label typeVar = invsUtil.validateInvocation(globalST, symbolTable, typeTable, jerar, semanticErrors);
         Label typeVar = invsUtil.validateInvocation(
                 globalST, 
                 symbolTable, 
@@ -115,21 +114,20 @@ public class JAssignAst extends JStatement{
         MemoryAccess expAccess = accessGenC3D.getAccess(
                 value, admiMemory, internalCuartetas, temporals, pass
         );
+        
+        RegisterUse bxIntRegister = new RegisterUse(Register.BX_INT);
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.BX_INT), 
+                        bxIntRegister, 
                         invRet.getTemporalUse()
                 )
         );
         MemoryAccess assignAccess;
-        if(invRet.getTypeAccess() == RetJInvC3D.HEAP_ACCESS){
-            assignAccess = new HeapAccess(primType, new RegisterUse(Register.BX_INT));
-        } else if(invRet.getTypeAccess() == RetJInvC3D.STACK_ACCESS){
-            assignAccess = new StackAccess(primType, new RegisterUse(Register.BX_INT));
-        } else {
-            throw new RuntimeException(
-                    "No se puede obtener un valor primitivo desde JAssignAst aun");
-        }
+        assignAccess = switch (invRet.getTypeAccess()) {
+            case RetJInvC3D.HEAP_ACCESS -> new HeapAccess(primType, bxIntRegister);
+            case RetJInvC3D.STACK_ACCESS -> new StackAccess(primType, bxIntRegister);
+            default -> bxIntRegister;
+        };
         internalCuartetas.add(
                 new AssignationC3D(
                         assignAccess, 

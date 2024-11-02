@@ -44,7 +44,9 @@ public class CIfAst extends CControlStmt{
     }
 
     @Override
-    public ReturnCase validate(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors, SemanticRestrictions restrictions) {
+    public ReturnCase validate(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable, 
+            SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors, 
+            SemanticRestrictions restrictions) {
         super.validateCondition(
                 imports, clasesST, symbolTable, pascalST, typeTable, 
                 semanticErrors, restrictions, condition
@@ -77,7 +79,8 @@ public class CIfAst extends CControlStmt{
     }
 
     @Override
-    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
+    public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
+            Memory temporals, C3Dpass pass) {
         int trueLabel = admiMemory.getCountLabels();
         int falseLabel = trueLabel + 1;
         int endLabel = trueLabel + 2;
@@ -101,15 +104,20 @@ public class CIfAst extends CControlStmt{
         );
         
         //generate elifs
-        pass.setEndIfLabel(endLabel);
+        C3Dpass newPass = new C3Dpass(
+                pass.getEndLabel(), 
+                pass.getStartBucleLabel(), 
+                endLabel
+        );
+        
         if(elifs != null && !elifs.isEmpty()){
             for (CIfAst elif : elifs) {
-                elif.generateElifCuartetas(admiMemory, internalCuartetas, temporals, pass);
+                elif.generateElifCuartetas(admiMemory, internalCuartetas, temporals, newPass);
             }
         }
         //generate else
         if(elseStmt != null){
-            elseStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
+            elseStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, newPass);
         }
         
         internalCuartetas.add(

@@ -106,15 +106,19 @@ public class JIfAst extends JControlStmt{
         );
         
         //generate elifs
-        pass.setEndIfLabel(endLabel);
+        C3Dpass newPass = new C3Dpass(
+                pass.getEndLabel(), 
+                pass.getStartBucleLabel(), 
+                endLabel
+        );
         if(elifs != null && !elifs.isEmpty()){
             for (JIfAst elif : elifs) {
-                elif.generateElifCuartetas(admiMemory, internalCuartetas, temporals, pass);
+                elif.generateElifCuartetas(admiMemory, internalCuartetas, temporals, newPass);
             }
         }
         //generate else
         if(elseStmt != null){
-            elseStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
+            elseStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, newPass);
         }
         
         internalCuartetas.add(

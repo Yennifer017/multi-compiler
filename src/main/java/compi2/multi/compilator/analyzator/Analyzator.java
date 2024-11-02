@@ -8,7 +8,6 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
-import compi2.multi.compilator.semantic.pmodule.FunctionDec;
 import compi2.multi.compilator.semantic.DefAst;
 import compi2.multi.compilator.semantic.c.CMain;
 import compi2.multi.compilator.semantic.jclases.JClass;
@@ -77,6 +76,7 @@ public class Analyzator {
                 generatorC3D.generateJavaC3D(javaClases, admiMemory);
                 generatorC3D.generateMainC3D(cmain, admiMemory);
                 generatorC3D.compilate(admiMemory);
+                builder.append("\n\nCompilacion exitosa");
                 
             }
         } catch (Exception e) {
@@ -127,7 +127,7 @@ public class Analyzator {
         genSymbolTab.addJavaInternalClasses(
                 javaSymbolTable, typeTable, classes, semanticErrors
         );
-        genSymbolTab.internajJavaSemanticValitations(
+        genSymbolTab.internalJavaSemanticValitations(
                 javaSymbolTable, typeTable, classes, semanticErrors
         );
         this.javaClases = classes;

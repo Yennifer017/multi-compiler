@@ -64,7 +64,7 @@ public class JVarUse extends JInvocation {
                             return new Label(Analyzator.ERROR_TYPE, this.inv.getPosition());
                         }
                     }
-                    currentST = symbolTable.getFather();
+                    currentST = currentST.getFather();
                 }
             case JContextRef.FromObject:
                 currentST = jerar.getClassST().getFieldsST();
@@ -150,13 +150,16 @@ public class JVarUse extends JInvocation {
     @Override
     public RetJInvC3D generateCuartetas(AdmiMemory admiMemory,
             List<Cuarteta> internalCuartetas, Memory temporals, int instanceStackRef) {
+        RegisterUse axIntRegister = new RegisterUse(Register.AX_INT);
+        RegisterUse bxIntRegister = new RegisterUse(Register.BX_INT);
+        
         if (rowST instanceof SingleData) {
             SingleData singleData = (SingleData) rowST;
             int currentIntTemp = temporals.getIntegerCount();
             temporals.setIntegerCount(currentIntTemp + 1);
             internalCuartetas.add( //AX = ptr + n
                     new OperationC3D(
-                            new RegisterUse(Register.AX_INT),
+                            axIntRegister,
                             new StackPtrUse(),
                             new AtomicValue<>(singleData.getRelativeDir()),
                             DefiniteOperation.Addition
@@ -169,7 +172,7 @@ public class JVarUse extends JInvocation {
                                     currentIntTemp,
                                     temporals
                             ),
-                            new RegisterUse(Register.AX_INT)
+                            axIntRegister
                     )
             );
             return new RetJInvC3D(
@@ -187,7 +190,7 @@ public class JVarUse extends JInvocation {
             temporals.setIntegerCount(temporalCount + 1);
             internalCuartetas.add(
                     new OperationC3D(
-                            new RegisterUse(Register.AX_INT), 
+                            axIntRegister, 
                             new StackPtrUse(), 
                             new AtomicValue(instanceStackRef), 
                             DefiniteOperation.Addition
@@ -195,17 +198,17 @@ public class JVarUse extends JInvocation {
             );
             internalCuartetas.add(
                     new AssignationC3D(
-                            new RegisterUse(Register.BX_INT), 
+                            bxIntRegister, 
                             new StackAccess(
                                     PrimitiveType.IntegerPT, 
-                                    new RegisterUse(Register.AX_INT)
+                                    axIntRegister
                             )
                     )
             );
             internalCuartetas.add(
                     new OperationC3D(
-                            new RegisterUse(Register.AX_INT),
-                            new RegisterUse(Register.BX_INT),
+                            axIntRegister,
+                            bxIntRegister,
                             new AtomicValue(fieldST.getRelativeDir()),
                             DefiniteOperation.Addition
                     )
@@ -217,7 +220,7 @@ public class JVarUse extends JInvocation {
                                     temporalCount,
                                     temporals
                             ),
-                            new RegisterUse(Register.AX_INT)
+                            axIntRegister
                     )
             );
             return new RetJInvC3D(
@@ -268,7 +271,9 @@ public class JVarUse extends JInvocation {
                                 )
                         )
                 );
-            default -> throw new RuntimeException();
+            default -> internalCuartetas.add(
+                        new AssignationC3D(bxIntRegister, axIntRegister)
+            );
         }
         internalCuartetas.add(
                 new AssignationC3D(

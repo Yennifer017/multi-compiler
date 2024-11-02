@@ -199,9 +199,12 @@ public class ExpGenC3D {
             ExpressionGenerateC3D leftExp, ExpressionGenerateC3D rightExp,
             PrimitiveType type, DefiniteOperation operation
     ) {
-        MemoryAccess firstAccess = accessGenC3D.getAccess(leftExp, admiMemory, internalCuartetas, temporals, pass);
-        MemoryAccess secondAccess = accessGenC3D.getAccess(rightExp, admiMemory, internalCuartetas, temporals, pass);
 
+        RetParamsC3D ret1 = leftExp.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
+        RetParamsC3D ret2 = rightExp.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
+        MemoryAccess firstAccess = accessGenC3D.getRegisterAccess(internalCuartetas, ret1, 1);
+        MemoryAccess secondAccess = accessGenC3D.getRegisterAccess(internalCuartetas, ret2, 2);
+        
         if (firstAccess instanceof AtomicValue atomicVal && atomicVal.getValue() instanceof String) {
             secondAccess = new AtomicStringConvC3D(secondAccess);
         }

@@ -46,4 +46,23 @@ public class AccessGenC3D {
         }
     }
     
+    public MemoryAccess getRegisterAccess(List<Cuarteta> internalCuartetas, RetParamsC3D retParamC3D, 
+            int registerNumber){
+        if (retParamC3D.getTemporalUse() != null) {
+
+            Register register = admiRegisters.findRegister(
+                    retParamC3D.getTemporalUse().getType(), registerNumber
+            );
+            internalCuartetas.add(
+                    new AssignationC3D(
+                            new RegisterUse(register),
+                            retParamC3D.getTemporalUse()
+                    )
+            );
+            return new RegisterUse(register);
+        } else {
+            return new AtomicValue(retParamC3D.getAtomicValue());
+        }
+    }
+    
 }

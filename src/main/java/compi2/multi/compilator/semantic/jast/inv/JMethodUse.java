@@ -209,7 +209,7 @@ public class JMethodUse extends JInvocation {
             );
             return new RetJInvC3D(
                     temporal, 
-                    this.isObjectReturn ? RetJInvC3D.HEAP_ACCESS : RetJInvC3D.TEMPORAL_USE
+                    RetJInvC3D.TEMPORAL_USE
             );
         }
     }
@@ -269,7 +269,11 @@ public class JMethodUse extends JInvocation {
                                 new StackAccess(PrimitiveType.IntegerPT, axIntRegister)
                         )
                 );
-            default -> throw new RuntimeException();
+            default -> internalCuartetas.add(
+                        new AssignationC3D(bxIntRegister, 
+                                axIntRegister
+                        )
+            );
         }
         internalCuartetas.add(
                 new AssignationC3D(
@@ -306,7 +310,7 @@ public class JMethodUse extends JInvocation {
             );
             return new RetJInvC3D(
                     temporal, 
-                    this.isObjectReturn ? RetJInvC3D.HEAP_ACCESS : RetJInvC3D.TEMPORAL_USE
+                    RetJInvC3D.TEMPORAL_USE
             );
         }
     }

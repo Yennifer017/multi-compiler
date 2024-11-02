@@ -129,7 +129,7 @@ public class GenSymbolTab extends Generator{
         }
     }
     
-    public void internajJavaSemanticValitations(JSymbolTable symbolTable, TypeTable typeTable,
+    public void internalJavaSemanticValitations(JSymbolTable symbolTable, TypeTable typeTable,
             List<JClass> classes, List<String> semanticErrors){
         if(classes != null && !classes.isEmpty()){
             for (JClass clase : classes) {

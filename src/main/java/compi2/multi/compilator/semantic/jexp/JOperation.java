@@ -85,6 +85,7 @@ public class JOperation extends JExpression{
                     DefiniteOperation.Substraction,
                     
                     DefiniteOperation.EqualsTo,
+                    DefiniteOperation.DifferentTo,
                     DefiniteOperation.GraterEq,
                     DefiniteOperation.GraterThan,
                     DefiniteOperation.LessEq,

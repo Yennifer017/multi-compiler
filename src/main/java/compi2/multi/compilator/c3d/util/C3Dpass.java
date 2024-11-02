@@ -24,5 +24,11 @@ public class C3Dpass {
         this.endLabel = endLabel;
         this.startBucleLabel = startBucleLabel;
     }
+
+    public C3Dpass(int endLabel, int startBucleLabel, int endIfLabel) {
+        this.endLabel = endLabel;
+        this.startBucleLabel = startBucleLabel;
+        this.endIfLabel = endIfLabel;
+    }
     
 }
