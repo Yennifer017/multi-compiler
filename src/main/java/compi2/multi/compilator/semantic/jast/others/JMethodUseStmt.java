@@ -8,6 +8,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.generators.InvocationsC3DGen;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jast.inv.InvocationsUtil;
@@ -31,6 +32,7 @@ public class JMethodUseStmt extends JStatement {
     private List<JInvocation> invocations;
     
     private InvocationsUtil invUtil;
+    private InvocationsC3DGen invC3DGen;
     
     private int instanceRef;
     
@@ -38,11 +40,13 @@ public class JMethodUseStmt extends JStatement {
         super(initPos);
         this.invocations = invocations;
         this.invUtil = new InvocationsUtil();
+        this.invC3DGen = new InvocationsC3DGen();
     }
     
     public JMethodUseStmt(Position initPos, List<JInvocation> invocations, JContextRef firstContextRef){
         super(initPos);
         this.invUtil = new InvocationsUtil();
+        this.invC3DGen = new InvocationsC3DGen();
         try {
             invocations.get(0).setContext(firstContextRef);
             this.invocations = invocations;
@@ -56,14 +60,24 @@ public class JMethodUseStmt extends JStatement {
             NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
         invUtil.validateInvocation(
-                globalST, symbolTable, typeTable, jerar, semanticErrors, invocations, initPos, false
+                globalST, 
+                symbolTable, 
+                typeTable, 
+                jerar, 
+                semanticErrors, 
+                invocations, 
+                initPos, 
+                false, 
+                false
         );
         return new ReturnCase(false);
     }
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        invUtil.generateC3DInvocations(admiMemory, internalCuartetas, temporals, invocations, instanceRef);
+        invC3DGen.generateC3DInvocations(
+                admiMemory, internalCuartetas, temporals, invocations, instanceRef
+        );
     }
 
 }

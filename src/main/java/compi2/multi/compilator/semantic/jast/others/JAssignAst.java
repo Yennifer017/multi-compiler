@@ -10,15 +10,9 @@ import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.access.HeapAccess;
-import compi2.multi.compilator.c3d.access.MemoryAccess;
-import compi2.multi.compilator.c3d.access.RegisterUse;
-import compi2.multi.compilator.c3d.access.StackAccess;
-import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.generators.AccessGenC3D;
+import compi2.multi.compilator.c3d.generators.InvocationsC3DGen;
 import compi2.multi.compilator.c3d.util.C3Dpass;
-import compi2.multi.compilator.c3d.util.Register;
-import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.j.JStatement;
 import compi2.multi.compilator.semantic.jast.inv.InvocationsUtil;
@@ -49,6 +43,7 @@ public class JAssignAst extends JStatement{
     private ExpGenC3D expGenC3D;
     private AccessGenC3D accessGenC3D;
     private InvocationsUtil invsUtil;
+    private InvocationsC3DGen invC3DGen;
     
     public JAssignAst(Position initPos, List<JInvocation> variable, JExpression value) {
         super(initPos);
@@ -57,6 +52,7 @@ public class JAssignAst extends JStatement{
         this.expGenC3D = new ExpGenC3D();
         this.accessGenC3D = new AccessGenC3D();
         this.invsUtil = new InvocationsUtil();
+        this.invC3DGen = new InvocationsC3DGen();
     }
     
     public JAssignAst(Position initPos, List<JInvocation> variable, 
@@ -65,6 +61,7 @@ public class JAssignAst extends JStatement{
         this.expGenC3D = new ExpGenC3D();
         this.accessGenC3D = new AccessGenC3D();
         this.invsUtil = new InvocationsUtil();
+        this.invC3DGen = new InvocationsC3DGen();
         try {
             variable.get(0).setContext(first);
             this.variable = variable;
@@ -89,9 +86,9 @@ public class JAssignAst extends JStatement{
                 semanticErrors, 
                 variable, 
                 initPos, 
-                true
+                true,
+                false
         );
-        //saveInstanceRef(symbolTable);
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
         primType = super.tConvert.convertAllPrimitive(typeVar.getName());
         if(!typeVar.getName().equals(typeValue.getName())){
@@ -108,31 +105,8 @@ public class JAssignAst extends JStatement{
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass) {
-        RetJInvC3D invRet = invsUtil.generateC3DInvocations(
-                admiMemory, internalCuartetas, temporals, variable, instanceRef
-        );
-        MemoryAccess expAccess = accessGenC3D.getAccess(
-                value, admiMemory, internalCuartetas, temporals, pass
-        );
-        
-        RegisterUse bxIntRegister = new RegisterUse(Register.BX_INT);
-        internalCuartetas.add(
-                new AssignationC3D(
-                        bxIntRegister, 
-                        invRet.getTemporalUse()
-                )
-        );
-        MemoryAccess assignAccess;
-        assignAccess = switch (invRet.getTypeAccess()) {
-            case RetJInvC3D.HEAP_ACCESS -> new HeapAccess(primType, bxIntRegister);
-            case RetJInvC3D.STACK_ACCESS -> new StackAccess(primType, bxIntRegister);
-            default -> bxIntRegister;
-        };
-        internalCuartetas.add(
-                new AssignationC3D(
-                        assignAccess, 
-                        expAccess
-                )
+        this.invC3DGen.generateCuartetasAssign(
+                admiMemory, internalCuartetas, temporals, pass, variable, primType, value, instanceRef
         );
     }
     

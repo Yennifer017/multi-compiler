@@ -17,6 +17,8 @@ public class Memory implements CodeTransformable{
     private int charCount;
     private int booleanCount;
     
+    private int bytes;
+    
     private String name;
     
     public Memory(String name){
@@ -78,5 +80,13 @@ public class Memory implements CodeTransformable{
             default -> this.charCount += increment;
         }
     }
+
+    /*@Override
+    public void generateAssemblyCode(StringBuilder builder) {
+        builder.append(this.name)
+                .append(" resb ")
+                .append(this.bytes)
+                .append("\n");
+    }*/
     
 }

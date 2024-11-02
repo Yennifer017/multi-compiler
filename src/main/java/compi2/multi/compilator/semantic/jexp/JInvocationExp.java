@@ -10,16 +10,8 @@ import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.access.HeapAccess;
-import compi2.multi.compilator.c3d.access.MemoryAccess;
-import compi2.multi.compilator.c3d.access.RegisterUse;
-import compi2.multi.compilator.c3d.access.StackAccess;
-import compi2.multi.compilator.c3d.access.TemporalUse;
-import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
-import compi2.multi.compilator.c3d.util.AdmiRegisters;
+import compi2.multi.compilator.c3d.generators.InvocationsC3DGen;
 import compi2.multi.compilator.c3d.util.C3Dpass;
-import compi2.multi.compilator.c3d.util.Register;
-import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.jast.inv.InvocationsUtil;
@@ -44,19 +36,19 @@ public class JInvocationExp extends JExpression{
     private PrimitiveType primType;
     private int instanceRef;
     
-    private AdmiRegisters admiRegisters;
+    private InvocationsC3DGen invC3DGen;
     
     public JInvocationExp(List<JInvocation> invocations){
         super(null);
         this.invocations = invocations;
         this.invsUtil = new InvocationsUtil();
-        this.admiRegisters = new AdmiRegisters();
+        this.invC3DGen = new InvocationsC3DGen();
     }
     
     public JInvocationExp(List<JInvocation> invocations, JContextRef firstContext){
         super(null);
         this.invsUtil =  new InvocationsUtil();
-        this.admiRegisters = new AdmiRegisters();
+        this.invC3DGen = new InvocationsC3DGen();
         try {
             invocations.get(0).setContext(firstContext);
             this.invocations = invocations;
@@ -80,7 +72,8 @@ public class JInvocationExp extends JExpression{
                 semanticErrors, 
                 invocations, 
                 pos, 
-                true
+                true,
+                false
         );
         this.primType = super.tConvert.convertAllPrimitive(type.getName());
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
@@ -89,47 +82,20 @@ public class JInvocationExp extends JExpression{
 
     @Override
     public Label validateSimpleData(List<String> semanticErrors) {
-        semanticErrors.add(errorsRep.ilegalUseError("Lista de invocaciones", pos));
+        try {
+            this.pos = invocations.get(0).getInv().getPosition();
+            semanticErrors.add(errorsRep.ilegalUseError("Lista de invocaciones", pos));
+        } catch (IndexOutOfBoundsException e) {
+            //add error
+        }
         return new Label(Analyzator.ERROR_TYPE, pos);
     }
 
     @Override
     public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        RetJInvC3D invRet = invsUtil.generateC3DInvocations(
-                admiMemory, internalCuartetas, temporals, invocations, instanceRef
-        );
-        Register register = admiRegisters.findRegister(primType, 2);
-        int temporalCount = temporals.getCount(primType);
-        temporals.increment(primType, 1);
-        
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
-                        invRet.getTemporalUse()
-                )
-        );
-        MemoryAccess fromInvMAccess;
-        fromInvMAccess = switch (invRet.getTypeAccess()) {
-            case RetJInvC3D.HEAP_ACCESS -> new HeapAccess(primType, new RegisterUse(Register.AX_INT));
-            case RetJInvC3D.STACK_ACCESS -> new StackAccess(primType, new RegisterUse(Register.AX_INT));
-            default -> new RegisterUse(Register.AX_INT);
-        };
-        
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new RegisterUse(register), 
-                        fromInvMAccess
-                )
-        );
-        internalCuartetas.add(
-                new AssignationC3D(
-                        new TemporalUse(primType, temporalCount, temporals), 
-                        new RegisterUse(register)
-                )
-        );
-        return new RetParamsC3D(
-                new TemporalUse(primType, temporalCount, temporals)
+        return this.invC3DGen.generateCuartetasExp(
+                admiMemory, internalCuartetas, temporals, pass, invocations, primType, instanceRef
         );
     }
 

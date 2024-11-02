@@ -180,4 +180,10 @@ public class ErrorsRep {
     public String invalidInvocationError(String supertype, String field, Position pos){
         return "No se encontro el atributo " + field +  "en la clase " + supertype + report(pos);
     }
+    
+    public String noObjectVarError(String name, Position pos){
+        return "La variable " + name + " no es un objeto, no puede invocar metodos/atributos " 
+                + report(pos);
+    }
+    
 }

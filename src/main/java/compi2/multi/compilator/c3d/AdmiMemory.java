@@ -63,4 +63,22 @@ public class AdmiMemory implements CodeTransformable{
             }
         }
     }
+
+    /*@Override
+    public void generateAssemblyCode(StringBuilder builder) {
+        builder.append("section .bss");
+        stack.setBytes(20000);
+        stack.generateAssemblyCode(builder);
+        heap.setBytes(20000);
+        heap.generateAssemblyCode(builder);
+        
+        builder.append("section .data\n");
+        builder.append(HEAP_PTR + " add 0;\n");
+        builder.append(STACK_PTR + " add 0;\n");
+        
+        builder.append("section .text\n");
+        builder.append("global _start\n");
+        builder.append("_start:\n");
+        
+    }*/
 }
