@@ -2416,6 +2416,12 @@ jarit_exp ::=
             {:
                 RESULT = l;
             :}
+        | NULL_LIT:n
+            {:
+                RESULT = new JNull(
+                    new Position(nleft, nright)
+                );
+            :}
         | ID:i jarray_access:ac
             {:
                 RESULT = new JInvocationExp(astGen.genListInv(

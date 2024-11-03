@@ -4,6 +4,7 @@ package compi2.multi.compilator.analysis.jerarquia;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.semantic.jclases.JClass;
+import java.util.LinkedList;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,7 +28,7 @@ public class NodeJerarTree {
     public NodeJerarTree(){
         this.father = null;
         this.classST = new ClassST(JClass.FATHER_OBJECT_CLASS, 
-                new SymbolTable(), new SymbolTable(), this);
+                new SymbolTable(), new SymbolTable(), this, new LinkedList<>());
         this.isObject = true;
     }
 }

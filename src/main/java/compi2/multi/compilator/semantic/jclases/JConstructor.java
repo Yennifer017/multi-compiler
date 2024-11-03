@@ -7,8 +7,10 @@ import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.symbolt.clases.ConstructorST;
 import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
+import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -48,36 +50,44 @@ public class JConstructor extends JFunction{
     }
     
     @Override
-    public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, List<String> semanticErrors) {
-        if(super.nameClass.getName().equals(this.name.getName())){
+    public RowST generateRowST(SymbolTable symbolTable, TypeTable typeTable, 
+            List<String> semanticErrors) {
+        if(super.nameClass.equals(this.name.getName())){
             List<InfParam> params = super.generateArgsList();
             String nameForST = getNameFunctionForST(symbolTable, params);
             if(nameForST != null){
                 this.constructorST = new ConstructorST(
-                        nameForST, super.generateInternalST(true), params, access
+                        nameForST, 
+                        super.generateInternalST(true), 
+                        params, access
                 );
                 String finalName = super.getFinalName(constructorST.getName());
                 constructorST.setCompleateName(finalName);
                 return this.constructorST;
             } else {
                 semanticErrors.add(
-                        super.errorsRep.redeclareFunctionError(name.getName(), params, name.getPosition())
+                        super.errorsRep.redeclareFunctionError(
+                                name.getName(), params, name.getPosition()
+                        )
                 );
             }
         } else {
             semanticErrors.add(super.errorsRep.noConstructorError(
-                    super.nameClass.getName(), name.getName(), name.getPosition())
+                    super.nameClass, name.getName(), name.getPosition())
             );
         }
         return null;
     }
     
     @Override
-    public void validateInternal(JSymbolTable globalST, TypeTable typeTable, List<String> semanticErrors) {
+    public void validateInternal(JSymbolTable globalST, TypeTable typeTable, 
+            List<String> semanticErrors) {
         if(!jerar.getFather().isObject()){
             //validar el uso de constructores
         }
-        super.validateArgs(globalST, constructorST.getInternalST(), typeTable, semanticErrors);
+        super.validateArgs(
+                globalST, constructorST.getInternalST(), typeTable, semanticErrors
+        );
         SemanticRestrictions restrictions = new SemanticRestrictions(
                 false, false, Analyzator.VOID_METHOD
         );
@@ -126,9 +136,12 @@ public class JConstructor extends JFunction{
     }
 
     @Override
-    public void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields) {
+    public void generateCuartetas(AdmiMemory admiMemory, ClassST classST) {
         List<Cuarteta> internalCuartetas = new LinkedList<>();
         Memory temporals = new Memory("internal");
+        
+        RegisterUse axIntRegister = new RegisterUse(Register.AX_INT);
+        RegisterUse bxIntRegister = new RegisterUse(Register.BX_INT);
         
         DirInstanceST dirInstanceST = (DirInstanceST) 
                 constructorST.getInternalST().get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
@@ -136,22 +149,25 @@ public class JConstructor extends JFunction{
         int stackDir = instanceDir + 1;
         temporals.setIntegerCount(instanceDir + 2);
         
+        TemporalUse instanceRefTemp = new TemporalUse(
+                PrimitiveType.IntegerPT, instanceDir, temporals
+        );
         internalCuartetas.add( 
                 new AssignationC3D(
-                        new TemporalUse(PrimitiveType.IntegerPT, instanceDir, temporals), 
+                        instanceRefTemp, 
                         new HeapPtrUse())
         );
         internalCuartetas.add( // h = h + nfields
                 new OperationC3D(
                         new HeapPtrUse(), 
                         new HeapPtrUse(), 
-                        new AtomicValue<>(fields.size()),
+                        new AtomicValue<>(classST.getFieldsST().size()),
                         DefiniteOperation.Addition
                 )
         );
         internalCuartetas.add(
                 new OperationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         new StackPtrUse(), 
                         new AtomicValue(dirInstanceST.getDirMemory()), 
                         DefiniteOperation.Addition
@@ -160,30 +176,33 @@ public class JConstructor extends JFunction{
         internalCuartetas.add(
                 new AssignationC3D(
                         new TemporalUse(PrimitiveType.IntegerPT, stackDir, temporals), 
-                        new RegisterUse(Register.AX_INT)
+                        axIntRegister
                 )
         );
         
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.AX_INT), 
+                        axIntRegister, 
                         new TemporalUse(PrimitiveType.IntegerPT, stackDir, temporals)
                 )
         );
         internalCuartetas.add(
                 new AssignationC3D(
-                        new RegisterUse(Register.BX_INT), 
-                        new TemporalUse(PrimitiveType.IntegerPT, instanceDir, temporals)
+                        bxIntRegister, 
+                        instanceRefTemp
                 )
         );
         internalCuartetas.add(
                 new AssignationC3D(
                         new StackAccess(
                                 PrimitiveType.IntegerPT, 
-                                new RegisterUse(Register.AX_INT)
+                                axIntRegister
                         ),
-                        new RegisterUse(Register.BX_INT)
+                        bxIntRegister
                 )
+        );
+        this.generateCuartetasFields(
+                admiMemory, internalCuartetas, temporals, classST, instanceRefTemp
         );
         super.generateInternalCuartetas(
                 admiMemory, internalCuartetas, temporals, new C3Dpass()
@@ -195,6 +214,17 @@ public class JConstructor extends JFunction{
                     internalCuartetas)
         );
         admiMemory.getDefinitions().add(constructorST.getCompleateName());
+    }
+    
+    private void generateCuartetasFields(AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas, Memory temporals, 
+            ClassST classST, TemporalUse instanceRefTemp){
+        for (String orderedField : classST.getFieldsOrdered()) {
+            FieldST fieldST = (FieldST) classST.getFieldsST().get(orderedField);
+            fieldST.getJfield().generateCuartetas(
+                    admiMemory, internalCuartetas, temporals, instanceRefTemp
+            );
+        }
     }
     
 }

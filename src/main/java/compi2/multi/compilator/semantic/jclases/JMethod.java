@@ -8,6 +8,7 @@ import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.MethodST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -140,7 +141,7 @@ public class JMethod extends JFunction implements Typable{
     }
 
     @Override
-    public void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields) {
+    public void generateCuartetas(AdmiMemory admiMemory, ClassST classST) {
         List<Cuarteta> internalCuartetas = new LinkedList<>();
         Memory temporals = new Memory("internal");
         

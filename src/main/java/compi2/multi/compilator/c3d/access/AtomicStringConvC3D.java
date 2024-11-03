@@ -21,7 +21,7 @@ public class AtomicStringConvC3D extends MemoryAccess{
         } else {
             builder.append("std::to_string(");
             access.generateCcode(builder);
-            builder.append(");");
+            builder.append(")");
         } 
     }
     

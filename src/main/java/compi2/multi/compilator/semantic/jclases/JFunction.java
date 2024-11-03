@@ -7,6 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.ReturnRow;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
 import compi2.multi.compilator.analysis.symbolt.clases.HeapDirecST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
@@ -17,7 +18,6 @@ import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JStatement;
-import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +30,7 @@ import lombok.Setter;
  */
 @Getter @Setter
 public abstract class JFunction extends JDef{
-    protected Label nameClass;
+    protected String nameClass;
     protected List<JArg> args;
     protected List<JStatement> internalStmts;
 
@@ -99,7 +99,7 @@ public abstract class JFunction extends JDef{
         }
     }
     
-    public abstract void generateCuartetas(AdmiMemory admiMemory, SymbolTable fields);
+    public abstract void generateCuartetas(AdmiMemory admiMemory, ClassST classST);
     
     protected void generateInternalCuartetas(AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass){
@@ -111,6 +111,6 @@ public abstract class JFunction extends JDef{
     }
     
     protected String getFinalName(String parcialName){
-        return "JAVA_" + nameClass.getName() + "_" + parcialName;
+        return "JAVA_" + nameClass + "_" + parcialName;
     }
 }

@@ -38,6 +38,7 @@ public class AdmiMemory implements CodeTransformable{
     public void generateCcode(StringBuilder builder) {
         builder.append("#include <string>\n");
         builder.append("#include <iostream>\n");
+        builder.append("#include <cmath>\n");
         
         builder.append("int " + HEAP_PTR + " = 0;\n");
         builder.append("int " + STACK_PTR + " = 0;\n");

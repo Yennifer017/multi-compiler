@@ -37,7 +37,7 @@ public class CObjUse extends CInvocation {
     public Label validate(CImports imports, JSymbolTable clasesST, SymbolTable symbolTable,
             SymbolTable pascalST, TypeTable typeTable, List<String> semanticErrors) {
         if (symbolTable.containsKey(this.inv.getName())) {
-            RowST rowST = symbolTable.get(this.inv.getName());
+            rowST = symbolTable.get(this.inv.getName());
             if (rowST.getCategory().equals(Category.JObject)) {
                 SingleData singleData = (SingleData) rowST;
                 return new Label(singleData.getType(), this.inv.getPosition());

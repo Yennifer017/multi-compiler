@@ -184,6 +184,11 @@ public class TConvertidor {
                 primConvert.penalize(rightType, PrimitiveType.StringPT, semanticErrors);
                 return PrimitiveType.BooleanPT;
             }
+            case Power -> {
+                primConvert.penalize(leftType, PrimitiveType.StringPT, semanticErrors);
+                primConvert.penalize(rightType, PrimitiveType.StringPT, semanticErrors);
+                return PrimitiveType.RealPT;
+            }
             default -> throw new AssertionError();
         }
     }

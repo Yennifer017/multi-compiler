@@ -27,6 +27,7 @@ public class Analyzator {
     public static final String ERROR_TYPE = "--error--";
     public static final String FUNCTION_SEPARATOR = "_";
     public static final String VOID_METHOD = "__no return__";
+    public static final int NULL_REFERENCE = -1;
     
     private List<String> semanticErrors;   
     private GenTypeTab genTypeTab;

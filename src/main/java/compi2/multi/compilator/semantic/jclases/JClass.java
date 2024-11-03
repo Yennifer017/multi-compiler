@@ -5,10 +5,12 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
+import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.semantic.DefObjsAst;
 import compi2.multi.compilator.semantic.util.Label;
+import java.util.LinkedList;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -55,7 +57,8 @@ public class JClass extends DefObjsAst {
                 name.getName(),
                 new SymbolTable(),
                 new SymbolTable(),
-                new NodeJerarTree(null, null)
+                new NodeJerarTree(null, null), 
+                new LinkedList<>()
         );
         classST.getJerar().setClassST(classST);
 
@@ -76,8 +79,7 @@ public class JClass extends DefObjsAst {
                     SymbolTable st = null;
                     if (definition instanceof JFunction) {
                         JFunction constructor = (JFunction) definition;
-                        constructor.setNameClass(name);
-                        
+                        constructor.setNameClass(name.getName());
                         st = classST.getMethodsST();
                     } else {
                         st = classST.getFieldsST();
@@ -89,6 +91,9 @@ public class JClass extends DefObjsAst {
                             semanticErrors
                     );
                     if (rowST != null) {
+                        if(rowST instanceof FieldST){
+                            classST.getFieldsOrdered().add(rowST.getName());
+                        }
                         st.put(rowST.getName(), rowST);
                     }
                 } catch (NullPointerException e) {
@@ -139,7 +144,7 @@ public class JClass extends DefObjsAst {
         for (JDef definition : definitions) {
             if(definition instanceof JFunction){
                 JFunction function = (JFunction) definition;
-                function.generateCuartetas(admiMemory, classST.getFieldsST());
+                function.generateCuartetas(admiMemory, classST);
             }
         }
     }

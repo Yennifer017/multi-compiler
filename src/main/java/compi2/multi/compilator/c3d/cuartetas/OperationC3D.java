@@ -27,10 +27,18 @@ public class OperationC3D extends Cuarteta{
     public void generateCcode(StringBuilder builder) {
         variable.generateCcode(builder);
         builder.append(" = ");
-        first.generateCcode(builder);
-        builder.append(operation.getSign());
-        second.generateCcode(builder);
-        builder.append(";\n");
+        if(operation == DefiniteOperation.Power){
+            builder.append("static_cast<float>(pow(");
+            first.generateCcode(builder);
+            builder.append(",");
+            second.generateCcode(builder);
+            builder.append("));\n");
+        } else {
+            first.generateCcode(builder);
+            builder.append(operation.getSign());
+            second.generateCcode(builder);
+            builder.append(";\n");
+        }
     }
     
 }
