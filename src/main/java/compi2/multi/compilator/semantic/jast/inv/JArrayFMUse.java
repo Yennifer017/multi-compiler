@@ -7,7 +7,6 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.j.JExpression;
 import compi2.multi.compilator.semantic.util.Label;
-import compi2.multi.compilator.util.Position;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;

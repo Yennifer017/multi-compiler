@@ -86,8 +86,7 @@ public class JAssignAst extends JStatement{
                 semanticErrors, 
                 variable, 
                 initPos, 
-                true,
-                false
+                true
         );
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
         primType = super.tConvert.convertAllPrimitive(typeVar.getName());

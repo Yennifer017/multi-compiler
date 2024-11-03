@@ -66,20 +66,24 @@ public class GenSymbolTab extends Generator{
             SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
             List<? extends CDef> definitions, List<String> semanticErrors){
         if(stmts != null && !stmts.isEmpty()){
-            for (CStatement stmt : stmts) {
-                stmt.validate(
-                        imports, 
-                        clasesST, 
-                        symbolTable, 
-                        pascalST, 
-                        typeTable, 
-                        semanticErrors, 
-                        new SemanticRestrictions(
-                                false,
-                                false, 
-                                Analyzator.VOID_METHOD
-                        )
-                );
+            try {
+                for (CStatement stmt : stmts) {
+                    stmt.validate(
+                            imports, 
+                            clasesST, 
+                            symbolTable, 
+                            pascalST, 
+                            typeTable, 
+                            semanticErrors, 
+                            new SemanticRestrictions(
+                                    false,
+                                    false, 
+                                    Analyzator.VOID_METHOD
+                            )
+                    );
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
             }
         }
     }

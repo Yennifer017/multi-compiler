@@ -10,6 +10,7 @@ import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.cast.CIfAst;
 import compi2.multi.compilator.semantic.cast.dec.CArrayObjDec;
 import compi2.multi.compilator.semantic.cast.dec.CObjectDec;
+import compi2.multi.compilator.semantic.cast.inv.objs.CInvocation;
 import compi2.multi.compilator.semantic.jast.JIfAst;
 import compi2.multi.compilator.semantic.jast.inv.JInvocation;
 import compi2.multi.compilator.semantic.util.CPassIf;
@@ -143,6 +144,21 @@ public class AstGen {
     }
     
     public List<JInvocation> genListInv(List<JInvocation> list, JInvocation first){
+        try {
+            list.add(0, first);
+            return list;
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            return new LinkedList<>();
+        }
+    }
+    
+    public List<CInvocation> genListCInv(CInvocation inv) {
+        List<CInvocation> list = new LinkedList<>();
+        list.add(inv);
+        return list;
+    }
+    
+    public List<CInvocation> genListCInv(List<CInvocation> list, CInvocation first){
         try {
             list.add(0, first);
             return list;

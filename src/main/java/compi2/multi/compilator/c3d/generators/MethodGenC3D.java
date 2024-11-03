@@ -1,12 +1,18 @@
 package compi2.multi.compilator.c3d.generators;
 
+import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.ModuleRowST;
+import compi2.multi.compilator.analysis.symbolt.ReturnRow;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
+import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
+import compi2.multi.compilator.analysis.symbolt.clases.MethodST;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
+import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.HeapAccess;
 import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
@@ -17,7 +23,9 @@ import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
 import compi2.multi.compilator.c3d.util.Register;
+import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;
+import compi2.multi.compilator.semantic.j.JExpression;
 import java.util.List;
 
 /**
@@ -166,6 +174,113 @@ public class MethodGenC3D {
                 )
         );
         return temporalRetVal;
+    }
+    
+    public RetJInvC3D generateMethodCuartetas(
+            AdmiMemory admiMemory, 
+            List<Cuarteta> internalCuartetas,
+            Memory temporals, 
+            RetJInvC3D previus, 
+            MethodST methodST, 
+            SymbolTable lastST,
+            PrimitiveType type, 
+            List<? extends ExpressionGenerateC3D> args
+    ){
+        DirInstanceST heapST = (DirInstanceST) methodST.getInternalST()
+                .get(AdditionalInfoST.DIR_INSTANCE_ROW.getNameRow());
+        int countTemp = temporals.getIntegerCount();
+        temporals.setIntegerCount(countTemp + 1);
+        
+        RegisterUse axIntRegister =  new RegisterUse(Register.AX_INT);
+        RegisterUse bxIntRegister =  new RegisterUse(Register.BX_INT);
+        
+        //mandar la direccion de referencia del objeto
+        TemporalUse temporalStackPos = this.moveTemporalStack(
+                internalCuartetas, temporals, lastST.getLastDir()
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        axIntRegister, 
+                        temporalStackPos
+                )
+        );
+        internalCuartetas.add(
+                new OperationC3D(
+                        bxIntRegister, 
+                        axIntRegister, 
+                        new AtomicValue(heapST.getDirMemory()), 
+                        DefiniteOperation.Addition
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals), 
+                        bxIntRegister
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        axIntRegister, 
+                        previus.getTemporalUse()
+                )
+        );
+        switch (previus.getTypeAccess()) {
+            case RetJInvC3D.HEAP_ACCESS -> internalCuartetas.add(
+                        new AssignationC3D(
+                                bxIntRegister,
+                                new HeapAccess(PrimitiveType.IntegerPT, axIntRegister)
+                        )
+                );
+            case RetJInvC3D.STACK_ACCESS -> internalCuartetas.add(
+                        new AssignationC3D(
+                                bxIntRegister,
+                                new StackAccess(PrimitiveType.IntegerPT, axIntRegister)
+                        )
+                );
+            default -> internalCuartetas.add(
+                        new AssignationC3D(bxIntRegister, 
+                                axIntRegister
+                        )
+            );
+        }
+        internalCuartetas.add(
+                new AssignationC3D(
+                        axIntRegister, 
+                        new TemporalUse(PrimitiveType.IntegerPT, countTemp, temporals)
+                )
+        );
+        internalCuartetas.add(
+                new AssignationC3D(
+                        new StackAccess(PrimitiveType.IntegerPT, axIntRegister), 
+                        bxIntRegister
+                )
+        );
+        
+        this.settingParams(
+                args, admiMemory, internalCuartetas, temporals, lastST, methodST
+        );
+        this.invocateMethod(
+                internalCuartetas, lastST, methodST.getCompleateName()
+        );
+        
+        //devolver el valor de retorno si existe
+        if (methodST.getType().equals(Analyzator.VOID_METHOD)) {
+            return null;
+        } else {
+            ReturnRow returnRow = (ReturnRow) methodST.getInternalST()
+                    .get(AdditionalInfoST.DIR_RETORNO_ROW.getNameRow());
+            TemporalUse temporal = this.recoverReturnValue(
+                    internalCuartetas, 
+                    temporals, 
+                    lastST.getLastDir(), 
+                    returnRow.getRelativeDir(), 
+                    type
+            );
+            return new RetJInvC3D(
+                    temporal, 
+                    RetJInvC3D.TEMPORAL_USE
+            );
+        }
     }
     
 }

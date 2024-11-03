@@ -13,6 +13,7 @@ import compi2.multi.compilator.semantic.cast.assign.*;
 import compi2.multi.compilator.semantic.cast.dec.*;
 import compi2.multi.compilator.semantic.cast.defaultfuncs.*;
 import compi2.multi.compilator.semantic.cast.inv.*;
+import compi2.multi.compilator.semantic.cast.inv.objs.*;
 import compi2.multi.compilator.semantic.cexp.*;
 import compi2.multi.compilator.semantic.util.*;
 import compi2.multi.compilator.semantic.pexp.*;
@@ -356,8 +357,6 @@ non terminal CCase ccase
     ;
 non terminal List<CStatement> cstmts
     ;
-non terminal List<JInvocation> c_jinvocation
-    ;
 non terminal CStatement cfor_reduced_stmt, cstmt, cdef_functions_stmt, 
     ccontrol_stmts
     ;
@@ -386,6 +385,10 @@ non terminal CMethodPass c_pinvocation
 non terminal CPassIf cif_stmt, celif_stmt
     ;
 non terminal CAssign cassign
+    ;
+non terminal List<CInvocation> c_jinvocation, c_jaccess
+    ;
+non terminal CInvocation c_jcomplex_access
     ;
 
 
@@ -2719,7 +2722,7 @@ cvars_dec ::= ctype:pt ID:i SEMICOLON
         | c_jclass_init:cis
             {:
                 RESULT = new CObjectsDec(
-                     (List<CObjectDec>) cis //////////////////////////////////////
+                     (List<CObjectDec>) cis
                 );
             :}
         ;
@@ -3019,24 +3022,78 @@ cdo_while_stmt ::= DO:d LBRACE cstmts:ls RBRACE
 
 /************************* invocations *****************************/
 
-c_jinvocation ::= JAVA DOT ID:i jaccess:li
+c_jinvocation ::= JAVA DOT ID:i c_jaccess:li
             {:
-                RESULT = astGen.genListInv(
+                RESULT = astGen.genListCInv(
                     li, 
-                    new JVarUse(
-                        new Label(i, new Position(ileft, iright)),
-                        JContextRef.Local
+                    new CObjUse(
+                        new Label(i, new Position(ileft, iright))
                     )
                 );
             :}
-        | JAVA DOT ID:i carray_dims:lce jaccess:li
+        | JAVA DOT ID:i carray_dims:lce c_jaccess:li
             {:
-                RESULT = astGen.genListInv(
+                RESULT = astGen.genListCInv(
                     li, 
-                    new FromCArrUse(
+                    new CArrayUse(
                         new Label(i, new Position(ileft, iright)),
                         lce
                     )
+                );
+            :}
+        ;
+
+c_jaccess ::= DOT c_jcomplex_access:i c_jaccess:l
+            {:
+                l.add(0, i);
+                RESULT = l;
+            :}
+        | DOT c_jcomplex_access:i
+            {:
+                List<CInvocation> list = new LinkedList<>();
+                list.add(i);
+                RESULT = list;
+            :}
+        ;
+
+c_jcomplex_access ::= ID:i
+            {:
+                RESULT = new CObjUse(
+                    new Label(i, new Position(ileft, iright))
+                );
+            :}
+        | ID:i LPAREN RPAREN 
+            {:
+                RESULT = new CMethodUse(
+                    new Label(i, new Position(ileft, iright))
+                );
+            :}
+        | ID:i LPAREN RPAREN carray_dims:ac
+            {:
+                RESULT = new CArrayFMUse(
+                    new Label(i, new Position(ileft, iright)),
+                    ac
+                );
+            :}
+        | ID:i LPAREN cparams:el RPAREN
+            {:
+                RESULT = new CMethodUse(
+                    new Label(i, new Position(ileft, iright)),
+                    el
+                );
+            :}
+        | ID:i LPAREN cparams:el RPAREN carray_dims:ac
+            {:
+                RESULT = new CArrayFMUse(
+                    new Label(i, new Position(ileft, iright)),
+                    el, ac
+                );
+            :}
+        | ID:i carray_dims:ac
+            {:
+                RESULT = new CArrayUse(
+                    new Label(i, new Position(ileft, iright)),
+                    ac
                 );
             :}
         ;

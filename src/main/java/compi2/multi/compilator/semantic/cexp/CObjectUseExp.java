@@ -16,8 +16,8 @@ import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
+import compi2.multi.compilator.semantic.cast.inv.objs.CInvocation;
 import compi2.multi.compilator.semantic.jast.inv.InvocationsUtil;
-import compi2.multi.compilator.semantic.jast.inv.JInvocation;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.List;
 import lombok.Getter;
@@ -30,16 +30,14 @@ import lombok.Setter;
 @Getter @Setter
 public class CObjectUseExp extends CExp{
     
-    private List<JInvocation> invocations;
+    private List<CInvocation> invocations;
     
     private InvocationsC3DGen invC3DGen;
     private InvocationsUtil invsUtil;
     
     private PrimitiveType primType;
-    private int instanceRef;
     
-    
-    public CObjectUseExp(List<JInvocation> invocations) {
+    public CObjectUseExp(List<CInvocation> invocations) {
         super(null);
         this.invocations = invocations;
         this.invsUtil = new InvocationsUtil();
@@ -51,41 +49,22 @@ public class CObjectUseExp extends CExp{
             SymbolTable symbolTable, SymbolTable pascalST, TypeTable typeTable, 
             List<String> semanticErrors) {
         try {
-            JInvocation first = invocations.get(0);
+            CInvocation first = invocations.get(0);
             this.pos = first.getInv().getPosition();
-            if(symbolTable.containsKey(first.getInv().getName())){
-                RowST rowST = symbolTable.get(first.getInv().getName());
-                if(rowST.getCategory().equals(Category.JObject)){
-                    Label type = invsUtil.validateInvocation(
-                            clasesST, 
-                            symbolTable, 
-                            typeTable, 
-                            null, 
-                            semanticErrors, 
-                            invocations, 
-                            pos, 
-                            true, 
-                            true
-                    );
-                    this.primType = super.tConvert.convertAllPrimitive(type.getName());
-                    this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
-                    return new Label(type.getName(), type.getPosition());
-                } else {
-                    semanticErrors.add(
-                        super.errorsRep.noObjectVarError(
-                                first.getInv().getName(), 
-                                first.getInv().getPosition()
-                        )
-                    );
-                }
-            } else {
-                semanticErrors.add(
-                        super.errorsRep.undefiniteVarUseError(
-                                first.getInv().getName(), 
-                                first.getInv().getPosition()
-                        )
-                );
-            }
+            Label type = invsUtil.validateInvocation(
+                    imports, 
+                    clasesST, 
+                    symbolTable, 
+                    pascalST, 
+                    typeTable, 
+                    semanticErrors, 
+                    invocations, 
+                    pos, 
+                    true
+            );
+                    
+            this.primType = super.tConvert.convertAllPrimitive(type.getName());
+            return new Label(type.getName(), type.getPosition());
         } catch (IndexOutOfBoundsException e) {
             //add error
         }
@@ -107,7 +86,7 @@ public class CObjectUseExp extends CExp{
     public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass) {
         return this.invC3DGen.generateCuartetasExp(
-                admiMemory, internalCuartetas, temporals, pass, invocations, primType, instanceRef
+                admiMemory, internalCuartetas, temporals, pass, invocations, primType, -1
         );
     }
     
