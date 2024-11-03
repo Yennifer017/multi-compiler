@@ -1,6 +1,7 @@
 package compi2.multi.compilator.semantic.jclases;
 
 import compi2.multi.compilator.analysis.jerarquia.NodeJerarTree;
+import compi2.multi.compilator.analysis.symbolt.AccessMod;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -74,6 +75,7 @@ public class JClass extends DefObjsAst {
         NodeJerarTree fatherJerarNode = this.validateAndGetFromHerence(globalST, semanticErrors);
         this.classST.getJerar().setFather(fatherJerarNode);
         if (this.definitions != null && !this.definitions.isEmpty()) {
+            boolean implementEmptyConstruct = true;
             for (JDef definition : definitions) {
                 try {
                     SymbolTable st = null;
@@ -81,6 +83,9 @@ public class JClass extends DefObjsAst {
                         JFunction constructor = (JFunction) definition;
                         constructor.setNameClass(name.getName());
                         st = classST.getMethodsST();
+                        if(implementEmptyConstruct && (definition instanceof JConstructor)){
+                            implementEmptyConstruct = false;
+                        }
                     } else {
                         st = classST.getFieldsST();
                     }
@@ -100,7 +105,24 @@ public class JClass extends DefObjsAst {
                     System.out.println(e);
                 }
             }
+            if(implementEmptyConstruct){
+                this.addEmptyConstruct(typeTable, semanticErrors);
+            }
         }
+    }
+    
+    private void addEmptyConstruct(TypeTable typeTable, List<String> semanticErrors){
+        JConstructor emptyConstruct = new JConstructor(
+                name, AccessMod.PUBLIC, new LinkedList<>(), new LinkedList<>()
+        );
+        emptyConstruct.setNameClass(name.getName());
+        definitions.add(emptyConstruct);
+        RowST rowST = emptyConstruct.generateRowST(
+                classST.getMethodsST(),
+                typeTable,
+                semanticErrors
+        );
+        classST.getMethodsST().put(rowST.getName(), rowST);
     }
 
     public void validateInternal(JSymbolTable globalST,
