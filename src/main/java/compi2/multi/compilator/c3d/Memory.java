@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.c3d;
 
+import compi2.multi.compilator.c3d.interfaces.CodeTransformable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import lombok.Getter;
 import lombok.Setter;

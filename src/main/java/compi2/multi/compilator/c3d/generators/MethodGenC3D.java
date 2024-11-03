@@ -21,7 +21,7 @@ import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
 import compi2.multi.compilator.c3d.cuartetas.MethodInvC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.util.AdmiRegisters;
-import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
+import compi2.multi.compilator.c3d.interfaces.ExpressionGenerateC3D;
 import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;

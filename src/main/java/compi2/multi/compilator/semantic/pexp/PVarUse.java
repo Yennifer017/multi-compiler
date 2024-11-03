@@ -19,7 +19,7 @@ import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
 import java.util.List;

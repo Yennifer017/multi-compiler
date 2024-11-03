@@ -3,7 +3,7 @@ package compi2.multi.compilator.semantic.pobj;
 
 
 import compi2.multi.compilator.semantic.util.Label;
-import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.p.DefAst;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;

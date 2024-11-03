@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.semantic;
+package compi2.multi.compilator.semantic.j;
 
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.RowST;

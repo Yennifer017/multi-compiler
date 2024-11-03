@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.semantic;
+package compi2.multi.compilator.semantic.p;
 
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -9,7 +9,7 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
-import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
+import compi2.multi.compilator.c3d.interfaces.ExpressionGenerateC3D;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;

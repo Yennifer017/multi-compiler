@@ -5,6 +5,9 @@
 
 package compi2.multi.compilator.analysis;
 
+import compi2.multi.compilator.semantic.p.DefAst;
+import compi2.multi.compilator.semantic.p.Statement;
+import compi2.multi.compilator.semantic.p.Expression;
 import java_cup.runtime.*;
 import java.util.*;
 import compi2.multi.compilator.analysis.symbolt.AccessMod;

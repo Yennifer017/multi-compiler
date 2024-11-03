@@ -2,7 +2,7 @@
 package compi2.multi.compilator.semantic.util;
 
 
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.util.Position;
 import lombok.Getter;
 import lombok.Setter;

@@ -11,7 +11,7 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.analysis.typet.convert.TConvertidor;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.j.JExpression;

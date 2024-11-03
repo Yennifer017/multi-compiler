@@ -7,8 +7,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
-import compi2.multi.compilator.c3d.cuartetas.LabelC3D;
+import compi2.multi.compilator.c3d.interfaces.ElifGenerateC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.c.CExp;
 import compi2.multi.compilator.semantic.c.CImports;
@@ -25,7 +24,7 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class CIfAst extends CControlStmt{
+public class CIfAst extends CControlStmt implements ElifGenerateC3D{
     private CExp condition;
     private List<CIfAst> elifs;
     private CElseAst elseStmt;
@@ -81,71 +80,28 @@ public class CIfAst extends CControlStmt{
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass) {
-        int trueLabel = admiMemory.getCountLabels();
-        int falseLabel = trueLabel + 1;
-        int endLabel = trueLabel + 2;
-        admiMemory.setCountLabels(admiMemory.getCountLabels() + 3);
-        
-        super.expGenC3D.generateConditionCuartetas(
-                admiMemory, internalCuartetas, temporals, pass, pass, condition, trueLabel
-        );
-        internalCuartetas.add(
-                new GotoC3D(falseLabel)
-        );
-        internalCuartetas.add(
-                new LabelC3D(trueLabel)
-        );
-        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass);
-        internalCuartetas.add(
-                new GotoC3D(endLabel)
-        );
-        internalCuartetas.add(
-                new LabelC3D(falseLabel)
-        );
-        
-        //generate elifs
-        C3Dpass newPass = new C3Dpass(
-                pass.getEndLabel(), 
-                pass.getStartBucleLabel(), 
-                endLabel
-        );
-        
-        if(elifs != null && !elifs.isEmpty()){
-            for (CIfAst elif : elifs) {
-                elif.generateElifCuartetas(admiMemory, internalCuartetas, temporals, newPass);
-            }
-        }
-        //generate else
-        if(elseStmt != null){
-            elseStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, newPass);
-        }
-        
-        internalCuartetas.add(
-                new LabelC3D(endLabel)
+        stmtsGeneratorC3D.generateIfCuartetas(
+                admiMemory, 
+                internalCuartetas, 
+                temporals, 
+                pass, 
+                internalStmts, 
+                condition, 
+                elifs, 
+                elseStmt
         );
     }
 
+    @Override
     public void generateElifCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass){
-        int trueLabel = admiMemory.getCountLabels();
-        int falseLabel = trueLabel + 1;
-        admiMemory.setCountLabels(admiMemory.getCountLabels() + 2);
-        
-        super.expGenC3D.generateConditionCuartetas(
-                admiMemory, internalCuartetas, temporals, pass, pass, condition, trueLabel
-        );
-        internalCuartetas.add(
-                new GotoC3D(falseLabel)
-        );
-        internalCuartetas.add(
-                new LabelC3D(trueLabel)
-        );
-        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass);
-        internalCuartetas.add(
-                new GotoC3D(pass.getEndIfLabel())
-        );
-        internalCuartetas.add(
-                new LabelC3D(falseLabel)
+        stmtsGeneratorC3D.generateElifCuartetas(
+                admiMemory, 
+                internalCuartetas, 
+                temporals, 
+                pass, 
+                condition, 
+                internalStmts
         );
     }
     

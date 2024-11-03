@@ -1,5 +1,5 @@
 
-package compi2.multi.compilator.semantic;
+package compi2.multi.compilator.semantic.p;
 
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
 import compi2.multi.compilator.semantic.util.ReturnCase;

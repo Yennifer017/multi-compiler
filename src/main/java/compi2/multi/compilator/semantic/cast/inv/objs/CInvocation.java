@@ -10,7 +10,7 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.generators.ExpGenC3D;
-import compi2.multi.compilator.c3d.util.InvocationGenerateC3D;
+import compi2.multi.compilator.c3d.interfaces.InvocationGenerateC3D;
 import compi2.multi.compilator.c3d.util.RetJInvC3D;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.util.Label;

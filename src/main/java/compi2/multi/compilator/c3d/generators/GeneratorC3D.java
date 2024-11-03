@@ -9,7 +9,7 @@ import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.exceptions.CompilationException;
 import compi2.multi.compilator.files.UtilForFiles;
 import compi2.multi.compilator.generator.Compilator;
-import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.p.DefAst;
 import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.c.CMain;
 import compi2.multi.compilator.semantic.c.CStatement;

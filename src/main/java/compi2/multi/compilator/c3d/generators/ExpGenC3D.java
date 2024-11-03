@@ -17,7 +17,7 @@ import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
 import compi2.multi.compilator.c3d.cuartetas.UnaryOpC3D;
 import compi2.multi.compilator.c3d.util.AdmiRegisters;
 import compi2.multi.compilator.c3d.util.C3Dpass;
-import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
+import compi2.multi.compilator.c3d.interfaces.ExpressionGenerateC3D;
 import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.semantic.DefiniteOperation;

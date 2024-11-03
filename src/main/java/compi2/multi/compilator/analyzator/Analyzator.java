@@ -8,7 +8,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
-import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.p.DefAst;
 import compi2.multi.compilator.semantic.c.CMain;
 import compi2.multi.compilator.semantic.jclases.JClass;
 import java.io.StringReader;

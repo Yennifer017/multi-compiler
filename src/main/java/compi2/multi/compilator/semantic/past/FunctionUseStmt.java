@@ -3,7 +3,7 @@ package compi2.multi.compilator.semantic.past;
 
 
 import compi2.multi.compilator.analysis.symbolt.InfParam;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.p.Statement;
 import compi2.multi.compilator.analysis.symbolt.estruc.FunctionST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
@@ -14,7 +14,7 @@ import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.Position;
 import java.util.List;

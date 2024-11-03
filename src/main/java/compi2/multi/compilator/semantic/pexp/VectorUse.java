@@ -2,7 +2,7 @@
 package compi2.multi.compilator.semantic.pexp;
 
 
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;

@@ -15,7 +15,7 @@ import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import compi2.multi.compilator.util.Position;
 import java.util.List;
-import compi2.multi.compilator.c3d.util.ExpressionGenerateC3D;
+import compi2.multi.compilator.c3d.interfaces.ExpressionGenerateC3D;
 
 /**
  *

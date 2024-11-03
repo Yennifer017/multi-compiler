@@ -1,9 +1,9 @@
 package compi2.multi.compilator.semantic.pobj;
 
-import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.p.DefAst;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.Limits;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;

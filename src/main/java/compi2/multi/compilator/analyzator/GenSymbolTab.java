@@ -8,7 +8,7 @@ import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.pmodule.ModuleDec;
-import compi2.multi.compilator.semantic.DefAst;
+import compi2.multi.compilator.semantic.p.DefAst;
 import compi2.multi.compilator.semantic.c.CDef;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.c.CStatement;

@@ -9,7 +9,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.ClassST;
 import compi2.multi.compilator.analysis.symbolt.clases.FieldST;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
-import compi2.multi.compilator.semantic.DefObjsAst;
+import compi2.multi.compilator.semantic.j.DefObjsAst;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.LinkedList;
 import java.util.List;

@@ -1,8 +1,8 @@
 
 package compi2.multi.compilator.semantic.past;
 
-import compi2.multi.compilator.semantic.ControlStruct;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.p.ControlStruct;
+import compi2.multi.compilator.semantic.p.Statement;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
@@ -13,7 +13,7 @@ import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.pobj.Range;
 import compi2.multi.compilator.util.Position;

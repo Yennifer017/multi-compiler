@@ -1,7 +1,7 @@
 
 package compi2.multi.compilator.semantic.past;
 
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.p.Statement;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
@@ -13,7 +13,7 @@ import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
-import compi2.multi.compilator.semantic.Expression;
+import compi2.multi.compilator.semantic.p.Expression;
 import compi2.multi.compilator.semantic.util.Label;
 import java.util.List;
 

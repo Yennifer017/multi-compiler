@@ -1,8 +1,8 @@
 
 package compi2.multi.compilator.semantic.past;
 
-import compi2.multi.compilator.semantic.ControlStruct;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.p.ControlStruct;
+import compi2.multi.compilator.semantic.p.Statement;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;

@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.c3d;
 
+import compi2.multi.compilator.c3d.interfaces.CodeTransformable;
 import compi2.multi.compilator.c3d.util.Register;
 import java.util.LinkedList;
 import java.util.List;

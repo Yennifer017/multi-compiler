@@ -7,7 +7,7 @@ import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
-import compi2.multi.compilator.semantic.Statement;
+import compi2.multi.compilator.semantic.p.Statement;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.c.CStatement;
 import compi2.multi.compilator.semantic.j.JStatement;
