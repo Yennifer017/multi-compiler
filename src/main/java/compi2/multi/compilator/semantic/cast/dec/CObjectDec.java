@@ -1,12 +1,10 @@
 package compi2.multi.compilator.semantic.cast.dec;
 
-import compi2.multi.compilator.analysis.symbolt.AdditionalInfoST;
 import compi2.multi.compilator.analysis.symbolt.Category;
 import compi2.multi.compilator.analysis.symbolt.InfParam;
 import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.ConstructorST;
-import compi2.multi.compilator.analysis.symbolt.clases.DirInstanceST;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.symbolt.estruc.SingleData;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
@@ -16,15 +14,15 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.access.AtomicValue;
+import compi2.multi.compilator.c3d.access.MemoryAccess;
 import compi2.multi.compilator.c3d.access.RegisterUse;
 import compi2.multi.compilator.c3d.access.StackAccess;
 import compi2.multi.compilator.c3d.access.StackPtrUse;
-import compi2.multi.compilator.c3d.access.TemporalUse;
 import compi2.multi.compilator.c3d.cuartetas.AssignationC3D;
-import compi2.multi.compilator.c3d.cuartetas.MethodInvC3D;
 import compi2.multi.compilator.c3d.cuartetas.OperationC3D;
+import compi2.multi.compilator.c3d.generators.AccessGenC3D;
 import compi2.multi.compilator.c3d.generators.ConstructorC3DGen;
-import compi2.multi.compilator.c3d.generators.ParamsGenC3D;
+import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.c3d.util.Register;
 import compi2.multi.compilator.c3d.util.RetParamsC3D;
 import compi2.multi.compilator.exceptions.NoDataFoundEx;
@@ -51,6 +49,7 @@ public class CObjectDec extends CDef {
 
     private FunctionRefAnalyzator refFun;
     private ConstructorC3DGen constructorC3DGen;
+    private AccessGenC3D accessGenC3D;
 
     private ConstructorST constructorST;
     private SymbolTable st;
@@ -62,6 +61,7 @@ public class CObjectDec extends CDef {
         args = new LinkedList<>();
         this.refFun = new FunctionRefAnalyzator();
         this.constructorC3DGen = new ConstructorC3DGen();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     public CObjectDec(Label name, List<CExp> args) {
@@ -69,6 +69,7 @@ public class CObjectDec extends CDef {
         this.args = args;
         this.refFun = new FunctionRefAnalyzator();
         this.constructorC3DGen = new ConstructorC3DGen();
+        this.accessGenC3D = new AccessGenC3D();
     }
 
     @Override
@@ -193,19 +194,29 @@ public class CObjectDec extends CDef {
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas,
             Memory temporals) {
-        RetParamsC3D retParamsC3D = constructorC3DGen.generateCuartetas(
+        RetParamsC3D constructReference = constructorC3DGen.generateCuartetas(
                 args, admiMemory, internalCuartetas, temporals, st, constructorST
+        ); //temporal de donde se encuentra la referencia del constructor
+        MemoryAccess refAcces = accessGenC3D.getRegisterAccess(
+                internalCuartetas, constructReference, 1
         );
-        //setear la referencia devuelta
-        /*internalCuartetas.add(
+        internalCuartetas.add(
+                new OperationC3D(
+                        new RegisterUse(Register.BX_INT),
+                        new StackPtrUse(),
+                        new AtomicValue(singleDataST.getRelativeDir()),
+                        DefiniteOperation.Addition
+                )
+        );
+        internalCuartetas.add(
                 new AssignationC3D(
                         new StackAccess(
-                                PrimitiveType.IntegerPT,
-                                new RegisterUse(Register.CX_INT)
+                                PrimitiveType.IntegerPT, 
+                                new RegisterUse(Register.BX_INT)
                         ),
-                        new RegisterUse(Register.AX_INT)
+                        refAcces
                 )
-        );*/
+        );
     }
 
 }
