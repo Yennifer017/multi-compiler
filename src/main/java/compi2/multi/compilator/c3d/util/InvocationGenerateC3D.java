@@ -30,4 +30,5 @@ public interface InvocationGenerateC3D {
     
     public abstract boolean hasReturnType();
     public abstract boolean isStatement();
+    public abstract boolean canAssign();
 }

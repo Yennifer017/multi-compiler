@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class JNull extends JExpression{
     
-    public static final String NULL_LIT = "#null";
+    public static final String NULL_TYPE = "#null";
 
     public JNull(Position pos) {
         super(pos);
@@ -32,7 +32,7 @@ public class JNull extends JExpression{
 
     @Override
     public Label validateData(JSymbolTable globalST, SymbolTable symbolTable, TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors, SemanticRestrictions restrictions) {
-        return new Label(NULL_LIT, pos);
+        return new Label(NULL_TYPE, pos);
     }
 
     @Override

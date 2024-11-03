@@ -111,4 +111,9 @@ public class CObjUse extends CInvocation {
         return false;
     }
 
+    @Override
+    public boolean canAssign() {
+        return true;
+    }
+
 }

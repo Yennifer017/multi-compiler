@@ -60,7 +60,9 @@ public class Operation extends Expression{
             List<String> semanticErrors) {
         Label leftType = leftExp.validateComplexData(symbolTable, typeTable, semanticErrors);
         Label rightType = rightExp.validateComplexData(symbolTable, typeTable, semanticErrors);
-        String typeString = super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors);
+        String typeString = super.tConvert.complexConvert(
+                operation, leftType, rightType, semanticErrors, false
+        );
         this.type = super.tConvert.convertAllPrimitive(typeString);
         return new Label(typeString, pos);
     }

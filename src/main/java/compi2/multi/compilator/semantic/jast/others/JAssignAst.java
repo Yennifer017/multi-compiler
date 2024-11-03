@@ -86,11 +86,15 @@ public class JAssignAst extends JStatement{
                 semanticErrors, 
                 variable, 
                 initPos, 
+                true,
                 true
         );
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);
         primType = super.tConvert.convertAllPrimitive(typeVar.getName());
-        if(!typeVar.getName().equals(typeValue.getName())){
+        
+        if(!typeVar.getName().equals(typeValue.getName())
+                && !tConvert.canUpgradeType(typeVar.getName(),
+                                    typeValue.getName()) ){
             semanticErrors.add(errorsRep.incorrectTypeError(
                     typeValue.getName(), 
                     typeVar.getName(), 

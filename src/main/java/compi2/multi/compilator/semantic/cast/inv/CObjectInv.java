@@ -57,6 +57,7 @@ public class CObjectInv extends CStatement {
                     semanticErrors, 
                     invocations, 
                     initPos, 
+                    false,
                     false
             );
         } catch (IndexOutOfBoundsException e) {

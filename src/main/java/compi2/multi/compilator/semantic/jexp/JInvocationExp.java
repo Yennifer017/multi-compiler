@@ -72,7 +72,8 @@ public class JInvocationExp extends JExpression{
                 semanticErrors, 
                 invocations, 
                 pos, 
-                true
+                true,
+                false
         );
         this.primType = super.tConvert.convertAllPrimitive(type.getName());
         this.instanceRef = super.refAnalyzator.findInstanceRef(symbolTable);

@@ -5,6 +5,7 @@ import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analyzator.Analyzator;
 import compi2.multi.compilator.exceptions.ConvPrimitiveException;
 import compi2.multi.compilator.semantic.DefiniteOperation;
+import compi2.multi.compilator.semantic.jexp.JNull;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.util.ErrorsRep;
 import java.util.List;
@@ -45,11 +46,16 @@ public class TConvertidor {
     }
     
     public String complexConvert(DefiniteOperation operation, Label leftType, 
-            Label rightType, List<String> semanticErrors){
+            Label rightType, List<String> semanticErrors, boolean transfObjects){
         try {
             return simpleConvert(operation, leftType, rightType, semanticErrors);
         } catch (ConvPrimitiveException e) {
-            if(rightType.getName().equals(leftType.getName())){
+            if(transfObjects){
+                
+            }
+            if(rightType.getName().equals(leftType.getName())
+                    || (transfObjects && canComparaObj(leftType.getName(), rightType.getName()))
+                    ){
                 switch (operation) {
                     case EqualsTo, DifferentTo:
                         return PrimitiveType.BooleanPT.getName();
@@ -71,6 +77,26 @@ public class TConvertidor {
             }
         }
         return Analyzator.ERROR_TYPE;
+    }
+    
+    private boolean canComparaObj(String leftType, String rightType){
+        if(leftType.equals(JNull.NULL_TYPE)){
+            try {
+                convertPrimitive(rightType);
+                return false;
+            } catch (ConvPrimitiveException e) {
+                return true;
+            }
+        } else if(rightType.equals(JNull.NULL_TYPE)){
+            try {
+                convertPrimitive(leftType);
+                return false;
+            } catch (ConvPrimitiveException e) {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
     
     public String simpleConvert(DefiniteOperation unaryOperation, Label type, 
@@ -101,14 +127,16 @@ public class TConvertidor {
     }
     
     public boolean canUpgradeType(String neededType, String currentType){
+        boolean isVarObject = true;
         try {
             PrimitiveType primNeededT = convertPrimitive(neededType);
+            isVarObject = false;
             PrimitiveType primCurrentT = convertPrimitive(currentType);
             if(primNeededT.isNumeric() && primCurrentT.isNumeric()){
                 return primNeededT.getId() >= primCurrentT.getId();
             }
         } catch (ConvPrimitiveException | NullPointerException ex) {
-            
+            return isVarObject && currentType.equals(JNull.NULL_TYPE);
         }
         return false;
     }

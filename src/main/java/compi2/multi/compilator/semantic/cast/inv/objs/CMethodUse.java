@@ -162,5 +162,10 @@ public class CMethodUse extends CInvocation{
     public boolean isStatement() {
         return true;
     }
+
+    @Override
+    public boolean canAssign() {
+        return false;
+    }
     
 }

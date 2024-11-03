@@ -74,4 +74,7 @@ public abstract class JInvocation implements InvocationGenerateC3D{
     
     @Override
     public abstract boolean isStatement();
+    
+    @Override
+    public abstract boolean canAssign();
 }

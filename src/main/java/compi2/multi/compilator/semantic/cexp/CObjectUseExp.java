@@ -1,8 +1,6 @@
 
 package compi2.multi.compilator.semantic.cexp;
 
-import compi2.multi.compilator.analysis.symbolt.Category;
-import compi2.multi.compilator.analysis.symbolt.RowST;
 import compi2.multi.compilator.analysis.symbolt.SymbolTable;
 import compi2.multi.compilator.analysis.symbolt.clases.JSymbolTable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
@@ -60,7 +58,8 @@ public class CObjectUseExp extends CExp{
                     semanticErrors, 
                     invocations, 
                     pos, 
-                    true
+                    true,
+                    false
             );
                     
             this.primType = super.tConvert.convertAllPrimitive(type.getName());

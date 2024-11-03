@@ -224,4 +224,9 @@ public class JMethodUse extends JInvocation {
         return !methodST.getType().equals(Analyzator.VOID_METHOD);
     }
 
+    @Override
+    public boolean canAssign() {
+        return false;
+    }
+
 }

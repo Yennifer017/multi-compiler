@@ -232,4 +232,9 @@ public class JVarUse extends JInvocation {
         return true;
     }
 
+    @Override
+    public boolean canAssign() {
+        return true;
+    }
+
 }

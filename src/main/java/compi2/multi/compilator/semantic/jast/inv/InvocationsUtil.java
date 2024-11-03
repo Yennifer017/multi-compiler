@@ -26,7 +26,8 @@ public class InvocationsUtil {
     
     public Label validateInvocation(JSymbolTable globalST, SymbolTable symbolTable, 
             TypeTable typeTable, NodeJerarTree jerar, List<String> semanticErrors,
-            List<JInvocation> invocations, Position initPos, boolean needExpression){
+            List<JInvocation> invocations, Position initPos, boolean needExpression,
+            boolean isGoingToAssign){
         Label currentType = null;
         for (int i = 0; i < invocations.size(); i++) {
             JInvocation invocation = invocations.get(i);
@@ -51,6 +52,11 @@ public class InvocationsUtil {
                         errorsRep.notStatementError(initPos)
                     );
                 }
+                if(isGoingToAssign && !invocation.canAssign()){
+                    semanticErrors.add(
+                            errorsRep.noSuitableAssignationError(initPos)
+                    );
+                }
             }
 
         }
@@ -61,7 +67,8 @@ public class InvocationsUtil {
     public Label validateInvocation(CImports imports, JSymbolTable clasesST, 
             SymbolTable symbolTable, SymbolTable pascalST,
             TypeTable typeTable, List<String> semanticErrors, 
-            List<CInvocation> invocations, Position initPos, boolean needExpression){
+            List<CInvocation> invocations, Position initPos, boolean needExpression,
+            boolean isGoingToAssign){
         Label currentType = null;
         for (int i = 0; i < invocations.size(); i++) {
             CInvocation invocation = invocations.get(i);
@@ -84,6 +91,12 @@ public class InvocationsUtil {
                 } else if(!needExpression && !invocation.isStatement()){ //need statement
                     semanticErrors.add(
                         errorsRep.notStatementError(initPos)
+                    );
+                }
+                
+                if(isGoingToAssign && !invocation.canAssign()){
+                    semanticErrors.add(
+                            errorsRep.noSuitableAssignationError(initPos)
                     );
                 }
             }

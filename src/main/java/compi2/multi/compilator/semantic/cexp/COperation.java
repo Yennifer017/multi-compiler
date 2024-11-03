@@ -56,7 +56,9 @@ public class COperation extends CExp {
         Label rightType = rightExp.validateComplexData(
                 imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors
         );
-        String typeString = super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors);
+        String typeString = super.tConvert.complexConvert(
+                operation, leftType, rightType, semanticErrors, false
+        );
         this.type = super.tConvert.convertAllPrimitive(typeString);
         return new Label(typeString, pos);
     }

@@ -56,7 +56,9 @@ public class JOperation extends JExpression{
         Label rightType = right.validateData(
                 globalST, symbolTable, typeTable, jerar, semanticErrors, restrictions
         );
-        String typeString = super.tConvert.complexConvert(operation, leftType, rightType, semanticErrors);
+        String typeString = super.tConvert.complexConvert(
+                operation, leftType, rightType, semanticErrors, true
+        );
         this.type = super.tConvert.convertAllPrimitive(typeString);
         return new Label(typeString, pos);
     }

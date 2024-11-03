@@ -186,4 +186,8 @@ public class ErrorsRep {
                 + report(pos);
     }
     
+    public String noSuitableAssignationError(Position pos){
+        return "No se puede hacer una asignacion a la invocacion " + report(pos);
+    }
+    
 }

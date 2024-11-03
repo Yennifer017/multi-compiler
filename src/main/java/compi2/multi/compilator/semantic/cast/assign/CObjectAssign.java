@@ -66,6 +66,7 @@ public class CObjectAssign extends CAssign {
                     semanticErrors,
                     variable,
                     initPos,
+                    true,
                     true
             );
             this.instanceRef = refAnalyzator.findInstanceRef(symbolTable);

@@ -67,6 +67,7 @@ public class JMethodUseStmt extends JStatement {
                 semanticErrors, 
                 invocations, 
                 initPos, 
+                false,
                 false
         );
         return new ReturnCase(false);
