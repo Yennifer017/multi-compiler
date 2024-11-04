@@ -40,10 +40,11 @@ public class CWhileAst extends CControlStmt{
                 imports, clasesST, symbolTable, pascalST, 
                 typeTable, semanticErrors, restrictions, condition
         );
-        return super.validateInternal(
+        super.validateInternal(
                 imports, clasesST, symbolTable, pascalST, typeTable, semanticErrors, 
                 new SemanticRestrictions(true, true, restrictions.getReturnType())
         );
+        return new ReturnCase(false);
     }
 
     @Override

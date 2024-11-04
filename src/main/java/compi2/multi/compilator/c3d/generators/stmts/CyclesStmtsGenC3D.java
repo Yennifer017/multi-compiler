@@ -43,6 +43,9 @@ public class CyclesStmtsGenC3D {
         );
         
         C3Dpass passInternal = new C3Dpass(finalLabel, firstLabel);
+        passInternal.setEndIfLabel(pass.getEndIfLabel());
+        passInternal.setEndMethod(pass.getEndMethod());
+        
         stmtsGeneratorC3D.generateInternalCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, internalStmts
         );
@@ -71,7 +74,11 @@ public class CyclesStmtsGenC3D {
         int trueLabel = firstLabel + 1;
         int falseLabel = firstLabel + 2;
         admiMemory.setCountLabels(admiMemory.getCountLabels() + 3);
+        
         C3Dpass internalPass = new C3Dpass(falseLabel,firstLabel);
+        internalPass.setEndIfLabel(pass.getEndIfLabel());
+        internalPass.setEndMethod(pass.getEndMethod());
+        
         internalCuartetas.add(
                 new LabelC3D(firstLabel)
         );
@@ -119,6 +126,9 @@ public class CyclesStmtsGenC3D {
         
         //validate condition
         C3Dpass passInternal = new C3Dpass(etFalse, etInicio);
+        passInternal.setEndIfLabel(pass.getEndIfLabel());
+        passInternal.setEndMethod(pass.getEndMethod());
+        
         expGenC3D.generateConditionCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, passInternal, condition, etTrue
         );

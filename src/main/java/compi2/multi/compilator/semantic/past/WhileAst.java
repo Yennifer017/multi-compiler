@@ -40,14 +40,14 @@ public class WhileAst extends ControlStruct{
     public ReturnCase validate(SymbolTable symbolTable, TypeTable typeTable, 
             List<String> semanticErrors, SemanticRestrictions restrictions) {
         super.validateCondition(condition, symbolTable, typeTable, semanticErrors);
-        return super.validateInternalStmts(symbolTable, typeTable, semanticErrors, 
+        validateInternalStmts(symbolTable, typeTable, semanticErrors, 
                 new SemanticRestrictions(
                         true, 
                         true, 
                         restrictions.getReturnType(), 
                         restrictions.getReturnType())
         );
-        
+        return new ReturnCase(false);
     }
 
     @Override

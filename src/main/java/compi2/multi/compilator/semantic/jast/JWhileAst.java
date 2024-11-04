@@ -41,8 +41,9 @@ public class JWhileAst extends JControlStmt{
             SemanticRestrictions restrictions) {
         super.validateCondition(globalST, symbolTable, typeTable, jerar, 
                 semanticErrors, restrictions, condition);
-        return super.validateInternalStmts(globalST, symbolTable, typeTable, 
+        validateInternalStmts(globalST, symbolTable, typeTable, 
                 jerar, semanticErrors, restrictions);
+        return new ReturnCase(false);
     }
 
     @Override
