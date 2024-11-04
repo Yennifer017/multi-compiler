@@ -47,6 +47,7 @@ public class JIfAst extends JControlStmt implements ElifGenerateC3D{
         this.elifs = elifs;
         this.elseStmt = elseStmt;
         super.internalStmts = statements;
+        stmtGenC3D = new ConditionalStmtsGenC3D();
     }
 
     @Override
