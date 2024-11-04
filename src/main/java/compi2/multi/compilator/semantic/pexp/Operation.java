@@ -78,6 +78,7 @@ public class Operation extends Expression{
                     DefiniteOperation.Substraction,
                     
                     DefiniteOperation.EqualsTo,
+                    DefiniteOperation.DifferentTo,
                     DefiniteOperation.GraterEq,
                     DefiniteOperation.GraterThan,
                     DefiniteOperation.LessEq,
@@ -95,7 +96,7 @@ public class Operation extends Expression{
                         admiMemory, internalCuartetas, temporals, pass, leftExp, rightExp, type, operation
                 );
             default:
-                throw new RuntimeException("Cuarteas en una pascal operation no definida");
+                throw new RuntimeException("Cuartas en una operacion de pascal no soportada aun");
         }
     }
 

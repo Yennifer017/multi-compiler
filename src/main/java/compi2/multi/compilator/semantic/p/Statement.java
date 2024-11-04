@@ -10,6 +10,7 @@ import compi2.multi.compilator.analyzator.RefAnalyzator;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.interfaces.StmtGenerateC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.util.ErrorsRep;
 import compi2.multi.compilator.util.Position;
@@ -21,7 +22,7 @@ import lombok.Getter;
  * @author blue-dragon
  */
 @Getter
-public abstract class Statement {
+public abstract class Statement implements StmtGenerateC3D{
     
     protected Position initPos;
     
@@ -40,6 +41,7 @@ public abstract class Statement {
         refAnalyzator = new RefAnalyzator();
     }
     
+    @Override
     public abstract void generateCuartetas(AdmiMemory admiMemory,
             List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass);

@@ -34,9 +34,15 @@ public class InvocationsC3DGen {
         accessGenC3D = new AccessGenC3D();
     }
 
-    public RetParamsC3D generateCuartetasExp(AdmiMemory admiMemory,
-            List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass,
-            List<? extends InvocationGenerateC3D> invocations, PrimitiveType primType, int instanceRef) {
+    public RetParamsC3D generateCuartetasExp(
+            AdmiMemory admiMemory,
+            List<Cuarteta> internalCuartetas, 
+            Memory temporals, 
+            C3Dpass pass,
+            List<? extends InvocationGenerateC3D> invocations, 
+            PrimitiveType primType, 
+            int instanceRef
+    ) {
         RetJInvC3D invRet = this.generateC3DInvocations(
                 admiMemory, internalCuartetas, temporals, invocations, instanceRef
         );

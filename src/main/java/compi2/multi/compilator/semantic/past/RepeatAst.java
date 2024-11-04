@@ -9,6 +9,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.generators.stmts.CyclesStmtsGenC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
@@ -25,11 +26,14 @@ import lombok.Setter;
 @Getter @Setter
 public class RepeatAst extends ControlStruct {
     private Expression condition;
+    
+    private CyclesStmtsGenC3D stmtGen;
 
     public RepeatAst(Expression condition, List<Statement> internalStmts, Position initPos) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = internalStmts;
+        stmtGen = new CyclesStmtsGenC3D();
     }
 
     @Override
@@ -46,8 +50,14 @@ public class RepeatAst extends ControlStruct {
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        stmtGen.generateDoWhileCuartetas(
+                admiMemory, 
+                internalCuartetas, 
+                temporals, 
+                pass, 
+                internalStmts, 
+                condition
+        );
     }
-
     
 }

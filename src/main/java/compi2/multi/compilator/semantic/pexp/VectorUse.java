@@ -72,7 +72,7 @@ public class VectorUse extends Expression{
 
     @Override
     public RetParamsC3D generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        throw new UnsupportedOperationException("No se puede usar arreglos desde pascal, aun  no sportado");
     }
 
     

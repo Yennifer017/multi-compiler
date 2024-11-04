@@ -8,6 +8,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.generators.stmts.ConditionalStmtsGenC3D;
 import compi2.multi.compilator.c3d.interfaces.ElifGenerateC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.j.JControlStmt;
@@ -29,11 +30,14 @@ public class JIfAst extends JControlStmt implements ElifGenerateC3D{
     private JExpression condition;
     private List<JIfAst> elifs;
     private JElseAst elseStmt;
+    
+    private ConditionalStmtsGenC3D stmtGenC3D;
 
     public JIfAst(Position initPos, JExpression condition, List<JStatement> statements) {
         super(initPos);
         this.condition = condition;
         super.internalStmts = statements;
+        stmtGenC3D = new ConditionalStmtsGenC3D();
     }
 
     public JIfAst(Position initPos, JExpression condition, List<JStatement> statements, 
@@ -82,7 +86,7 @@ public class JIfAst extends JControlStmt implements ElifGenerateC3D{
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass) {
-        stmtsGeneratorC3D.generateIfCuartetas(
+        stmtGenC3D.generateIfCuartetas(
                 admiMemory, 
                 internalCuartetas, 
                 temporals, 
@@ -97,7 +101,7 @@ public class JIfAst extends JControlStmt implements ElifGenerateC3D{
     @Override
     public void generateElifCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
             Memory temporals, C3Dpass pass){
-        stmtsGeneratorC3D.generateElifCuartetas(
+        stmtGenC3D.generateElifCuartetas(
                 admiMemory, 
                 internalCuartetas, 
                 temporals, 

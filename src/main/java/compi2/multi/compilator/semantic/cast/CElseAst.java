@@ -8,6 +8,7 @@ import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
+import compi2.multi.compilator.c3d.generators.stmts.StmtsGeneratorC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.c.CImports;
 import compi2.multi.compilator.semantic.c.CStatement;
@@ -22,8 +23,11 @@ import java.util.List;
  */
 public class CElseAst extends CControlStmt{
     
+    private StmtsGeneratorC3D stmtGenC3D;
+    
     public CElseAst(Position initPos, List<CStatement> internalStmt) {
         super(initPos, internalStmt);
+        stmtGenC3D = new StmtsGeneratorC3D();
     }
 
     @Override
@@ -37,7 +41,7 @@ public class CElseAst extends CControlStmt{
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        super.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass);
+        stmtGenC3D.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass, internalStmts);
         internalCuartetas.add(
                 new GotoC3D(pass.getEndIfLabel())
         );

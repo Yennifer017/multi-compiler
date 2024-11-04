@@ -8,6 +8,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
@@ -52,7 +53,15 @@ public class SimpleStmt extends Statement{
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        if(typeStruct == BREAK){
+            internalCuartetas.add(
+                    new GotoC3D(pass.getEndLabel())
+            );
+        } else {
+            internalCuartetas.add(
+                    new GotoC3D(pass.getStartBucleLabel())
+            );
+        }
     }
 
     

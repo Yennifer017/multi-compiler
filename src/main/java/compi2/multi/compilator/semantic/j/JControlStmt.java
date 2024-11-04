@@ -8,11 +8,6 @@ import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.analyzator.StmtsAnalizator;
-import compi2.multi.compilator.c3d.AdmiMemory;
-import compi2.multi.compilator.c3d.Cuarteta;
-import compi2.multi.compilator.c3d.Memory;
-import compi2.multi.compilator.c3d.generators.ConditionalStmtsGenC3D;
-import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.Label;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
@@ -31,13 +26,10 @@ public abstract class JControlStmt extends JStatement{
     protected List<JStatement> internalStmts;
     protected ExpGenC3D expGenC3D;
     
-    protected ConditionalStmtsGenC3D stmtsGeneratorC3D;
-
     public JControlStmt(Position initPos) {
         super(initPos);
         this.expGenC3D = new ExpGenC3D();
         this.stmtsAnalizator = new StmtsAnalizator();
-        this.stmtsGeneratorC3D = new ConditionalStmtsGenC3D();
     }
     
     protected ReturnCase validateInternalStmts(JSymbolTable globalST, SymbolTable symbolTable, 
@@ -63,15 +55,5 @@ public abstract class JControlStmt extends JStatement{
             );
         }
     }
-    
-    protected void generateInternalCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, 
-            Memory temporals, C3Dpass pass){
-        if(!internalCuartetas.isEmpty()){
-            for (JStatement internalStmt : internalStmts) {
-                internalStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
-            }
-        }
-    }
-    
     
 }

@@ -7,6 +7,7 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.generators.stmts.ConditionalStmtsGenC3D;
 import compi2.multi.compilator.c3d.interfaces.ElifGenerateC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.c.CExp;
@@ -29,9 +30,12 @@ public class CIfAst extends CControlStmt implements ElifGenerateC3D{
     private List<CIfAst> elifs;
     private CElseAst elseStmt;
     
+    private ConditionalStmtsGenC3D stmtsGeneratorC3D;
+    
     public CIfAst(Position initPos, CExp condition, List<CStatement> internalStmt) {
         super(initPos, internalStmt);
         this.condition = condition;
+        stmtsGeneratorC3D = new ConditionalStmtsGenC3D();
     }
     
     public CIfAst(Position initPos, CExp condition, List<CStatement> statements, 
@@ -40,6 +44,7 @@ public class CIfAst extends CControlStmt implements ElifGenerateC3D{
         this.condition = condition;
         this.elifs = elifs;
         this.elseStmt = elseStmt;
+        stmtsGeneratorC3D = new ConditionalStmtsGenC3D();
     }
 
     @Override

@@ -1,11 +1,12 @@
 
-package compi2.multi.compilator.c3d.generators;
+package compi2.multi.compilator.c3d.generators.stmts;
 
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
 import compi2.multi.compilator.c3d.cuartetas.LabelC3D;
+import compi2.multi.compilator.c3d.generators.ExpGenC3D;
 import compi2.multi.compilator.c3d.interfaces.ElifGenerateC3D;
 import compi2.multi.compilator.c3d.interfaces.ExpressionGenerateC3D;
 import compi2.multi.compilator.c3d.interfaces.StmtGenerateC3D;
@@ -19,9 +20,11 @@ import java.util.List;
 public class ConditionalStmtsGenC3D {
     
     private ExpGenC3D expGenC3D;
+    private StmtsGeneratorC3D stmtsGeneratorC3D;
     
     public ConditionalStmtsGenC3D(){
         this.expGenC3D = new ExpGenC3D();
+        stmtsGeneratorC3D = new StmtsGeneratorC3D();
     }
     
     public void generateIfCuartetas(
@@ -48,7 +51,7 @@ public class ConditionalStmtsGenC3D {
         internalCuartetas.add(
                 new LabelC3D(trueLabel)
         );
-        this.generateInternalCuartetas(
+        stmtsGeneratorC3D.generateInternalCuartetas(
                 admiMemory, internalCuartetas, temporals, pass, internalStatements
         );
         internalCuartetas.add(
@@ -81,20 +84,6 @@ public class ConditionalStmtsGenC3D {
         );
     }
     
-    private void generateInternalCuartetas(
-            AdmiMemory admiMemory, 
-            List<Cuarteta> internalCuartetas, 
-            Memory temporals, 
-            C3Dpass pass, 
-            List<? extends StmtGenerateC3D> internalStmts
-    ){
-        if(!internalCuartetas.isEmpty()){
-            for (StmtGenerateC3D internalStmt : internalStmts) {
-                internalStmt.generateCuartetas(admiMemory, internalCuartetas, temporals, pass);
-            }
-        }
-    }
-    
     public void generateElifCuartetas(
             AdmiMemory admiMemory, 
             List<Cuarteta> internalCuartetas, 
@@ -116,7 +105,7 @@ public class ConditionalStmtsGenC3D {
         internalCuartetas.add(
                 new LabelC3D(trueLabel)
         );
-        this.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass, internalStmts);
+        stmtsGeneratorC3D.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass, internalStmts);
         internalCuartetas.add(
                 new GotoC3D(pass.getEndIfLabel())
         );

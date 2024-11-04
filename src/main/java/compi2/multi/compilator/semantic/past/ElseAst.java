@@ -8,6 +8,8 @@ import compi2.multi.compilator.analysis.typet.TypeTable;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
+import compi2.multi.compilator.c3d.cuartetas.GotoC3D;
+import compi2.multi.compilator.c3d.generators.stmts.StmtsGeneratorC3D;
 import compi2.multi.compilator.c3d.util.C3Dpass;
 import compi2.multi.compilator.semantic.util.ReturnCase;
 import compi2.multi.compilator.semantic.util.SemanticRestrictions;
@@ -20,9 +22,12 @@ import java.util.List;
  */
 public class ElseAst extends ControlStruct{
     
+    private StmtsGeneratorC3D stmtGenC3D;
+    
     public ElseAst(List<Statement> stmts){
         super(null);
         super.internalStmts = stmts;
+        stmtGenC3D = new StmtsGeneratorC3D();
     }
 
     @Override
@@ -37,7 +42,10 @@ public class ElseAst extends ControlStruct{
 
     @Override
     public void generateCuartetas(AdmiMemory admiMemory, List<Cuarteta> internalCuartetas, Memory temporals, C3Dpass pass) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        stmtGenC3D.generateInternalCuartetas(admiMemory, internalCuartetas, temporals, pass, internalStmts);
+        internalCuartetas.add(
+                new GotoC3D(pass.getEndIfLabel())
+        );
     }
 
 }
