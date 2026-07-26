@@ -7,5 +7,4 @@ package compi2.multi.compilator.c3d.interfaces;
  */
 public interface CodeTransformable {
     public void generateCcode(StringBuilder builder);
-    //public void generateAssemblyCode(StringBuilder builder);
 }

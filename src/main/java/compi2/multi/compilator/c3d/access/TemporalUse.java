@@ -29,5 +29,5 @@ public class TemporalUse extends MemoryAccess{
         builder.append(countTemp);
         builder.append("]");
     }
-    
+
 }

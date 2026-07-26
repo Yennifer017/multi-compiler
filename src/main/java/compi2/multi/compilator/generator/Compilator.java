@@ -10,6 +10,31 @@ import java.io.IOException;
  * @author blue-dragon
  */
 public class Compilator {
+    
+    public void compilateNASM(String pathFile, String workerDirectory, String nameProcessedFile) 
+        throws InterruptedException, IOException, CompilationException {
+    
+        String objectFile = nameProcessedFile + ".o";
+        ProcessBuilder nasmBuilder = new ProcessBuilder(
+                "nasm", "-f", "elf64", pathFile, "-o", objectFile);
+        nasmBuilder.redirectErrorStream(true); 
+
+        Process nasmProcess = nasmBuilder.start();
+        if (nasmProcess.waitFor() != 0) {
+            throw new CompilationException("Error en la etapa de ensamblado (nasm)");
+        }
+
+        ProcessBuilder ldBuilder = new ProcessBuilder(
+                "ld", objectFile, "-o", nameProcessedFile);
+        ldBuilder.directory(new File(workerDirectory));
+        ldBuilder.redirectErrorStream(true);
+
+        Process ldProcess = ldBuilder.start();
+        if (ldProcess.waitFor() != 0) {
+            throw new CompilationException("Error en la etapa de enlazado (ld)");
+        }
+    }
+    
     public void compilateCPP(String pathFile, String workerDirectory, String nameProcessedFile) 
             throws InterruptedException, IOException, CompilationException{
         ProcessBuilder processBuilder = new ProcessBuilder(

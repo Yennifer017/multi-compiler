@@ -1,11 +1,15 @@
 
 package compi2.multi.compilator.c3d;
 
+import compi2.multi.compilator.assembly.interfaces.AssemblyTransformable;
 import compi2.multi.compilator.c3d.interfaces.CodeTransformable;
 
 /**
  *
  * @author blue-dragon
  */
-public abstract class Cuarteta implements  CodeTransformable{
+public abstract class Cuarteta implements 
+        CodeTransformable, AssemblyTransformable
+{
+    
 }

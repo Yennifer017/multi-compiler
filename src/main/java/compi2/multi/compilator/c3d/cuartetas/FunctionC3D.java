@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.c3d.cuartetas;
 
+import compi2.multi.compilator.assembly.AssemblyComps;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.Memory;
 import java.util.List;
@@ -35,6 +36,11 @@ public class FunctionC3D extends Cuarteta{
             }
         }
         builder.append("}\n");
+    }
+
+    @Override
+    public void generateAssemblyNasmCode(StringBuilder builder, AssemblyComps ac) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
 }

@@ -40,5 +40,5 @@ public class HeapAccess extends MemoryAccess{
                     .append("]");
         }
     }
-    
+
 }

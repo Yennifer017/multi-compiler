@@ -13,5 +13,5 @@ public class HeapPtrUse extends MemoryAccess{
     public void generateCcode(StringBuilder builder) {
         builder.append(AdmiMemory.HEAP_PTR);
     }
-    
+
 }

@@ -1,6 +1,7 @@
 
 package compi2.multi.compilator.c3d.cuartetas;
 
+import compi2.multi.compilator.assembly.AssemblyComps;
 import compi2.multi.compilator.c3d.AdmiMemory;
 import compi2.multi.compilator.c3d.Cuarteta;
 import lombok.Getter;
@@ -23,6 +24,11 @@ public class LabelC3D extends Cuarteta{
         builder.append(AdmiMemory.LABEL_C3D_NAME);
         builder.append(number);
         builder.append(":\n");
+    }
+
+    @Override
+    public void generateAssemblyNasmCode(StringBuilder builder, AssemblyComps ac) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
     
