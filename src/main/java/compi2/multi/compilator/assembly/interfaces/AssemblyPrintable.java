@@ -5,12 +5,11 @@
 package compi2.multi.compilator.assembly.interfaces;
 
 import compi2.multi.compilator.assembly.AssemblyComps;
-import compi2.multi.compilator.assembly.components.Literal;
 
 /**
  *
  * @author blue-dragon
  */
-public interface IImmediateValue extends AssemblyPreparable{
-    Literal getLiteral(AssemblyComps ac);
+public interface AssemblyPrintable {
+    public String getNasmPrintableCode(AssemblyComps ac);
 }

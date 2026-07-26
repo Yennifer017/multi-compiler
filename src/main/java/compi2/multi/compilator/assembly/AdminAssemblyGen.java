@@ -50,6 +50,9 @@ public class AdminAssemblyGen {
                            ; Tabla de literales
                            ; ============================
                            
+                           newline:
+                               db 10
+                           
                            """);
             
             ac.getLiteralPool().generateAssemblyNasmCode(builder, ac);

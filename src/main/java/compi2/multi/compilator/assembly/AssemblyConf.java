@@ -9,5 +9,7 @@ package compi2.multi.compilator.assembly;
  * @author blue-dragon
  */
 public class AssemblyConf {
+    public static final String PRINT_LN_FUNCT_NAME = "print_ln";
     public static final String PRINT_STRING_FUNCT_NAME = "print_string";
+    public static final String PRINT_INTEGER_FUNCT_NAME = "print_int";
 }

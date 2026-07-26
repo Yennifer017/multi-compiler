@@ -2,14 +2,13 @@
 package compi2.multi.compilator.c3d.access;
 
 import compi2.multi.compilator.assembly.AssemblyComps;
-import compi2.multi.compilator.assembly.components.Literal;
-import compi2.multi.compilator.assembly.interfaces.IImmediateValue;
+import compi2.multi.compilator.assembly.interfaces.AssemblyPreparable;
 
 /**
  *
  * @author blue-dragon
  */
-public class AtomicStringConvC3D extends MemoryAccess implements IImmediateValue{
+public class AtomicStringConvC3D extends MemoryAccess implements AssemblyPreparable{
     
     private MemoryAccess access;
     public AtomicStringConvC3D(MemoryAccess access) {
@@ -31,17 +30,14 @@ public class AtomicStringConvC3D extends MemoryAccess implements IImmediateValue
     
     @Override
     public void prepareForAssembly(AssemblyComps ac) {
-        if (access instanceof AtomicValue atomicValue) {
+        if (access instanceof AssemblyPreparable atomicValue) {
             atomicValue.prepareForAssembly(ac);
         }
     }
 
     @Override
-    public Literal getLiteral(AssemblyComps ac) {
-        if (access instanceof AtomicValue atomicValue) {
-            return atomicValue.getLiteral(ac);
-        } 
-        throw new RuntimeException("Cant access to atomic string value convert literal because it's not a literal content");
+    public String getNasmPrintableCode(AssemblyComps ac) {
+        return access.getNasmPrintableCode(ac);
     }
 
 }

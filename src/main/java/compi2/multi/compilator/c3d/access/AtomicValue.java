@@ -2,8 +2,9 @@
 package compi2.multi.compilator.c3d.access;
 
 import compi2.multi.compilator.assembly.AssemblyComps;
+import compi2.multi.compilator.assembly.AssemblyConf;
 import compi2.multi.compilator.assembly.components.Literal;
-import compi2.multi.compilator.assembly.interfaces.IImmediateValue;
+import compi2.multi.compilator.assembly.interfaces.AssemblyPreparable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +13,7 @@ import lombok.Setter;
  * @author blue-dragon
  */
 @Getter @Setter
-public class AtomicValue<T> extends MemoryAccess implements IImmediateValue{
+public class AtomicValue<T> extends MemoryAccess implements AssemblyPreparable{
     private T value;
 
     public AtomicValue(T value) {
@@ -42,8 +43,30 @@ public class AtomicValue<T> extends MemoryAccess implements IImmediateValue{
     }
 
     @Override
-    public Literal getLiteral(AssemblyComps ac) {
-        return ac.getLiteralPool().get(value.toString());
+    public String getNasmPrintableCode(AssemblyComps ac) {
+        if((value instanceof String) || (value instanceof Character)){
+            Literal literal = ac.getLiteralPool().get(value.toString());
+            return String.format("""
+                                 mov rsi, %s
+                                 mov rdx, %s
+                                 call %s
+                                 
+                                 """, 
+                    literal.getLabel(), literal.getLenghtLabel(), 
+                    AssemblyConf.PRINT_STRING_FUNCT_NAME
+            );
+        } else if(value instanceof Integer) {
+            return String.format("""
+                                 mov rax, %s
+                                 call %s
+                                 
+                                 """, 
+                    value.toString(), 
+                    AssemblyConf.PRINT_INTEGER_FUNCT_NAME
+            );
+        }
+        throw new UnsupportedOperationException();
     }
+
     
 }
