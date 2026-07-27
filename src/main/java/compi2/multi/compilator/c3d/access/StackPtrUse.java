@@ -19,5 +19,10 @@ public class StackPtrUse extends MemoryAccess{
     public String getNasmPrintableCode(AssemblyComps ac) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+    @Override
+    public String getAssemblyRepresentation() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
  
 }

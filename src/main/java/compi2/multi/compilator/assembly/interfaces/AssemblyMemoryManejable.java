@@ -4,12 +4,12 @@
  */
 package compi2.multi.compilator.assembly.interfaces;
 
-import compi2.multi.compilator.analysis.typet.PrimitiveType;
-
 /**
  *
  * @author blue-dragon
  */
-public interface VarAssignable extends AssemblyRepresentable{
-    public PrimitiveType getTypeAsign();
+public interface AssemblyMemoryManejable {
+    public String getReserveMemoryNasmCode();
+    public String getFreeMemoryNasmCode(boolean withReturn);
+    public int getMemorySize();
 }

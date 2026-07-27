@@ -40,4 +40,9 @@ public class AtomicStringConvC3D extends MemoryAccess implements AssemblyPrepara
         return access.getNasmPrintableCode(ac);
     }
 
+    @Override
+    public String getAssemblyRepresentation() {
+        return access.getAssemblyRepresentation();
+    }
+
 }

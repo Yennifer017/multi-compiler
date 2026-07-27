@@ -1,8 +1,9 @@
-
 package compi2.multi.compilator.c3d;
 
 import compi2.multi.compilator.c3d.interfaces.CodeTransformable;
 import compi2.multi.compilator.analysis.typet.PrimitiveType;
+import compi2.multi.compilator.assembly.interfaces.AssemblyMemoryManejable;
+import compi2.multi.compilator.assembly.utils.AssemblyMemoryUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,23 +11,25 @@ import lombok.Setter;
  *
  * @author blue-dragon
  */
-@Getter @Setter
-public class Memory implements CodeTransformable{
+@Getter
+@Setter
+public class Memory implements CodeTransformable, AssemblyMemoryManejable {
+
     private int stringCount;
     private int integerCount;
     private int floatCount;
     private int charCount;
     private int booleanCount;
-    
+
     private int bytes;
-    
+
     private String name;
-    
-    public Memory(String name){
+
+    public Memory(String name) {
         this.name = name;
     }
-    
-    public void incrementMemory(int generalCount){
+
+    public void incrementMemory(int generalCount) {
         stringCount = generalCount;
         integerCount = generalCount;
         floatCount = generalCount;
@@ -42,9 +45,9 @@ public class Memory implements CodeTransformable{
         definite(builder, PrimitiveType.CharPT, charCount);
         definite(builder, PrimitiveType.BooleanPT, booleanCount);
     }
-    
-    private void definite(StringBuilder builder, PrimitiveType type, int count){
-        if(count > 0){
+
+    private void definite(StringBuilder builder, PrimitiveType type, int count) {
+        if (count > 0) {
             builder.append(type.getCName()).append(" ");
             builder.append(this.name).append(type.getName());
             builder.append("[");
@@ -52,12 +55,12 @@ public class Memory implements CodeTransformable{
             builder.append("];\n");
         }
     }
-    
-    public String getMemoryName(PrimitiveType type){
+
+    public String getMemoryName(PrimitiveType type) {
         return this.name + type.getName();
     }
-    
-    public int getCount(PrimitiveType type){
+
+    public int getCount(PrimitiveType type) {
         switch (type) {
             case PrimitiveType.IntegerPT:
                 return this.integerCount;
@@ -71,23 +74,63 @@ public class Memory implements CodeTransformable{
                 return this.charCount;
         }
     }
-    
-    public void increment(PrimitiveType type, int increment){
+
+    public void increment(PrimitiveType type, int increment) {
         switch (type) {
-            case PrimitiveType.IntegerPT -> this.integerCount += increment;
-            case PrimitiveType.BooleanPT -> this.booleanCount += increment;
-            case PrimitiveType.RealPT -> this.floatCount += increment;
-            case PrimitiveType.StringPT -> this.stringCount += increment;
-            default -> this.charCount += increment;
+            case PrimitiveType.IntegerPT ->
+                this.integerCount += increment;
+            case PrimitiveType.BooleanPT ->
+                this.booleanCount += increment;
+            case PrimitiveType.RealPT ->
+                this.floatCount += increment;
+            case PrimitiveType.StringPT ->
+                this.stringCount += increment;
+            default ->
+                this.charCount += increment;
         }
     }
 
-    /*@Override
-    public void generateAssemblyCode(StringBuilder builder) {
-        builder.append(this.name)
-                .append(" resb ")
-                .append(this.bytes)
-                .append("\n");
-    }*/
-    
+    @Override
+    public String getReserveMemoryNasmCode() {
+        int memorySize = getMemorySize();
+        if (memorySize != 0) {
+            return String.format("""
+                                 ; Reservar espacio
+                                 push rbp
+                                 mov rbp, rsp
+                                 
+                                 sub rsp, %d
+                                 
+                                 """, memorySize);
+        }
+        return "";
+    }
+
+    @Override
+    public String getFreeMemoryNasmCode(boolean withReturn) {
+        int memorySize = getMemorySize();
+        if (memorySize != 0) {
+            return String.format("""
+                                 ; liberar espacio
+                                 mov rsp, rbp
+                                 pop rbp
+                                 %s
+                                 
+                                 """, withReturn ? "ret" : "");
+        }
+        return "";
+    }
+
+    @Override
+    public int getMemorySize() {
+        int memoryInBytes = 0;
+        memoryInBytes += integerCount * 4;
+        memoryInBytes += floatCount * 4;
+        memoryInBytes += charCount * 1;
+        memoryInBytes += booleanCount * 4;
+        memoryInBytes += stringCount * 8;
+
+        return AssemblyMemoryUtil.getAlignedMemorySize(memoryInBytes);
+    }
+
 }

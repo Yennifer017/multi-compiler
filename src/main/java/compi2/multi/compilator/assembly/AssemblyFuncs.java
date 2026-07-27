@@ -4,6 +4,7 @@
  */
 package compi2.multi.compilator.assembly;
 
+import compi2.multi.compilator.assembly.config.AssemblyFuncsName;
 import compi2.multi.compilator.assembly.interfaces.AssemblyTransformable;
 
 /**
@@ -33,7 +34,7 @@ public class AssemblyFuncs implements AssemblyTransformable{
                        
                            ret
                                      
-                                     """, AssemblyConf.PRINT_LN_FUNCT_NAME));
+                                     """, AssemblyFuncsName.PRINT_LN_FUNCT_NAME));
         
         builder.append(String.format("""
                       
@@ -46,7 +47,7 @@ public class AssemblyFuncs implements AssemblyTransformable{
                        
                            ret
                                      
-                       """, AssemblyConf.PRINT_STRING_FUNCT_NAME));
+                       """, AssemblyFuncsName.PRINT_STRING_FUNCT_NAME));
         builder.append(String.format("""
                        print_int:
                            sub rsp, 32         ; Mover el sp para tener 32 bits
@@ -69,7 +70,7 @@ public class AssemblyFuncs implements AssemblyTransformable{
                        
                            add rsp, 32         ; Devolver el sp a su posicion original
                            ret
-                                     """, AssemblyConf.PRINT_INTEGER_FUNCT_NAME));
+                                     """, AssemblyFuncsName.PRINT_INTEGER_FUNCT_NAME));
     }
     
 }

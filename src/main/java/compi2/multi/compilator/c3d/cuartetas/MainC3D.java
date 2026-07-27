@@ -53,12 +53,13 @@ public class MainC3D extends Cuarteta implements AssemblyPreparable{
                        _start:
                        
                        """);
-        
+        builder.append(internalMemory.getReserveMemoryNasmCode());
         if(cuartetas != null){
             for (Cuarteta cuarteta : cuartetas) {
                 cuarteta.generateAssemblyNasmCode(builder, ac);
             }
         }
+        builder.append(internalMemory.getFreeMemoryNasmCode(false));
         
         builder.append("""
                            ; syscall exit

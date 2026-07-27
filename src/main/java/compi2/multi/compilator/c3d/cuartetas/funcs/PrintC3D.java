@@ -2,7 +2,7 @@
 package compi2.multi.compilator.c3d.cuartetas.funcs;
 
 import compi2.multi.compilator.assembly.AssemblyComps;
-import compi2.multi.compilator.assembly.AssemblyConf;
+import compi2.multi.compilator.assembly.config.AssemblyFuncsName;
 import compi2.multi.compilator.assembly.interfaces.AssemblyPreparable;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
@@ -44,7 +44,7 @@ public class PrintC3D extends Cuarteta implements AssemblyPreparable{
     public void generateAssemblyNasmCode(StringBuilder builder, AssemblyComps ac) {
         builder.append(access.getNasmPrintableCode(ac));
         if(withLn){
-            builder.append("call " + AssemblyConf.PRINT_LN_FUNCT_NAME + "\n");
+            builder.append("call " + AssemblyFuncsName.PRINT_LN_FUNCT_NAME + "\n");
         }
     }
     

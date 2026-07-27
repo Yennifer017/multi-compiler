@@ -42,7 +42,7 @@ public class RegisterUse extends MemoryAccess implements VarAssignable{
     }
 
     @Override
-    public String getAssemblyRepresentationForAssign() {
+    public String getAssemblyRepresentation() {
         return this.register.getNasmRegister();
     }
 

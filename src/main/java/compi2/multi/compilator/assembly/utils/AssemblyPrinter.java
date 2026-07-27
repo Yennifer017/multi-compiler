@@ -4,7 +4,7 @@
  */
 package compi2.multi.compilator.assembly.utils;
 
-import compi2.multi.compilator.assembly.AssemblyConf;
+import compi2.multi.compilator.assembly.config.AssemblyFuncsName;
 
 /**
  *
@@ -23,7 +23,7 @@ public class AssemblyPrinter {
                                  
                                  """,
                 nasmValue,
-                AssemblyConf.PRINT_INTEGER_FUNCT_NAME
+                AssemblyFuncsName.PRINT_INTEGER_FUNCT_NAME
         );
     }
 }

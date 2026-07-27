@@ -7,7 +7,6 @@ import compi2.multi.compilator.assembly.interfaces.VarAssignable;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
 import compi2.multi.compilator.semantic.DefiniteOperation;
-import jdk.jshell.spi.ExecutionControl;
 
 /**
  *
@@ -49,15 +48,18 @@ public class OperationC3D extends Cuarteta{
     public void generateAssemblyNasmCode(StringBuilder builder, AssemblyComps ac) {
         VarAssignable varAssign = (VarAssignable) variable; 
         switch (varAssign.getTypeAsign()) {
+            //TODO: not all the operations are allowed
             case PrimitiveType.IntegerPT, PrimitiveType.BooleanPT:
                 builder.append("mov ")
-                        .append(varAssign.getAssemblyRepresentationForAssign())
+                        .append(varAssign.getAssemblyRepresentation())
                         .append(", ")
-                        .append(1)
-                        .append("\nadd ")
-                        .append(varAssign.getAssemblyRepresentationForAssign())
+                        .append(first.getAssemblyRepresentation())
+                        .append("\n")
+                        .append(operation.getNasm())
+                        .append(" ")
+                        .append(varAssign.getAssemblyRepresentation())
                         .append(", ")
-                        .append(1)
+                        .append(second.getAssemblyRepresentation())
                         .append("\n")
                         ;
                 break;

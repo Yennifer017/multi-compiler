@@ -2,7 +2,7 @@
 package compi2.multi.compilator.c3d.access;
 
 import compi2.multi.compilator.assembly.AssemblyComps;
-import compi2.multi.compilator.assembly.AssemblyConf;
+import compi2.multi.compilator.assembly.config.AssemblyFuncsName;
 import compi2.multi.compilator.assembly.components.Literal;
 import compi2.multi.compilator.assembly.interfaces.AssemblyPreparable;
 import compi2.multi.compilator.assembly.utils.AssemblyPrinter;
@@ -54,12 +54,17 @@ public class AtomicValue<T> extends MemoryAccess implements AssemblyPreparable{
                                  
                                  """, 
                     literal.getLabel(), literal.getLenghtLabel(), 
-                    AssemblyConf.PRINT_STRING_FUNCT_NAME
+                    AssemblyFuncsName.PRINT_STRING_FUNCT_NAME
             );
         } else if(value instanceof Integer) {
             return AssemblyPrinter.getPrintIntCode(value.toString());
         }
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getAssemblyRepresentation() {
+        return value.toString();
     }
 
     
