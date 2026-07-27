@@ -1,14 +1,17 @@
 
 package compi2.multi.compilator.c3d.access;
 
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.assembly.AssemblyComps;
+import compi2.multi.compilator.assembly.interfaces.VarAssignable;
+import compi2.multi.compilator.assembly.utils.AssemblyPrinter;
 import compi2.multi.compilator.c3d.util.Register;
 
 /**
  *
  * @author blue-dragon
  */
-public class RegisterUse extends MemoryAccess{
+public class RegisterUse extends MemoryAccess implements VarAssignable{
     
     private Register register;
 
@@ -30,6 +33,17 @@ public class RegisterUse extends MemoryAccess{
 
     @Override
     public String getNasmPrintableCode(AssemblyComps ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return AssemblyPrinter.getPrintIntCode(register.getNasmRegister());
     }
+
+    @Override
+    public PrimitiveType getTypeAsign() {
+        return this.register.getType();
+    }
+
+    @Override
+    public String getAssemblyRepresentationForAssign() {
+        return this.register.getNasmRegister();
+    }
+
 }

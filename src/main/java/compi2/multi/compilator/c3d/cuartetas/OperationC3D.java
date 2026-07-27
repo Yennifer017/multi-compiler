@@ -1,10 +1,13 @@
 
 package compi2.multi.compilator.c3d.cuartetas;
 
+import compi2.multi.compilator.analysis.typet.PrimitiveType;
 import compi2.multi.compilator.assembly.AssemblyComps;
+import compi2.multi.compilator.assembly.interfaces.VarAssignable;
 import compi2.multi.compilator.c3d.Cuarteta;
 import compi2.multi.compilator.c3d.access.MemoryAccess;
 import compi2.multi.compilator.semantic.DefiniteOperation;
+import jdk.jshell.spi.ExecutionControl;
 
 /**
  *
@@ -44,7 +47,23 @@ public class OperationC3D extends Cuarteta{
 
     @Override
     public void generateAssemblyNasmCode(StringBuilder builder, AssemblyComps ac) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        VarAssignable varAssign = (VarAssignable) variable; 
+        switch (varAssign.getTypeAsign()) {
+            case PrimitiveType.IntegerPT, PrimitiveType.BooleanPT:
+                builder.append("mov ")
+                        .append(varAssign.getAssemblyRepresentationForAssign())
+                        .append(", ")
+                        .append(1)
+                        .append("\nadd ")
+                        .append(varAssign.getAssemblyRepresentationForAssign())
+                        .append(", ")
+                        .append(1)
+                        .append("\n")
+                        ;
+                break;
+            default:
+                throw new RuntimeException("not supported yet");
+        }
     }
     
 }
